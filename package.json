@@ -12,7 +12,8 @@
     "update": "npm-check -u"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.4"
+    "parcel-bundler": "^1.12.4",
+    "sass": "^1.26.8"
   },
   "dependencies": {
     "@babel/core": "^7.10.2",

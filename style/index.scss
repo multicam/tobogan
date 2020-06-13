@@ -3,8 +3,8 @@
 
 body {
   font-family: 'Gotham SSm A', 'Gotham SSm B', sans-serif;
-  color: #222222;
   padding: 1rem;
+  color: #222222;
 }
 
 h1 {
@@ -19,6 +19,12 @@ a {
     color: orange;
     background: transparentize(orange,.917)
   }
+}
+
+#grid {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  user-select: none;
 }
 
 

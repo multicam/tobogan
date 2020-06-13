@@ -1,0 +1,22 @@
+{
+  "name": " ",
+  "version": "0.0.1",
+  "description": "",
+  "keywords": "",
+  "license": "",
+  "author": "",
+  "scripts": {
+    "dev": "parcel serve index.html --port 1234",
+    "build": "parcel build index.html",
+    "start": "npm run build && npm run dev",
+    "update": "npm-check -u"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4"
+  },
+  "dependencies": {
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
+    "node-sass": "^4.14.1"
+  }
+}

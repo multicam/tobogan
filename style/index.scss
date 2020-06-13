@@ -1,7 +1,7 @@
 @import "normalise";
 @import "fonts";
 
-$_red: #D40A24;
+$red: #d40a24;
 
 body {
   font-family: 'Gotham SSm A', 'Gotham SSm B', sans-serif;
@@ -20,8 +20,8 @@ a {
   color: #222222;
 
   &:hover {
-    color: orange;
-    background: transparentize(orange,.917)
+    color: $red;
+    background: transparentize($red,.917)
   }
 }
 
@@ -57,14 +57,20 @@ header {
   }
 }
 
+.red {
+  background: $red;
+}
+
+.box {
+  z-index: -1;
+  &.full {
+    position: fixed; top: 0; left: 0; width: 100vw;
+    height: 100vh;
+  }
+}
 
 main {
   section {
-    .box {
-      background-color: green;
-      width: 200px;
-      margin: 1rem -1rem;
-    }
     h1 {
       margin-top: 18vw;
       font-weight: 700;

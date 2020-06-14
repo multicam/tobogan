@@ -1,24 +1,27 @@
 {
-  "name": " ",
+  "name": "tgds-2020",
   "version": "0.0.1",
-  "description": "",
+  "description": "TGDS 2020",
   "keywords": "",
   "license": "",
   "author": "",
   "scripts": {
     "dev": "parcel serve index.html --port 1234",
     "build": "parcel build index.html",
-    "start": "npm run build && npm run dev",
-    "update": "npm-check -u"
+    "start": "yarn build && yarn dev",
+    "update": "npm-check -u && rm package-lock.json ; yarn"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.4",
-    "sass": "^1.26.8"
-  },
-  "dependencies": {
     "@babel/core": "^7.10.2",
     "@babel/preset-env": "^7.10.2",
-    "gsap": "^3.3.1",
-    "node-sass": "^4.14.1"
+    "parcel-bundler": "^1.12.4",
+    "postcss": "^7.0.32",
+    "postcss-import": "^12.0.1",
+    "postcss-preset-env": "^6.7.0",
+    "sass": "^1.26.8",
+    "tailwindcss": "^1.4.6"
+  },
+  "dependencies": {
+    "gsap": "^3.3.3"
   }
 }

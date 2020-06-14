@@ -1,7 +1,17 @@
 @import "normalise";
-@import "fonts";
+@import "grid";
+
+:root {
+  --debug-style: {
+    outline: 1px solid rgba(100,0,0,.2);
+  }
+}
 
 $red: #d40a24;
+
+.debug {
+  @apply --debug-style;
+}
 
 body {
   font-family: 'Gotham SSm A', 'Gotham SSm B', sans-serif;

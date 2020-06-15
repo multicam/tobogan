@@ -1,25 +1,27 @@
 @import "normalise";
 @import "grid";
 
-:root {
-  --debug-style: {
-    outline: 1px solid rgba(100,0,0,.2);
-  }
-}
-
 $red: #d40a24;
 
 .debug {
-  @apply --debug-style;
+  outline: 1px solid rgba(100,0,0,.2);
+
+  > div {
+    outline: 1px solid rgba(100,0,0,.2);
+    min-height: 2rem;
+
+    &:after {
+      content: '--d--';
+      font-size: .75rem;
+      line-height: 2rem;
+    }
+
+  }
 }
 
 body {
   font-family: 'Gotham SSm A', 'Gotham SSm B', sans-serif;
   color: #222222;
-}
-
-main, header {
-  padding: 1rem;
 }
 
 h1 {
@@ -43,11 +45,16 @@ a {
   z-index: -1;
 }
 
+#app {
+  max-width: calc((100% / 16) * 16);
+  border: 1px solid green;
+}
 
 header {
   display: flex;
 
   img {
+    margin: .5rem;
     height: 2rem;
   }
 
@@ -59,7 +66,7 @@ header {
 
   a {
     padding: 0 .5rem;
-    line-height: 2rem;
+    line-height: 3rem;
     text-decoration: none;
     text-transform: uppercase;
     font-size: .75rem;
@@ -81,6 +88,8 @@ header {
 
 main {
   section {
+    padding: 1rem;
+
     h1 {
       margin-top: 18vw;
       font-weight: 700;

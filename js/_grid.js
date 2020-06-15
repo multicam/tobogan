@@ -5,7 +5,7 @@ function renderGrid () {
 
   if( update ) {
 
-    canvas = document.getElementById('grid')
+    canvas = document.getElementById('overlay')
     ctx = canvas.getContext('2d')
     // const width = canvas.width, height = canvas.height
     const width = window.innerWidth, height = window.innerHeight, step = 16

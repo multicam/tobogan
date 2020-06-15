@@ -12,18 +12,21 @@
   <meta property="og:url" content="">
   <meta property="og:image" content="">
 
-  <link rel="manifest" href="site.webmanifest">
-  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="apple-touch-icon" href="images/icons/icon.png">
 
   <meta name="theme-color" content="#afafaf">
 
-  <link rel="stylesheet" type="text/css" href="style/typography.css" />
-  <!-- <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/7492252/6694412/css/fonts.css" /> -->
-  <link rel="stylesheet" href="style/index.scss">
+  <link rel="stylesheet" type="text/css" href="/style/typography.css" />
+  <link rel="stylesheet" href="/style/index.scss">
+  <!--
+  <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/7492252/6694412/css/fonts.css" />
+  -->
+
 </head>
 
 <body>
-  <canvas id="grid"></canvas>
+
   <div id="app">
 
     <header>
@@ -106,9 +109,9 @@
 
       <section class="red">
           <div class="slide">
-            <h2 class="1">Student work</h2>
-            <h2 class="2">Student work</h2>
-            <h2 class="3">Student work</h2>
+            <h2 class="s1">Student work</h2>
+            <h2 class="s2">Student work</h2>
+            <h2 class="s3">Student work</h2>
           </div>
       </section>
 
@@ -120,11 +123,25 @@
     </main>
   </div>
 
+  <canvas id="overlay"></canvas>
+
 <!--
 -->
 
   <script src="js/plugins.js"></script>
   <script src="js/main.js"></script>
+  <script>
+    window.addEventListener('orientationchange', () => window.location.reload());
+
+    function on() {
+      document.getElementById("overlay").style.display = "block";
+    }
+
+    function off() {
+      document.getElementById("overlay").style.display = "none";
+    }
+
+  </script>
 
 <!--
   <script>

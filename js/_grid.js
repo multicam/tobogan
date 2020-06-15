@@ -11,6 +11,8 @@ function renderGrid () {
     const width = window.innerWidth, height = window.innerHeight, step = 16
 
     log('-- grid', width, height)
+    canvas.offsetTop = 0;
+    canvas.offsetLeft = 0;
     canvas.width = width
     canvas.height = height
 

@@ -17,7 +17,7 @@ function renderGrid () {
     canvas.height = height
 
     ctx.lineWidth = .5
-    ctx.strokeStyle = 'rgba(200,0,0,.15)'
+    ctx.strokeStyle = 'rgba(200,0,0,.25)'
 
     //
     for( let x=0; x<width; x += step) {

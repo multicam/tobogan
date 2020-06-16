@@ -11,28 +11,23 @@ ScrollTrigger.defaults({
 const timeline = gsap.timeline();
 timeline
   .to(".box", {
-    duration: .5,
-    width: '110%',
-    ease: "expo"
-  })
-  .to(".box", {
+    delay: .25,
     duration: 1.25,
     width: '0',
     ease: "expo"
   })
 
-//   .to(".box", { duration: 1, backgroundColor: "#f38630" }, "+=0.5")
-//   .to(".box", { duration: 1, x: 0, rotation: -360 }, "+=0.5")
 
 const myScrollTrigger = {
   trigger: ".slide",
   scrub: true
 }
+//
+// const topLine = document.querySelector('.slide .s1 h2')
+// const botLine = document.querySelector('.slide .s3 h2')
+//
+// log( 's1', topLine.parentNode.offsetWidth, topLine, topLine.offsetWidth)
 
-const topLine = document.querySelector('.slide .s1')
-const botLine = document.querySelector('.slide .s3')
-
-log( 's1', topLine.parentNode.clientWidth, topLine.clientWidth)
 
 gsap.to(".slide .s1", {
   duration: 1,
@@ -41,19 +36,22 @@ gsap.to(".slide .s1", {
     trigger: ".slide",
     scrub: true,
     onEnter: self => {
-      log('s1',self)
+      // log('s1',self)
     }
   }
 })
 
 gsap.to(".slide .s3", {
   duration: 1,
-  translateX: '50%',
+  startAt: {
+    translateX: '-100%'
+  },
+  translateX: '0%',
   scrollTrigger: {
     trigger: ".slide",
     scrub: true,
     onEnter: self => {
-      log('s2',self)
+      // log('s2',self)
     }
   }
 })

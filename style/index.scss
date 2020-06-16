@@ -58,6 +58,10 @@ a {
 
 // --
 
+body {
+  overflow-x: hidden;
+}
+
 header {
   display: flex;
 
@@ -111,8 +115,8 @@ main {
 
 
       h2 {
-        display: inline;
-        font-size: 20vw;
+        display: block;
+        font-size: 18vw;
         font-weight: 300;
         text-transform: uppercase;
         line-height: 1;
@@ -124,6 +128,7 @@ main {
 
       text-align: center;
       font-size: 3.2vw;
+      line-height: 4.8vw;
       font-weight: 700;
 
       margin: 6vw 12vw;

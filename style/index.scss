@@ -1,6 +1,7 @@
 @import "normalise";
 @import "grid";
 
+// -- overlay
 
 #overlay {
   position: fixed;
@@ -13,8 +14,11 @@
   pointer-events:none;
 }
 
+// -- colors
 
 $red: #d40a24;
+
+// -- misc
 
 .debug {
   outline: 1px solid rgba(100,0,0,.2);
@@ -31,6 +35,8 @@ $red: #d40a24;
 
   }
 }
+
+// -- typography
 
 body {
   font-family: 'Gotham SSm A', 'Gotham SSm B', sans-serif;
@@ -50,7 +56,7 @@ a {
   }
 }
 
-
+// --
 
 header {
   display: flex;
@@ -105,24 +111,22 @@ main {
 
 
       h2 {
+        display: inline;
         font-size: 20vw;
         font-weight: 300;
         text-transform: uppercase;
         line-height: 1;
         margin: 0;
-
-        &.s3 {
-          text-align: right;
-        }
       }
     }
 
     blockquote {
 
-      font-size: 3vw;
+      text-align: center;
+      font-size: 3.2vw;
       font-weight: 700;
 
-      margin: 6vw;
+      margin: 6vw 12vw;
 
       strong {
         color: $red;

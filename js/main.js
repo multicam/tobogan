@@ -1,13 +1,11 @@
 import './_grid'
 import gsap from 'gsap'
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+
 gsap.registerPlugin(ScrollTrigger);
 
 const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys
 
-ScrollTrigger.defaults({
-  toggleActions: "restart pause resume pause"
-});
 const timeline = gsap.timeline();
 timeline
   .to(".box", {
@@ -18,41 +16,60 @@ timeline
   })
 
 
-const myScrollTrigger = {
-  trigger: ".slide",
-  scrub: true
-}
-//
-// const topLine = document.querySelector('.slide .s1 h2')
-// const botLine = document.querySelector('.slide .s3 h2')
-//
-// log( 's1', topLine.parentNode.offsetWidth, topLine, topLine.offsetWidth)
+ScrollTrigger.defaults({
+  toggleActions: "restart pause resume pause"
+});
 
 
-gsap.to(".slide .s1", {
+gsap.to(".slide_students .s1", {
   duration: 1,
   translateX: '-50%',
   scrollTrigger: {
-    trigger: ".slide",
-    scrub: true,
-    onEnter: self => {
-      // log('s1',self)
-    }
+    trigger: ".slide_students",
+    scrub: true
   }
 })
 
-gsap.to(".slide .s3", {
+gsap.to(".slide_students .s3", {
   duration: 1,
   startAt: {
     translateX: '-100%'
   },
   translateX: '0%',
   scrollTrigger: {
-    trigger: ".slide",
-    scrub: true,
-    onEnter: self => {
-      // log('s2',self)
-    }
+    trigger: ".slide_students",
+    scrub: true
   }
 })
 
+const infinite = gsap.timeline({repeat:-1,paused: false})
+infinite.fromTo('.image .content span', {
+    duration: 2.5,
+    x:'100%',
+  },
+  {
+    duration: 2.5,
+    x:'-100%',
+  }
+)
+
+gsap.to([".slide_courses .s1",".slide_courses .s3"], {
+  duration: 1,
+  translateX: '-100%',
+  scrollTrigger: {
+    trigger: ".slide_courses",
+    scrub: true
+  }
+})
+
+gsap.to([".slide_courses .s2",".slide_courses .s4"], {
+  duration: 1,
+  startAt: {
+    translateX: '-100%'
+  },
+  translateX: '0%',
+  scrollTrigger: {
+    trigger: ".slide_courses",
+    scrub: true
+  }
+})

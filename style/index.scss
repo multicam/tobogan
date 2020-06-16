@@ -90,6 +90,11 @@ header {
   background: $red;
 }
 
+.black {
+  background: #000;
+  color: $red;
+}
+
 .box {
   z-index: -1;
   &.full {
@@ -98,9 +103,12 @@ header {
   }
 }
 
+
 main {
+
   section {
     padding: 1rem;
+    position: relative;
 
     h1 {
       margin-top: 18vw;
@@ -113,16 +121,16 @@ main {
       overflow: hidden;
       white-space: nowrap;
 
-
       h2 {
         display: block;
         font-size: 18vw;
         font-weight: 300;
         text-transform: uppercase;
-        line-height: 1;
+        line-height: .8em;
         margin: 0;
       }
     }
+
 
     blockquote {
 
@@ -137,5 +145,39 @@ main {
         color: $red;
       }
     }
+
   }
 }
+
+.image {
+  position: absolute; top: 1px; left: 1px; bottom: 1px; right: 1px;
+  width: 50vw;
+  height: calc(1080 / 1620 * 50vw);
+  margin:auto;
+
+  background: url("../img/cheeneeta/drip/dr2.png") 50% 50% no-repeat;
+  background-size: cover;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .content {
+    background: $red;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 1.5vw;
+    line-height: 2vw;
+    text-align: center;
+    display:block;
+
+    span {
+      display: inline-block;
+    }
+
+    .marquee {
+
+    }
+  }
+}
+

@@ -55,21 +55,30 @@ infinite.fromTo('.image .content span', {
 
 gsap.to([".slide_courses .s1",".slide_courses .s3"], {
   duration: 1,
+  startAt: {
+    translateY: '-400%'
+  },
   translateX: '-100%',
+  translateY: '0',
+
   scrollTrigger: {
     trigger: ".slide_courses",
     scrub: true
   }
 })
 
-gsap.to([".slide_courses .s2",".slide_courses .s4"], {
-  duration: 1,
-  startAt: {
-    translateX: '-100%'
-  },
-  translateX: '0%',
-  scrollTrigger: {
-    trigger: ".slide_courses",
-    scrub: true
-  }
-})
+gsap
+  .to([".slide_courses .s2",".slide_courses .s4"], {
+    duration: 10,
+    startAt: {
+      translateX: '-100%',
+      translateY: '-400%'
+    },
+    translateX: '0%',
+    translateY: '0',
+
+    scrollTrigger: {
+      trigger: ".slide_courses",
+      scrub: true
+    }
+  })

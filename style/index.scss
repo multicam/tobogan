@@ -147,7 +147,9 @@ main {
     }
 
   }
+
 }
+
 
 .image {
   position: absolute; top: 1px; left: 1px; bottom: 1px; right: 1px;
@@ -161,6 +163,7 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: center;
+
 
   .content {
     background: $red;
@@ -179,5 +182,6 @@ main {
 
     }
   }
+
 }
 

@@ -18,6 +18,9 @@
     "prod:parcel": "parcel build js/*.js --out-dir build/js",
 		"serve": "serve build/"
   },
+  "dependencies": {
+    "@sass-collective/sass-rem": "^1.4.1",
+  },
   "devDependencies": {
     "@babel/core": "^7.10.2",
     "@babel/plugin-transform-runtime": "^7.10.1",

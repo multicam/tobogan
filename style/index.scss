@@ -1,5 +1,6 @@
-@import "normalise";
-@import "grid";
+@use "~@sass-collective/sass-rem";
+@use "normalise";
+@use "grid";
 
 // -- overlay
 
@@ -29,8 +30,8 @@ $red: #d40a24;
 
 		&:after {
 			content: '--d--';
-			font-size: .75rem;
-			line-height: 2rem;
+			font-size: sass-rem.rem(12);
+			line-height: sass-rem.rem(32);
 		}
 
 	}
@@ -86,8 +87,8 @@ header {
 
 
 	img {
-		margin: .5rem;
-		height: 2rem;
+		margin: sass-rem.rem(8);
+		height: sass-rem.rem(32);
 	}
 
 	nav {
@@ -99,11 +100,11 @@ header {
 	}
 
 	a {
-		padding: 0 .5rem;
-		line-height: 3rem;
+		padding: sass-rem.rem(0, 8);
+		line-height: sass-rem.rem(48);
 		text-decoration: none;
 		text-transform: uppercase;
-		font-size: .75rem;
+		font-size: sass-rem.rem(12);
 		font-weight: 700;
 	}
 }
@@ -213,7 +214,7 @@ main {
 				font-size: 18vw;
 				font-weight: 300;
 				text-transform: uppercase;
-				line-height: .8em;
+				line-height: sass-rem.rem(13);
 				margin: 0;
 			}
 		}

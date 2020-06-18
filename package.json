@@ -12,7 +12,10 @@
     "clear": "rm -R dist/* && rm -R .cache/*",
     "update": "npm-check -u && rm package-lock.json ; yarn",
     "s:sass": "sass style/:style/ --no-source-map --charset",
-    "s:sass::watch": "sass style/:dist/ --no-source-map --charset --watch"
+    "s:sass::watch": "sass style/:style/ --no-source-map --charset --watch",
+    "e:build": "npx eleventy",
+    "e:serve": "npx eleventy --serve",
+    "e:debug": "DEBUG=* npx eleventy"
   },
   "dependencies": {
     "gsap": "^3.3.3"

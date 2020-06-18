@@ -1,10 +1,9 @@
-module.exports = function (eleventyConfig) {
-  // Add a filter using the Config API
+module.exports = function (e11Config) {
 
-  eleventyConfig.addPassthroughCopy('favicon.ico')
-  eleventyConfig.addPassthroughCopy('site.webmanifest')
-  eleventyConfig.addPassthroughCopy('img');
-  eleventyConfig.addPassthroughCopy('style/*.css');
+  e11Config.addPassthroughCopy('favicon.ico')
+  e11Config.addPassthroughCopy('site.webmanifest')
+  e11Config.addPassthroughCopy('img');
+  e11Config.addPassthroughCopy('style/*.css');
 
 
   // You can return your Config object (optional).

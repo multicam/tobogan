@@ -1,4 +1,4 @@
-import './_grid'
+import './lib/_grid'
 import gsap from 'gsap'
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 

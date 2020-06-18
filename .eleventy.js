@@ -1,11 +1,29 @@
-module.exports = function (e11Config) {
+const chalk = require('chalk')
 
-  e11Config.addPassthroughCopy('favicon.ico')
-  e11Config.addPassthroughCopy('site.webmanifest')
-  e11Config.addPassthroughCopy('images');
-  e11Config.addPassthroughCopy('img');
-  e11Config.addPassthroughCopy('style/*.css');
+const proxy_patchy = () => (req, res, next) => {
+	req.url = req.url === '/' || req.url === '' ? '/' : req.url + '.html'
 
+	console.log('==',chalk.grey.italic(req.url))
+
+	next()
+}
+
+module.exports = function (eleventyConfig) {
+
+  eleventyConfig.addPassthroughCopy('favicon.ico')
+  eleventyConfig.addPassthroughCopy('site.webmanifest')
+  eleventyConfig.addPassthroughCopy('images');
+  eleventyConfig.addPassthroughCopy('img');
+  eleventyConfig.addPassthroughCopy('style/*.css');
+
+	eleventyConfig.setBrowserSyncConfig({
+		notify: true,
+		callbacks: {
+			ready: (err,bs) => {
+				err && console.log(err)
+			}
+		}
+	});
 
   // You can return your Config object (optional).
   return {

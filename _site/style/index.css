@@ -541,6 +541,9 @@ main section .slide {
   overflow: hidden;
   white-space: nowrap;
 }
+main section .slide a {
+  text-decoration: #d40a24;
+}
 main section .slide h2 {
   display: block;
   font-size: 18vw;

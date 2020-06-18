@@ -121,6 +121,10 @@ main {
       overflow: hidden;
       white-space: nowrap;
 
+			a {
+				text-decoration: $red;
+			}
+
       h2 {
         display: block;
         font-size: 18vw;

@@ -1,10 +1,16 @@
 const chalk = require('chalk')
 
+const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys
+
 const proxy_patchy = () => (req, res, next) => {
-	req.url = req.url === '/' || req.url === '' ? '/' : req.url + '.html'
+	const rewrites = [
+		'/student-work'
+	]
+	if( rewrites.includes(req.url) ) {
+		req.url += '.html'
+	}
 
 	console.log('==',chalk.grey.italic(req.url))
-
 	next()
 }
 
@@ -21,8 +27,10 @@ module.exports = function (eleventyConfig) {
 		callbacks: {
 			ready: (err,bs) => {
 				err && console.log(err)
+				log('BrowserSync config', bs.config)
 			}
-		}
+		},
+		middleware: [ proxy_patchy() ]
 	});
 
   // You can return your Config object (optional).

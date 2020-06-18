@@ -6,6 +6,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys
 
+
 const timeline = gsap.timeline();
 timeline
   .to(".box", {

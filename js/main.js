@@ -10,9 +10,9 @@ const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, k
 const timeline = gsap.timeline();
 timeline
   .to(".box", {
-    delay: .25,
-    duration: 1.25,
-    width: '0',
+    delay: 1.25,
+    duration: 2.5,
+    translateY: '100%',
     ease: "expo"
   })
 

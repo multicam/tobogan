@@ -482,6 +482,21 @@ a:hover {
   background: rgba(212, 10, 36, 0.083);
 }
 
+figure {
+  margin: 0;
+  padding: 0;
+}
+
+figcaption {
+  padding: 1rem 0;
+  font-variant: small-caps;
+  text-transform: lowercase;
+}
+figcaption strong {
+  font-variant: none;
+  text-transform: uppercase;
+}
+
 body {
   overflow-x: hidden;
 }
@@ -496,7 +511,9 @@ header img {
 header nav {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   flex: 1;
+  margin-right: 0.5rem;
 }
 header a {
   padding: 0 0.5rem;
@@ -523,8 +540,8 @@ header a {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
 }
 
 main section {
@@ -563,7 +580,7 @@ main section blockquote strong {
   color: #d40a24;
 }
 
-.image {
+.home .image {
   position: absolute;
   top: 1px;
   left: 1px;
@@ -578,7 +595,7 @@ main section blockquote strong {
   flex-direction: column;
   justify-content: center;
 }
-.image .content {
+.home .image .content {
   background: #d40a24;
   text-transform: uppercase;
   font-weight: 700;
@@ -587,6 +604,64 @@ main section blockquote strong {
   text-align: center;
   display: block;
 }
-.image .content span {
+.home .image .content span {
   display: inline-block;
+}
+.student section {
+  padding: 0 1rem;
+}
+.student h1, .student h2, .student h3, .student h4, .student h5, .student h6 {
+  margin: 0;
+}
+.student h1 {
+  letter-spacing: 0;
+  line-height: 3vw;
+  font-size: 2vw;
+}
+.student blockquote {
+  margin: 0;
+  font-size: 1vw;
+  line-height: 2vw;
+  text-align: left;
+}
+figure {
+  margin: 0;
+}
+
+img {
+  width: 100%;
+}
+
+.container-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, auto);
+  grid-gap: 0 1rem;
+}
+.container-grid .bl {
+  background: rgba(0, 0, 0, 0.1);
+}
+.container-grid .bl img {
+  object-fit: cover;
+}
+.container-grid .bl.full {
+  grid-column: 1/-1;
+}
+.container-grid .bl.w--9 {
+  grid-column: span 9;
+}
+.container-grid .bl.w--3 {
+  grid-column: span 3;
+}
+.container-grid .bl.w--4 {
+  grid-column: span 4;
+}
+.container-grid .bl.w--5 {
+  grid-column: span 5;
+}
+.container-grid .bl.w--6 {
+  grid-column: span 6;
+}
+.container-grid .bl.w--7 {
+  grid-column: span 7;
 }

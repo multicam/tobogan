@@ -6992,9 +6992,9 @@ var log = console.log,
 var timeline = _gsap.default.timeline();
 
 timeline.to(".box", {
-  delay: .25,
-  duration: 1.25,
-  width: '0',
+  delay: 1.25,
+  duration: 2.5,
+  translateY: '100%',
   ease: "expo"
 });
 
@@ -7096,7 +7096,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "38871" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "38387" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

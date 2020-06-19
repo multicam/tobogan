@@ -628,10 +628,6 @@ figure {
   margin: 0;
 }
 
-img {
-  width: 100%;
-}
-
 .container-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -664,4 +660,21 @@ img {
 }
 .container-grid .bl.w--7 {
   grid-column: span 7;
+}
+
+.v2 .row {
+  padding: 0.25rem 1rem;
+}
+.v2 img {
+  width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+}
+.v2 .item {
+  flex: 1;
+  overflow: hidden;
+}
+.v2 .fcol {
+  display: flex;
+  flex-direction: column;
 }

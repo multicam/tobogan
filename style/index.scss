@@ -121,7 +121,6 @@ header {
   }
 }
 
-
 main {
 
   section {
@@ -210,8 +209,6 @@ main {
 	}
 }
 
-
-
 .student {
 
 	section {
@@ -245,17 +242,13 @@ figure {
 	margin: 0
 }
 
-img {
-	width: 100%;
-}
 
 .container-grid {
+
 	display: grid;
 	grid-template-columns: repeat(12, 1fr);
 	grid-template-rows: repeat(12, auto);
 	grid-gap: 0 1rem;
-
-
 
 	.bl {
 		background: rgba(0,0,0,.1);
@@ -291,9 +284,30 @@ img {
 		&.w--7 {
 			grid-column: span 7;
 		}
+	}
+}
 
+.v2 {
+
+	.row {
+		padding: .25rem 1rem;
 	}
 
+	img {
+		width:100%;
+		min-height:100%;
+		object-fit: cover;
+	}
 
+	.item {
+		flex:1;
+		overflow:hidden;
+	}
+
+	.fcol {
+		display: flex;
+		flex-direction: column;
+	}
 }
+
 

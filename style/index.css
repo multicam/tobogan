@@ -589,7 +589,7 @@ main section blockquote strong {
   width: 50vw;
   height: calc(1080 / 1620 * 50vw);
   margin: auto;
-  background: url("../img/cheeneeta/drip/dr2.png") 50% 50% no-repeat;
+  background: url("../img/cheneeta/dr2.png") 50% 50% no-repeat;
   background-size: cover;
   display: flex;
   flex-direction: column;
@@ -607,6 +607,7 @@ main section blockquote strong {
 .home .image .content span {
   display: inline-block;
 }
+
 .student section {
   padding: 0 1rem;
 }

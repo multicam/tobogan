@@ -170,6 +170,7 @@ main {
   }
 }
 
+
 .home {
 	.image {
 		position: absolute;
@@ -181,13 +182,12 @@ main {
 		height: calc(1080 / 1620 * 50vw);
 		margin: auto;
 
-		background: url("../img/cheeneeta/drip/dr2.png") 50% 50% no-repeat;
+		background: url("../img/cheneeta/dr2.png") 50% 50% no-repeat;
 		background-size: cover;
 
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
-
 
 		.content {
 			background: $red;
@@ -202,9 +202,6 @@ main {
 				display: inline-block;
 			}
 
-			.marquee {
-
-			}
 		}
 	}
 }
@@ -309,5 +306,4 @@ figure {
 		flex-direction: column;
 	}
 }
-
 

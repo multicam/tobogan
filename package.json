@@ -6,18 +6,16 @@
   "scripts": {
     "clear": "rm -Rf build/* && rm -Rf .cache/* && rm -Rf _site/",
     "update": "npm-check -u && rm package-lock.json ; yarn",
-		"sass:watch": "sass style/:style/ --no-source-map --charset --watch",
+    "sass:watch": "sass style/:style/ --no-source-map --charset --watch",
     "sass:build": "sass style/:style/ --no-source-map --charset",
     "e11:debug": "DEBUG=* npx eleventy",
-
     "start": "npm-run-all --parallel dev:*",
     "dev:eleventy": "ELEVENTY_ENV=development eleventy --serve",
-		"dev:sass": "yarn sass:watch",
+    "dev:sass": "yarn sass:watch",
     "dev:parcel": "parcel watch js/*.js --out-dir _site/js",
-
     "build": "run-s prod:*",
     "prod:eleventy": "ELEVENTY_ENV=production eleventy --output=./build",
-		"prod:sass": "yarn sass:build",
+    "prod:sass": "yarn sass:build",
     "prod:parcel": "parcel build js/*.js --out-dir build/js"
   },
   "devDependencies": {
@@ -25,8 +23,10 @@
     "@babel/plugin-transform-runtime": "^7.10.1",
     "@babel/preset-env": "^7.10.2",
     "@snowpack/plugin-babel": "^1.0.0",
+    "bluebird": "^3.7.2",
     "chalk": "^4.1.0",
     "gsap": "^3.3.3",
+    "node-sass-promise": "^1.0.0",
     "npm-run-all": "^4.1.5",
     "parcel-bundler": "^1.12.4",
     "sass": "^1.26.8"

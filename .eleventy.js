@@ -6,8 +6,12 @@ const proxy_patchy = () => (req, res, next) => {
 	const rewrites = [
 		'/student-work'
 	]
+
 	if( rewrites.includes(req.url) ) {
 		req.url += '.html'
+	}
+	else {
+
 	}
 
 	console.log('==',chalk.grey.italic(req.url))
@@ -16,11 +20,12 @@ const proxy_patchy = () => (req, res, next) => {
 
 module.exports = function (eleventyConfig) {
 
-  eleventyConfig.addPassthroughCopy('favicon.ico')
-  eleventyConfig.addPassthroughCopy('site.webmanifest')
   eleventyConfig.addPassthroughCopy('images');
   eleventyConfig.addPassthroughCopy('img');
   eleventyConfig.addPassthroughCopy('style/*.css');
+
+	eleventyConfig.addPassthroughCopy('favicon.ico')
+	eleventyConfig.addPassthroughCopy('site.webmanifest')
 
 	eleventyConfig.setBrowserSyncConfig({
 		notify: true,

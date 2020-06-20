@@ -6982,24 +6982,24 @@ var _ScrollTrigger = require("gsap/ScrollTrigger");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_gsap.default.registerPlugin(_ScrollTrigger.ScrollTrigger);
-
 var log = console.log,
     serialize = JSON.stringify,
     deserialize = JSON.parse,
     keysOf = Object.keys;
 
-var timeline = _gsap.default.timeline();
-
-timeline.to(".box", {
-  delay: 1.25,
-  duration: 2.5,
-  translateY: '100%',
-  ease: "expo"
-});
+_gsap.default.registerPlugin(_ScrollTrigger.ScrollTrigger);
 
 _ScrollTrigger.ScrollTrigger.defaults({
   toggleActions: "restart pause resume pause"
+});
+
+var timeline = _gsap.default.timeline();
+
+timeline.to("#hello .box", {
+  delay: .75,
+  duration: 2.5,
+  translateY: '100%',
+  ease: "expo"
 });
 
 _gsap.default.to(".slide_students .s1", {
@@ -7096,7 +7096,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "38387" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "46733" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

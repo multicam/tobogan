@@ -2,25 +2,22 @@ import './lib/_grid'
 import gsap from 'gsap'
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
-
 const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys
 
+gsap.registerPlugin(ScrollTrigger);
+
+ScrollTrigger.defaults({
+	toggleActions: "restart pause resume pause"
+});
 
 const timeline = gsap.timeline();
 timeline
-  .to(".box", {
-    delay: 1.25,
+  .to("#hello .box", {
+    delay: .75,
     duration: 2.5,
     translateY: '100%',
     ease: "expo"
   })
-
-
-ScrollTrigger.defaults({
-  toggleActions: "restart pause resume pause"
-});
-
 
 gsap.to(".slide_students .s1", {
   duration: 1,
@@ -63,8 +60,6 @@ tl2.from(".slide_courses .s1",{
   translateY: '-400%',
   transformOrigin: 'bottom right',
   ease: "expo",
-
-
 })
 
 tl2.to([".slide_courses .s1",".slide_courses .s3"], {

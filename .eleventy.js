@@ -1,6 +1,23 @@
-const chalk = require('chalk')
+const chalk = require('chalk'), chokidar = require('chokidar'), promise = require('bluebird'), sass = require('node-sass'), path = require('path')
 
 const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys
+
+const sass_install = dir => {
+	log('sass install', dir)
+	chokidar.watch(dir).on('all', (event, path) => {
+		log(`processing ${path} on ${event}`)
+	});
+}
+
+const sass_process = file => {
+	return new promise((resolve, reject) => {
+		sass.render({file: file}, (error, result) => {
+			error && reject(error);
+			resolve(result);
+			log(result)
+		});
+	});
+}
 
 const proxy_patchy = () => (req, res, next) => {
 	const rewrites = [
@@ -10,9 +27,6 @@ const proxy_patchy = () => (req, res, next) => {
 	if( rewrites.includes(req.url) ) {
 		req.url += '.html'
 	}
-	else {
-
-	}
 
 	console.log('==',chalk.grey.italic(req.url))
 	next()
@@ -20,9 +34,18 @@ const proxy_patchy = () => (req, res, next) => {
 
 module.exports = function (eleventyConfig) {
 
-  eleventyConfig.addPassthroughCopy('images');
+	sass_install('style/')
+
+	// promise.all([
+	// 	sass_process('style/index.scss'),
+	// 	sass_process('style/typography.scss')
+	// ]).then( res => {
+		eleventyConfig.addPassthroughCopy('style/*.css');
+	// })
+
+	eleventyConfig.addPassthroughCopy('images');
   eleventyConfig.addPassthroughCopy('img');
-  eleventyConfig.addPassthroughCopy('style/*.css');
+
 
 	eleventyConfig.addPassthroughCopy('favicon.ico')
 	eleventyConfig.addPassthroughCopy('site.webmanifest')
@@ -37,6 +60,7 @@ module.exports = function (eleventyConfig) {
 		},
 		middleware: [ proxy_patchy() ]
 	});
+
 
   // You can return your Config object (optional).
   return {

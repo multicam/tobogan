@@ -502,7 +502,10 @@ body {
 }
 
 header {
+  top: 0;
+  position: sticky;
   display: flex;
+  z-index: 9999;
 }
 header img {
   margin: 0.5rem;

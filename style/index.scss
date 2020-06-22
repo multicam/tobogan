@@ -108,8 +108,70 @@ header {
 	}
 }
 
+footer {
+	color: white;
+	background: black;
+
+	padding: 1rem;
+
+	.tagline {
+
+		font-size: 6vw;
+		font-weight: bolder;
+		margin-top: 6vw;
+	}
+
+	a {
+		color: lightslategrey;
+		line-height: 1.75rem;
+		text-decoration: none;
+		text-transform: capitalize;
+	}
+
+	h4 {
+		font-weight: 300;
+		margin: 0;
+	}
+
+	.form {
+		form {
+			display: flex;
+
+			input {
+				flex: 1;
+			}
+		}
+
+		h3 {
+			font-size: 2.25vw;
+			line-height: 1em;
+		}
+
+		button {
+			appearance: none;
+			text-transform: uppercase;
+		}
+	}
+}
+
+.uc {
+	text-transform: uppercase;
+}
+
+.sc {
+	font-variant: small-caps;
+}
+.flex-col {
+	display: flex;
+	flex-direction: column;
+}
+
 .red {
 	background: $red;
+}
+
+.yel {
+	color: #ffe900;
 }
 
 .black {
@@ -311,4 +373,5 @@ figure {
 		flex-direction: column;
 	}
 }
+
 

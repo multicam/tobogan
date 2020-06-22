@@ -601,8 +601,55 @@ header a {
   font-size: .75rem;
   font-weight: 700; }
 
+footer {
+  color: white;
+  background: black;
+  padding: 1rem; }
+
+footer .tagline {
+  font-size: 6vw;
+  font-weight: bolder;
+  margin-top: 6vw; }
+
+footer a {
+  color: lightslategrey;
+  line-height: 1.75rem;
+  text-decoration: none;
+  text-transform: capitalize; }
+
+footer h4 {
+  font-weight: 300;
+  margin: 0; }
+
+footer .form form {
+  display: flex; }
+
+footer .form form input {
+  flex: 1; }
+
+footer .form h3 {
+  font-size: 2.25vw;
+  line-height: 1em; }
+
+footer .form button {
+  appearance: none;
+  text-transform: uppercase; }
+
+.uc {
+  text-transform: uppercase; }
+
+.sc {
+  font-variant: small-caps; }
+
+.flex-col {
+  display: flex;
+  flex-direction: column; }
+
 .red {
   background: #d40a24; }
+
+.yel {
+  color: #ffe900; }
 
 .black {
   background: #000;

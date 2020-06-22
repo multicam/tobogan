@@ -43,19 +43,30 @@
   <main class={{ class }}>
     {{ content | safe }}
   </main>
+
+	<footer id="foot">
+
+	</footer>
 </div>
 
 <canvas id="overlay"></canvas>
 
 <!--
 -->
+<script crossorigin src="//unpkg.com/react@16/umd/react.production.min.js"></script>
+<script crossorigin src="//unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
 
 <script src="js/plugins.js"></script>
 <script src="js/main.js"></script>
 <script>
   window.addEventListener('orientationchange', () => window.location.reload());
 </script>
+<script type="application/javascript" src="js/components/footer.js">
 
+</script>
+<script>
+	ReactDOM.render(React.createElement(FooterComponent), document.querySelector('#foot'));
+</script>
 <!--
   <script>
     window.ga = function () { ga.q.push(arguments) }; ga.q = []; ga.l = +new Date;

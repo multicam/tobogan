@@ -15,7 +15,8 @@
     "build": "run-s prod:*",
     "prod:eleventy": "ELEVENTY_ENV=production eleventy --output=./build",
     "prod:sass": "yarn sass:build",
-    "prod:parcel": "parcel build js/*.js --out-dir build/js"
+    "prod:parcel": "parcel build js/*.js --out-dir build/js",
+		"serve": "serve build/"
   },
   "devDependencies": {
     "@babel/core": "^7.10.2",

@@ -1,5 +1,7 @@
 node_modules/
 dist/
+build/
+_site/
 .idea/
 .cache/
 package-lock.json

@@ -11,6 +11,7 @@
     "e11:debug": "DEBUG=* npx eleventy",
     "start": "npm-run-all --parallel dev:*",
     "dev:eleventy": "ELEVENTY_ENV=development eleventy --serve",
+		"dev:sass": "yarn sass:watch",
     "dev:parcel": "parcel watch js/*.js --out-dir _site/js",
     "build": "run-s prod:*",
     "prod:eleventy": "ELEVENTY_ENV=production eleventy --output=./build",

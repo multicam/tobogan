@@ -21,16 +21,18 @@ class: home
     <div class="s1"><h2 >Student work</h2></div>
     <div class="s2"><h2 >Student work</h2></div>
     <div class="s3"><h2 >Student work</h2></div>
+    <div class="s4"><h2 >Student work</h2></div>
+    <div class="s5"><h2 >Student work</h2></div>
   </div>
 
   <div class="image">
     <div class="content">
       <div class="marquee">
-        <span>Enter</span>
-        <span>Enter</span>
-        <span>Enter</span>
-        <span>Enter</span>
-        <span>Enter</span>
+				<div class="marquee__inner">
+					{% for i in range(0, 15) -%}
+						<span>Enter&nbsp;</span>
+					{%- endfor %}
+				</div>
       </div>
     </div>
   </div>
@@ -54,6 +56,6 @@ class: home
 
 <section id="random">
   <blockquote>
-    TODAY, I HAD A BURGER AND FRIES.
+    ...
   </blockquote>
 </section>

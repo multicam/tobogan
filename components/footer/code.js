@@ -1,9 +1,14 @@
 
 const FooterComponent = () => {
 	const [value,setValue] = React.useState(0)
+
 	React.useEffect( () => {
 		setTimeout(() => setValue(value+1), 1000)
 	})
+
+	const handleSubmitSubscribe = console.log
+	const handleSubmitCallback = console.log
+
 	return <>
 		<div className='row'>
 			<div className="col-9 tagline uc">
@@ -15,19 +20,19 @@ const FooterComponent = () => {
 				<h3 className="uc yel">See the world <br/>differently too? <br/>Subscribe, be one of us</h3>
 				<form >
 					<input placeholder='email'/>
-					<button>OK</button>
+					<a href="#0" className="button">OK</a>
 				</form>
-				<div className='sc'>We are too busy with our students to have thew time to span you. Read our <a href='#'>Privacy Policy</a></div>
+				<div className='note'>We are too busy with our students to have thew time to span you. Read our <a href='#'>Privacy Policy</a></div>
 			</div>
 			<div className="col-6">
 				<h3 className="uc yel">Want us to call you about the course? <br/>We love a chat!</h3>
 				<form >
 					<input placeholder='telephone'/>
-					<button>OK</button>
+					<a href="#0" className="button">OK</a>
 				</form>
 			</div>
 		</div>
-		<h3 className='uc'>Sitemap</h3>
+		<h3 className='uc sitemap'>Sitemap</h3>
 		<div className="row">
 
 			<div className="col-3 flex-col">

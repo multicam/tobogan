@@ -19,50 +19,47 @@ timeline
     ease: "expo"
   })
 
-gsap.to(".slide_students .s1", {
-  duration: 1,
-  translateX: '-50%',
-  scrollTrigger: {
-    trigger: ".slide_students",
-    scrub: true
-  }
+const st = i => `.slide_students .s${i}`
+const offsets = [ '-50%', '25%', '-100%', '-25%', '50%' ]
+
+const allSlides = document.querySelectorAll('.slide_students > *')
+// allSlides.forEach(log)
+const t1 = gsap.timeline()
+
+allSlides.forEach( (sl,n) => {
+	t1.to(st(n), {
+		duration: 1,
+		translateX: offsets[n],
+		scrollTrigger: {
+			trigger: ".slide_students",
+			scrub: true
+		}
+	})
+	log('*',n,sl)
 })
 
-gsap.to(".slide_students .s3", {
-  duration: 1,
-  startAt: {
-    translateX: '-100%'
-  },
-  translateX: '0%',
-  scrollTrigger: {
-    trigger: ".slide_students",
-    scrub: true
-  }
-})
+// const infinite = gsap.timeline({repeat:-1,paused: false})
 
-const infinite = gsap.timeline({repeat:-1,paused: false})
-
-infinite.fromTo('.image .content span', {
-    duration: 2.5,
-    x:'100%',
-  },
-  {
-    duration: 2.5,
-    x:'-100%',
-  }
-)
+// const me = document.querySelector('.marquee span')
+// log(me)
+// infinite.to('.marquee span', {
+//     duration: 2.5,
+//     x:`-${me.clientWidth}px`,
+// 		repeat: -1
+//   }
+// )
 
 
-const tl2 = gsap.timeline()
+const t2 = gsap.timeline()
 
-tl2.from(".slide_courses .s1",{
+t2.from(".slide_courses .s1",{
   rotateZ: '90deg',
   translateY: '-400%',
   transformOrigin: 'bottom right',
   ease: "expo",
 })
 
-tl2.to([".slide_courses .s1",".slide_courses .s3"], {
+t2.to([".slide_courses .s1",".slide_courses .s3"], {
     duration: 1,
     startAt: {
       translateY: '-400%'

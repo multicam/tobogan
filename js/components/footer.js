@@ -3,6 +3,8 @@ const FooterComponent = () => {
   React.useEffect(() => {
     setTimeout(() => setValue(value + 1), 1000);
   });
+  const handleSubmitSubscribe = console.log;
+  const handleSubmitCallback = console.log;
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
@@ -15,8 +17,11 @@ const FooterComponent = () => {
     className: "uc yel"
   }, "See the world ", /*#__PURE__*/React.createElement("br", null), "differently too? ", /*#__PURE__*/React.createElement("br", null), "Subscribe, be one of us"), /*#__PURE__*/React.createElement("form", null, /*#__PURE__*/React.createElement("input", {
     placeholder: "email"
-  }), /*#__PURE__*/React.createElement("button", null, "OK")), /*#__PURE__*/React.createElement("div", {
-    className: "sc"
+  }), /*#__PURE__*/React.createElement("a", {
+    href: "#0",
+    className: "button"
+  }, "OK")), /*#__PURE__*/React.createElement("div", {
+    className: "note"
   }, "We are too busy with our students to have thew time to span you. Read our ", /*#__PURE__*/React.createElement("a", {
     href: "#"
   }, "Privacy Policy"))), /*#__PURE__*/React.createElement("div", {
@@ -25,8 +30,11 @@ const FooterComponent = () => {
     className: "uc yel"
   }, "Want us to call you about the course? ", /*#__PURE__*/React.createElement("br", null), "We love a chat!"), /*#__PURE__*/React.createElement("form", null, /*#__PURE__*/React.createElement("input", {
     placeholder: "telephone"
-  }), /*#__PURE__*/React.createElement("button", null, "OK")))), /*#__PURE__*/React.createElement("h3", {
-    className: "uc"
+  }), /*#__PURE__*/React.createElement("a", {
+    href: "#0",
+    className: "button"
+  }, "OK")))), /*#__PURE__*/React.createElement("h3", {
+    className: "uc sitemap"
   }, "Sitemap"), /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {

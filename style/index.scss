@@ -1,6 +1,34 @@
 @import "normalise";
 @import "grid";
 
+// -- normalise
+
+button,
+button[disabled],
+button::-moz-focus-inner,
+input,
+optgroup,
+select,
+textarea,
+input[type="reset"],
+input[type="submit"],
+input[type="checkbox"],
+input[type="radio"],
+input[type="search"],
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration,
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button,
+html input[type="button"],
+html input[disabled],
+input::-moz-focus-inner {
+	border:none;
+	background-image:none;
+	background-color:transparent;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+}
 // -- overlay
 
 #overlay {
@@ -17,6 +45,7 @@
 // -- colors
 
 $red: #d40a24;
+$yel: #ffe900;
 
 // -- misc
 
@@ -72,11 +101,13 @@ figcaption {
 	}
 }
 
-// --
+// -- structure
 
 body {
 	overflow-x: hidden;
 }
+
+// -- header & footer
 
 header {
 	top: 0;
@@ -108,6 +139,12 @@ header {
 	}
 }
 
+
+::placeholder {
+	color: white;
+	text-transform: uppercase;
+}
+
 footer {
 	color: white;
 	background: black;
@@ -123,23 +160,40 @@ footer {
 
 	a {
 		color: lightslategrey;
-		line-height: 1.75rem;
+		line-height: 2rem;
 		text-decoration: none;
 		text-transform: capitalize;
 	}
 
 	h4 {
 		font-weight: 300;
-		margin: 0;
+		margin: 1rem 0;
 	}
 
 	.form {
+
+		input {
+			flex: 1;
+			border-bottom: 1px solid $yel;
+			margin-right: 1rem;
+			font-size: 1.5vw;
+			padding: .5vw 0;
+			color: white!important;
+		}
+
+		.button {
+			padding: 0 .5rem;
+			font-weight: 700;
+			color: white;
+
+			&:hover {
+				color: black;
+				background: $yel;
+			}
+		}
+
 		form {
 			display: flex;
-
-			input {
-				flex: 1;
-			}
 		}
 
 		h3 {
@@ -147,10 +201,22 @@ footer {
 			line-height: 1em;
 		}
 
-		button {
-			appearance: none;
-			text-transform: uppercase;
+		.note {
+			color: #cfcfcf;
+			font-variant: small-caps;
+			margin-top: .5rem;
+			font-size: .72em;
 		}
+
+	}
+
+	.sitemap {
+
+	}
+
+	address {
+		font-style: normal;
+		line-height: 2rem;
 	}
 }
 
@@ -171,7 +237,7 @@ footer {
 }
 
 .yel {
-	color: #ffe900;
+	color: $yel;
 }
 
 .black {
@@ -210,14 +276,13 @@ main {
 
 			h2 {
 				display: block;
-				font-size: 18vw;
+				font-size: 12vw;
 				font-weight: 300;
 				text-transform: uppercase;
 				line-height: .8em;
 				margin: 0;
 			}
 		}
-
 
 		blockquote {
 
@@ -235,7 +300,6 @@ main {
 
 	}
 }
-
 
 .home {
 	.image {
@@ -271,6 +335,7 @@ main {
 		}
 	}
 }
+
 
 .student {
 
@@ -372,6 +437,7 @@ figure {
 		display: flex;
 		flex-direction: column;
 	}
+
 }
 
-
+@import "marquee";

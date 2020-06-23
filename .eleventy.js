@@ -1,12 +1,23 @@
-const chalk = require('chalk'), chokidar = require('chokidar'), promise = require('bluebird'), sass = require('node-sass'), path = require('path'), fs = require('fs')
+const chalk = require('chalk'), chokidar = require('chokidar'), promise = require('bluebird'), sass = require('node-sass'), path_ = require('path'), fs = require('fs')
 
 const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys
 
+const
+	rewrites = [
+		'/student-work'
+	],
+	stylesheets = [
+		'index.scss',
+		'typography.scss'
+	]
+
+
 const sass_install = dir => {
 	log('sass install', dir)
+
 	chokidar.watch(dir).on('all', (event, path) => {
-		log(`checking ${path} on ${event}`)
-		event === 'change' && sass_process(path).then( res => log('xxx', res))
+		log(`chk ${path} on ${event} (${path_.basename(path)})`)
+		stylesheets.includes(path_.basename(path)) && event === 'change' && event === 'add' && sass_process(path).then( res => log('xxx', res))
 	});
 }
 
@@ -24,10 +35,6 @@ const sass_process = file => {
 }
 
 const proxy_patchy = () => (req, res, next) => {
-	const rewrites = [
-		'/student-work'
-	]
-
 	if( rewrites.includes(req.url) ) {
 		req.url += '.html'
 	}

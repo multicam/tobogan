@@ -11,27 +11,27 @@
     "e11:debug": "DEBUG=* npx eleventy",
     "start": "npm-run-all --parallel dev:*",
     "dev:eleventy": "ELEVENTY_ENV=development eleventy --serve",
-		"dev:sass": "yarn sass:watch",
+    "dev:sass": "yarn sass:watch",
     "dev:parcel": "parcel watch js/*.js --out-dir _site/js",
     "build": "run-s prod:*",
     "prod:eleventy": "ELEVENTY_ENV=production eleventy --output=./build",
     "prod:sass": "yarn sass:build",
     "prod:parcel": "parcel build js/*.js --out-dir build/js",
-		"serve": "serve build/"
+    "serve": "serve build/"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.2",
-    "@babel/plugin-transform-runtime": "^7.10.1",
-    "@babel/preset-env": "^7.10.2",
+    "@babel/core": "^7.10.3",
+    "@babel/plugin-transform-runtime": "^7.10.3",
+    "@babel/preset-env": "^7.10.3",
     "@snowpack/plugin-babel": "^1.0.0",
     "bluebird": "^3.7.2",
     "chalk": "^4.1.0",
     "chokidar": "^3.4.0",
-    "gsap": "^3.3.3",
+    "gsap": "^3.3.4",
     "node-sass": "^4.14.1",
     "node-sass-promise": "^1.0.0",
     "npm-run-all": "^4.1.5",
     "parcel-bundler": "^1.12.4",
-    "sass": "^1.26.8"
+    "sass": "^1.26.9"
   }
 }

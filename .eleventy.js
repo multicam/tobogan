@@ -17,7 +17,7 @@ const sass_install = dir => {
 
 	chokidar.watch(dir).on('all', (event, path) => {
 		log(`chk ${path} on ${event} (${path_.basename(path)})`)
-		stylesheets.includes(path_.basename(path)) && event === 'change' && event === 'add' && sass_process(path).then( res => log('xxx', res))
+		stylesheets.includes(path_.basename(path)) && event === 'change' && event === 'add' && sass_process(path).then( res => log('xxx', res)).catch(log)
 	});
 }
 
@@ -32,6 +32,7 @@ const sass_process = file => {
 			resolve(true);
 		});
 	});
+
 }
 
 const proxy_patchy = () => (req, res, next) => {
@@ -45,7 +46,7 @@ const proxy_patchy = () => (req, res, next) => {
 
 module.exports = function (eleventyConfig) {
 
-	sass_install('style/')
+	// sass_install('style/')
 
 	eleventyConfig.addPassthroughCopy('style/*.css');
 	eleventyConfig.addPassthroughCopy('images');

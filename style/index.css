@@ -776,11 +776,13 @@ footer h4 {
 }
 footer .form input {
   flex: 1;
+  border: none;
   border-bottom: 1px solid #ffe900;
   margin-right: 1rem;
   font-size: 1.5vw;
   padding: 0.5vw 0;
   color: white !important;
+  background: transparent;
 }
 footer .form .button {
   padding: 0 0.5rem;

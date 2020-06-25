@@ -174,11 +174,13 @@ footer {
 
 		input {
 			flex: 1;
+			border: none;
 			border-bottom: 1px solid $yel;
 			margin-right: 1rem;
 			font-size: 1.5vw;
 			padding: .5vw 0;
 			color: white!important;
+			background: transparent;
 		}
 
 		.button {

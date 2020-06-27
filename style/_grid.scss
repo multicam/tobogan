@@ -1,6 +1,6 @@
 :root {
-	--gutter-width: 1rem;
-	--outer-margin: 2rem;
+	--gutter-width: sass-rem.rem(16);
+	--outer-margin: sass-rem.rem(32);
 	--gutter-compensation: calc((var(--gutter-width) * 0.5) * -1);
 	--half-gutter-width: calc((var(--gutter-width) * 0.5));
 	--xs-min: 30;
@@ -26,8 +26,8 @@
 }
 
 .container-fluid {
-	padding-right: var(--outer-margin, 2rem);
-	padding-left: var(--outer-margin, 2rem);
+	padding-right: var(--outer-margin, sass-rem.rem(32));
+	padding-left: var(--outer-margin, sass-rem.rem(32));
 }
 
 .row {
@@ -36,8 +36,8 @@
 	flex: 0 1 auto;
 	flex-direction: row;
 	flex-wrap: wrap;
-	margin-right: var(--gutter-compensation, -0.5rem);
-	margin-left: var(--gutter-compensation, -0.5rem);
+	margin-right: var(--gutter-compensation, sass-rem.rem(-8));
+	margin-left: var(--gutter-compensation, sass-rem.rem(-8));
 }
 
 .row.reverse {
@@ -109,8 +109,8 @@
 .col-offset-12 {
 	box-sizing: border-box;
 	flex: 0 0 auto;
-	padding-right: var(--half-gutter-width, 0.5rem);
-	padding-left: var(--half-gutter-width, 0.5rem);
+	padding-right: var(--half-gutter-width, sass-rem.rem(8));
+	padding-left: var(--half-gutter-width, sass-rem.rem(8));
 }
 
 .col {

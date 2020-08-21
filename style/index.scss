@@ -107,119 +107,9 @@ body {
 	overflow-x: hidden;
 }
 
-// -- header & footer
-
-header {
-	top: 0;
-	position: sticky;
-	display: flex;
-	z-index: 9999;
-
-
-	img {
-		margin: .5rem;
-		height: 2rem;
-	}
-
-	nav {
-		display: flex;
-		justify-content: flex-end;
-		align-items: center;
-		flex: 1;
-		margin-right: .5rem;
-	}
-
-	a {
-		padding: 0 .5rem;
-		line-height: 3rem;
-		text-decoration: none;
-		text-transform: uppercase;
-		font-size: .75rem;
-		font-weight: 700;
-	}
-}
-
-
 ::placeholder {
-	color: white;
+	color: #aaa;
 	text-transform: uppercase;
-}
-
-footer {
-	color: white;
-	background: black;
-
-	padding: 1rem;
-
-	.tagline {
-
-		font-size: 6vw;
-		font-weight: bolder;
-		margin-top: 6vw;
-	}
-
-	a {
-		color: lightslategrey;
-		line-height: 2rem;
-		text-decoration: none;
-		text-transform: capitalize;
-	}
-
-	h4 {
-		font-weight: 300;
-		margin: 1rem 0;
-	}
-
-	.form {
-
-		input {
-			flex: 1;
-			border: none;
-			border-bottom: 1px solid $yel;
-			margin-right: 1rem;
-			font-size: 1.5vw;
-			padding: .5vw 0;
-			color: white!important;
-			background: transparent;
-		}
-
-		.button {
-			padding: 0 .5rem;
-			font-weight: 700;
-			color: white;
-
-			&:hover {
-				color: black;
-				background: $yel;
-			}
-		}
-
-		form {
-			display: flex;
-		}
-
-		h3 {
-			font-size: 2.25vw;
-			line-height: 1em;
-		}
-
-		.note {
-			color: #cfcfcf;
-			font-variant: small-caps;
-			margin-top: .5rem;
-			font-size: .72em;
-		}
-
-	}
-
-	.sitemap {
-
-	}
-
-	address {
-		font-style: normal;
-		line-height: 2rem;
-	}
 }
 
 .uc {
@@ -340,35 +230,6 @@ main {
 }
 
 
-.student {
-
-	section {
-		padding: 0 1rem;
-	}
-
-
-	h1, h2, h3, h4, h5, h6 {
-
-		margin: 0;
-	}
-
-
-	h1 {
-		letter-spacing: 0;
-		line-height: 3vw;
-		font-size: 2vw;
-	}
-
-	blockquote {
-		margin: 0;
-		font-size: 1vw;
-		line-height: 2vw;
-		text-align: left;
-	}
-	.title-bar {
-
-	}
-}
 
 figure {
 	margin: 0
@@ -444,3 +305,11 @@ figure {
 }
 
 @import "marquee";
+
+// -- header & footer
+
+@import "_elements/header";
+@import "_elements/footer";
+
+@import "_pages/student";
+@import "_pages/courses";

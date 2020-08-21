@@ -59,20 +59,21 @@ t2.from(".slide_courses .s1",{
   ease: "expo",
 })
 
-t2.to([".slide_courses .s1",".slide_courses .s3"], {
-    duration: 1,
-    startAt: {
-      translateY: '-400%'
-    },
+t2
+.to([".slide_courses .s1",".slide_courses .s3"], {
+  duration: 1,
+  startAt: {
+    translateY: '-400%'
+  },
 
-    translateX: '-100%',
-    translateY: '0',
+  translateX: '-100%',
+  translateY: '0',
 
-    scrollTrigger: {
-      trigger: ".slide_courses",
-      scrub: true
-    }
-  })
+  scrollTrigger: {
+    trigger: ".slide_courses",
+    scrub: true
+  }
+})
 .to([".slide_courses .s2",".slide_courses .s4"], {
   duration: 10,
   startAt: {

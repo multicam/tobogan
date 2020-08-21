@@ -1,0 +1,30 @@
+header {
+	top: 0;
+	position: sticky;
+	display: flex;
+	z-index: 9999;
+
+
+	img {
+		margin: .5rem;
+		height: 2rem;
+	}
+
+	nav {
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+		flex: 1;
+		margin-right: .5rem;
+	}
+
+	a {
+		padding: 0 .5rem;
+		line-height: 3rem;
+		text-decoration: none;
+		text-transform: uppercase;
+		font-size: .75rem;
+		font-weight: 700;
+	}
+}
+

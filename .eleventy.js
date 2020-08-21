@@ -4,6 +4,7 @@ const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, k
 
 const
 	rewrites = [
+		'/courses',
 		'/student-work'
 	],
 	stylesheets = [

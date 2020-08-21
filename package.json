@@ -20,18 +20,20 @@
     "serve": "serve build/"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.3",
-    "@babel/plugin-transform-runtime": "^7.10.3",
-    "@babel/preset-env": "^7.10.3",
-    "@snowpack/plugin-babel": "^1.0.0",
+    "@babel/core": "^7.11.4",
+    "@babel/plugin-transform-runtime": "^7.11.0",
+    "@babel/preset-env": "^7.11.0",
     "bluebird": "^3.7.2",
     "chalk": "^4.1.0",
-    "chokidar": "^3.4.0",
-    "gsap": "^3.3.4",
+    "chokidar": "^3.4.2",
+    "gsap": "^3.5.0",
     "node-sass": "^4.14.1",
     "node-sass-promise": "^1.0.0",
     "npm-run-all": "^4.1.5",
     "parcel-bundler": "^1.12.4",
-    "sass": "^1.26.9"
+    "sass": "^1.26.10"
+  },
+  "dependencies": {
+    "@shoelace-style/shoelace": "^2.0.0-beta.9"
   }
 }

@@ -19,6 +19,7 @@
 
   <link rel="stylesheet" type="text/css" href="/style/typography.css" />
   <link rel="stylesheet" href="/style/index.css">
+
   <!--
   <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/7492252/6694412/css/fonts.css" />
   -->
@@ -29,7 +30,7 @@
 <div id="app">
 
   <header>
-    <a href="/"><img src="img/logo.svg" alt="TGDS Logo"/></a>
+    <a href="/"><img src="/img/logo.svg" alt="TGDS Logo"/></a>
     <nav>
       <a href="/courses">courses</a>
       <a href="#">study</a>
@@ -45,11 +46,12 @@
   </main>
 
 	<footer id="foot">
-
 	</footer>
+
 </div>
 
-<canvas id="overlay"></canvas>
+<canvas id="overlay">
+</canvas>
 
 <!--
 -->
@@ -68,13 +70,7 @@
 	ReactDOM.render(React.createElement(FooterComponent), document.querySelector('#foot'));
 </script>
 
-<!--
-  <script>
-    window.ga = function () { ga.q.push(arguments) }; ga.q = []; ga.l = +new Date;
-    ga('create', 'UA-6421879-1', 'auto'); ga('set', 'anonymizeIp', true); ga('set', 'transport', 'beacon'); ga('send', 'pageview')
-  </script>
-  <script src="https://www.google-analytics.com/analytics.js" async></script>
--->
+{#{% include "_analytics.njk" %}#}
 
 </body>
 

@@ -1,0 +1,35 @@
+
+.home {
+	.image {
+		position: absolute;
+		top: 1px;
+		left: 1px;
+		bottom: 1px;
+		right: 1px;
+		width: 50vw;
+		height: calc(1080 / 1620 * 50vw);
+		margin: auto;
+
+		background: url("../img/cheneeta/dr2.png") 50% 50% no-repeat;
+		background-size: cover;
+
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+
+		.content {
+			background: $red;
+			text-transform: uppercase;
+			font-weight: 700;
+			font-size: 1.5vw;
+			line-height: 2vw;
+			text-align: center;
+			display: block;
+
+			span {
+				display: inline-block;
+			}
+
+		}
+	}
+}

@@ -194,90 +194,10 @@ main {
 	}
 }
 
-.home {
-	.image {
-		position: absolute;
-		top: 1px;
-		left: 1px;
-		bottom: 1px;
-		right: 1px;
-		width: 50vw;
-		height: calc(1080 / 1620 * 50vw);
-		margin: auto;
-
-		background: url("../img/cheneeta/dr2.png") 50% 50% no-repeat;
-		background-size: cover;
-
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-
-		.content {
-			background: $red;
-			text-transform: uppercase;
-			font-weight: 700;
-			font-size: 1.5vw;
-			line-height: 2vw;
-			text-align: center;
-			display: block;
-
-			span {
-				display: inline-block;
-			}
-
-		}
-	}
-}
-
 
 
 figure {
 	margin: 0
-}
-
-
-.container-grid {
-
-	display: grid;
-	grid-template-columns: repeat(12, 1fr);
-	grid-template-rows: repeat(12, auto);
-	grid-gap: 0 1rem;
-
-	.bl {
-		background: rgba(0,0,0,.1);
-
-		img {
-			object-fit: cover;
-		}
-
-		&.full {
-			grid-column: 1 / -1;
-		}
-
-		&.w--9 {
-			grid-column: span 9;
-		}
-
-		&.w--3 {
-			grid-column: span 3;
-		}
-
-		&.w--4 {
-			grid-column: span 4;
-		}
-
-		&.w--5 {
-			grid-column: span 5;
-		}
-
-		&.w--6 {
-			grid-column: span 6;
-		}
-
-		&.w--7 {
-			grid-column: span 7;
-		}
-	}
 }
 
 .v2 {
@@ -308,8 +228,12 @@ figure {
 
 // -- header & footer
 
+@import "_elements/grid";
 @import "_elements/header";
 @import "_elements/footer";
 
+// -- pages -- to split later
+
+@import "_pages/home";
 @import "_pages/student";
 @import "_pages/courses";

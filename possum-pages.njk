@@ -1,0 +1,21 @@
+---
+layout: layout.njk
+permalink: "possum/{{ possum.name | slug }}/"
+
+pagination:
+  data: possums
+  size: 1
+  alias: possum
+---
+
+<section class="possum">
+	<ul class="possum-nav">
+		{% for possum in possums %}
+			<li><a href="/possum/{{ possum.name | slug }}/">{{ possum.name | slug }}</a></li>
+		{% endfor %}
+	</ul>
+	<section class="data">
+		{{ possum.name }} is {{ possum.age }} years old
+	</section>
+</section>
+

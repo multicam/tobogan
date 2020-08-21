@@ -801,70 +801,8 @@ main section blockquote strong {
   color: #d40a24;
 }
 
-.home .image {
-  position: absolute;
-  top: 1px;
-  left: 1px;
-  bottom: 1px;
-  right: 1px;
-  width: 50vw;
-  height: calc(1080 / 1620 * 50vw);
-  margin: auto;
-  background: url("../img/cheneeta/dr2.png") 50% 50% no-repeat;
-  background-size: cover;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.home .image .content {
-  background: #d40a24;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 1.5vw;
-  line-height: 2vw;
-  text-align: center;
-  display: block;
-}
-.home .image .content span {
-  display: inline-block;
-}
-
 figure {
   margin: 0;
-}
-
-.container-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(12, auto);
-  grid-gap: 0 1rem;
-}
-.container-grid .bl {
-  background: rgba(0, 0, 0, 0.1);
-}
-.container-grid .bl img {
-  object-fit: cover;
-}
-.container-grid .bl.full {
-  grid-column: 1/-1;
-}
-.container-grid .bl.w--9 {
-  grid-column: span 9;
-}
-.container-grid .bl.w--3 {
-  grid-column: span 3;
-}
-.container-grid .bl.w--4 {
-  grid-column: span 4;
-}
-.container-grid .bl.w--5 {
-  grid-column: span 5;
-}
-.container-grid .bl.w--6 {
-  grid-column: span 6;
-}
-.container-grid .bl.w--7 {
-  grid-column: span 7;
 }
 
 .v2 .row {
@@ -918,6 +856,40 @@ figure {
     transform: translate3d(var(--move-final), 0, 0);
   }
 }
+.container-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, auto);
+  grid-gap: 0 1rem;
+}
+.container-grid .bl {
+  background: rgba(0, 0, 0, 0.1);
+}
+.container-grid .bl img {
+  object-fit: cover;
+}
+.container-grid .bl.full {
+  grid-column: 1/-1;
+}
+.container-grid .bl.w--9 {
+  grid-column: span 9;
+}
+.container-grid .bl.w--3 {
+  grid-column: span 3;
+}
+.container-grid .bl.w--4 {
+  grid-column: span 4;
+}
+.container-grid .bl.w--5 {
+  grid-column: span 5;
+}
+.container-grid .bl.w--6 {
+  grid-column: span 6;
+}
+.container-grid .bl.w--7 {
+  grid-column: span 7;
+}
+
 header {
   top: 0;
   position: sticky;
@@ -999,6 +971,34 @@ footer .form .note {
 footer address {
   font-style: normal;
   line-height: 2rem;
+}
+
+.home .image {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  bottom: 1px;
+  right: 1px;
+  width: 50vw;
+  height: calc(1080 / 1620 * 50vw);
+  margin: auto;
+  background: url("../img/cheneeta/dr2.png") 50% 50% no-repeat;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.home .image .content {
+  background: #d40a24;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 1.5vw;
+  line-height: 2vw;
+  text-align: center;
+  display: block;
+}
+.home .image .content span {
+  display: inline-block;
 }
 
 .student section {

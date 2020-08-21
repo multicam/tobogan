@@ -17,21 +17,28 @@
     "prod:eleventy": "ELEVENTY_ENV=production eleventy --output=./build",
     "prod:sass": "yarn sass:build",
     "prod:parcel": "parcel build js/*.js --out-dir build/js",
-    "serve": "serve build/"
+    "serve": "serve build/",
+    "dev:content": "nodemon --watch _scripts/* --watch ../../tgds/tgds-content/_demo/* _scripts/"
   },
   "devDependencies": {
     "@babel/core": "^7.11.4",
     "@babel/plugin-transform-runtime": "^7.11.0",
     "@babel/preset-env": "^7.11.0",
-		"@shoelace-style/shoelace": "^2.0.0-beta.9",
+    "@shoelace-style/shoelace": "^2.0.0-beta.9",
     "bluebird": "^3.7.2",
     "chalk": "^4.1.0",
     "chokidar": "^3.4.2",
+    "express": "^4.17.1",
     "gsap": "^3.5.0",
+    "lodash": "^4.17.20",
     "node-sass": "^4.14.1",
     "node-sass-promise": "^1.0.0",
+    "node-yaml": "^4.0.1",
     "npm-run-all": "^4.1.5",
     "parcel-bundler": "^1.12.4",
     "sass": "^1.26.10"
+  },
+  "content": {
+    "location": "/media/ssd1/tgds/tgds-content/_demo/"
   }
 }

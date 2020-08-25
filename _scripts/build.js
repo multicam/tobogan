@@ -8,22 +8,27 @@ const loadYaml = async (dir,leaf) => {
 	return fs.existsSync(filename) ? await yaml.read(filename) : await yaml.read(filename+'.yaml') || {}
 }
 
+const pagesIndex = {}
+
 const parse = async location => {
+
 	log('parsing', location)
 
-	let nodes = await loadYaml(location)
+	let root = await loadYaml(location)
 
-	if( nodes.pages && nodes.pages.length ) {
-		for(let i in nodes.pages ) {
-			let page = nodes.pages[i]
+	log('-- a', root.pages)
+
+	if( root.pages && root.pages.length ) {
+		for(let i in root.pages ) {
+			let page = root.pages[i]
 			if( page.path ) {
 				log('++',page.path)
-				// page = {...page, ...await loadYaml(page.path)}
+				page = {...page, ...await parse(page.path)}
 			}
 		}
 	}
 
-	return nodes
+	return root
 }
 
 const run_on_flat = (fn, exit = false) =>
@@ -33,7 +38,8 @@ run_on_flat(async () => {
 
 	const config = require('../package.json').content
 	const data = await parse(config.location)
-	log("|>",data)
+	log("|>",serialize(data,null,2))
+
 })
 
 

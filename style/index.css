@@ -769,6 +769,12 @@ main section {
   padding: 1rem;
   position: relative;
 }
+main section.no-padding {
+  padding: 0;
+}
+main section .padding {
+  padding: 1rem;
+}
 main section h1 {
   margin-top: 18vw;
   font-weight: 700;

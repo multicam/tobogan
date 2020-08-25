@@ -1,0 +1,9 @@
+{
+	"name": "coucou les amis",
+	"value": 5678,
+	"html": "<h2>Cul de bouteille</h2>",
+	"markdown": "## 123 \n nous irons au bois...",
+	"elements": {
+		"courses": "<h2>this is courses</h2>"
+	}
+}

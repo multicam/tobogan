@@ -1,0 +1,3162 @@
+{
+	"type": "root",
+	"children": [
+		{
+			"type": "element",
+			"tagName": "svg",
+			"properties": {
+				"xmlns": "http://www.w3.org/2000/svg",
+				"xmlns:xlink": "http://www.w3.org/1999/xlink",
+				"width": 1920,
+				"height": 8404,
+				"viewBox": "0 0 1920 8404"
+			},
+			"children": [
+				{
+					"type": "element",
+					"tagName": "defs",
+					"properties": {},
+					"children": [
+						{
+							"type": "element",
+							"tagName": "style",
+							"properties": {},
+							"children": [
+								{
+									"type": "text",
+									"value": "\n      .cls-1, .cls-13, .cls-15, .cls-17, .cls-19, .cls-21, .cls-23, .cls-32, .cls-6, .cls-9 {\n        fill: #fff;\n      }\n\n      .cls-18, .cls-2 {\n        fill: #121212;\n      }\n\n      .cls-3 {\n        clip-path: url(#clip-wip-courses-certiv-outline-module-1);\n      }\n\n      .cls-4 {\n        fill: #231f20;\n      }\n\n      .cls-5 {\n        font-size: 14px;\n        letter-spacing: 0.15em;\n      }\n\n      .cls-13, .cls-14, .cls-15, .cls-18, .cls-19, .cls-20, .cls-21, .cls-22, .cls-23, .cls-26, .cls-5, .cls-6 {\n        font-family: Gotham-Bold, Gotham;\n        font-weight: 700;\n      }\n\n      .cls-12, .cls-6 {\n        stroke: #fff;\n      }\n\n      .cls-22, .cls-23, .cls-6 {\n        font-size: 50px;\n      }\n\n      .cls-19, .cls-20, .cls-21, .cls-7 {\n        font-size: 40px;\n      }\n\n      .cls-11, .cls-28, .cls-32, .cls-7, .cls-8 {\n        font-family: Gotham-Light, Gotham;\n        font-weight: 300;\n      }\n\n      .cls-10, .cls-13, .cls-17, .cls-32, .cls-8 {\n        font-size: 30px;\n      }\n\n      .cls-25, .cls-9 {\n        stroke: #707070;\n      }\n\n      .cls-12, .cls-27, .cls-31, .cls-35 {\n        fill: none;\n      }\n\n      .cls-12 {\n        stroke-width: 6px;\n      }\n\n      .cls-14 {\n        fill: #313131;\n        font-size: 70px;\n      }\n\n      .cls-15 {\n        font-size: 150px;\n      }\n\n      .cls-16 {\n        letter-spacing: 0.06em;\n      }\n\n      .cls-17, .cls-30 {\n        font-family: Gotham-Medium, Gotham;\n        font-weight: 500;\n      }\n\n      .cls-18 {\n        font-size: 300px;\n      }\n\n      .cls-20, .cls-22 {\n        fill: #ffe900;\n      }\n\n      .cls-20, .cls-21, .cls-29 {\n        text-decoration: underline;\n      }\n\n      .cls-24 {\n        clip-path: url(#clip-path);\n      }\n\n      .cls-26, .cls-28, .cls-30 {\n        fill: #fcf9f9;\n      }\n\n      .cls-26 {\n        font-size: 160px;\n      }\n\n      .cls-27 {\n        stroke: #ffe900;\n      }\n\n      .cls-27, .cls-31 {\n        stroke-width: 2px;\n      }\n\n      .cls-28 {\n        font-size: 14.5px;\n      }\n\n      .cls-30 {\n        font-size: 20px;\n      }\n\n      .cls-31 {\n        stroke: #efea33;\n      }\n\n      .cls-33, .cls-34 {\n        stroke: none;\n      }\n    "
+								}
+							]
+						},
+						{
+							"type": "element",
+							"tagName": "clipPath",
+							"properties": {
+								"id": "clip-path"
+							},
+							"children": [
+								{
+									"type": "element",
+									"tagName": "rect",
+									"properties": {
+										"id": "Rectangle_1269",
+										"data-name": "Rectangle 1269",
+										"class": "cls-2",
+										"width": 335,
+										"height": 291,
+										"transform": "translate(187 2348)"
+									},
+									"children": []
+								}
+							]
+						},
+						{
+							"type": "element",
+							"tagName": "clipPath",
+							"properties": {
+								"id": "clip-wip-courses-certiv-outline-module-1"
+							},
+							"children": [
+								{
+									"type": "element",
+									"tagName": "rect",
+									"properties": {
+										"width": 1920,
+										"height": 8404
+									},
+									"children": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"type": "element",
+					"tagName": "g",
+					"properties": {
+						"id": "wip-courses-certiv-outline-module-1",
+						"class": "cls-3"
+					},
+					"children": [
+						{
+							"type": "element",
+							"tagName": "rect",
+							"properties": {
+								"class": "cls-1",
+								"width": 1920,
+								"height": 8404
+							},
+							"children": []
+						},
+						{
+							"type": "element",
+							"tagName": "g",
+							"properties": {
+								"id": "Path_972",
+								"data-name": "Path 972",
+								"transform": "translate(0 78)"
+							},
+							"children": [
+								{
+									"type": "element",
+									"tagName": "path",
+									"properties": {
+										"class": "cls-33",
+										"d": "M 1920.5 5952.34423828125 L 0.5 5952.34423828125 L 0.5 0.5003365278244019 L 1920.5 0.5003365278244019 L 1920.5 5952.34423828125 Z"
+									},
+									"children": []
+								},
+								{
+									"type": "element",
+									"tagName": "path",
+									"properties": {
+										"class": "cls-34",
+										"d": "M 1 0.99951171875 L 1 5951.84326171875 L 1920 5951.84326171875 L 1920 0.99951171875 L 1 0.99951171875 M 0 -0.00048828125 L 1921 -0.00048828125 L 1921 5952.84326171875 L 0 5952.84326171875 L 0 -0.00048828125 Z"
+									},
+									"children": []
+								}
+							]
+						},
+						{
+							"type": "element",
+							"tagName": "g",
+							"properties": {
+								"id": "The_Logo_Top_left",
+								"data-name": "The Logo Top left",
+								"transform": "translate(29.999 22.753)"
+							},
+							"children": [
+								{
+									"type": "element",
+									"tagName": "path",
+									"properties": {
+										"id": "Path_941",
+										"data-name": "Path 941",
+										"class": "cls-4",
+										"d": "M47.442,13.113c-2.646-1.122-5.667.079-7.918,1.545-.2.129-.418.272-.643.416-.6-.515-1.191-1.018-1.772-1.447-.394-.289-.786-.573-1.182-.85.988-1.754,1.54-3.6.925-5.1a1.782,1.782,0,0,0-.521-.706c-1.966-1.606-4.264.058-5.731,2.662A19.782,19.782,0,0,0,23.491,7.76c.921-2.355,1.118-4.611-1.236-5.033-2.687-.485-4.335,3.749-5.083,5.5-.836.159-1.665.351-2.5.563A8.3,8.3,0,0,0,15.659,3.1C13.831-5.152-1.008,5.042.054,10.742c.469,2.521,3.478,2.359,5.482,1.692.787-.263,1.586-.543,2.4-.829-1.854,2.478-3.667,5.089-5.266,7.733C1.055,22-.051,27.692,5.075,26.779c3.436-.614,6.2-4.49,7.682-7.357.549-1.058,2.715-6.8,4.667-10.664.232-.044.465-.085.7-.121.546-.088,1.094-.149,1.641-.188a55.486,55.486,0,0,1-2.907,4.9,28.8,28.8,0,0,0-3.175,6.055c-.817,2.749.418,5.679,3.37,3.57,1.643-1.173,3.023-4.941,3.875-7.313.311-.867,1.586-3.5,2.693-3.5,2.226-.015.492,5.645.574,6.836.278,3.915,4.316,1.61,6.519-.109a3.844,3.844,0,0,0,.421.289c2.565,1.518,5.721-.7,8.4-2.744a17.47,17.47,0,0,0,4.032,2.02c1.525.492,3.51.784,4.946-.127C50.91,16.813,49.392,13.943,47.442,13.113ZM34.427,8.375c1.39.526,1.275,2.421.8,3.92a35.546,35.546,0,0,0-3.7-2.21C31.956,8.689,32.9,7.8,34.427,8.375Zm-1.877,7.85a7,7,0,0,1-1.24-5.1c1.222.638,2.408,1.354,3.549,2.1a4.535,4.535,0,0,1-.36.639A19.565,19.565,0,0,1,32.55,16.225ZM6.817,11.042C1.621,12.51,1.7,7.778,4.378,4.58,5.871,2.8,8.847.586,11.321,1.775a1.769,1.769,0,0,1,.895,1.934c-.188,2.617-1.855,4.747-3.424,6.77q-.962.283-1.969.561Zm6.518,5.325c-1.138,2.2-3.271,6.14-5.728,7.134-2.336.942-2.478-.875-1.549-2.556,2.25-4.088,6.1-7.741,8.225-11.441.871-.245,1.743-.462,2.609-.64C15.46,12.138,14.493,14.122,13.335,16.367Zm4.416-8.245c.983-1.858,1.881-3.128,2.455-2.934.667.224.432,1.315-.149,2.634C19.278,7.89,18.512,7.991,17.751,8.123Zm8.926,2.728c-5.948-4.5-7.668,11.644-9.939,11.58-2.451-.069,3.313-8.5,3.8-9.246a35.751,35.751,0,0,0,2.639-4.67,20.8,20.8,0,0,1,2.661.463,22.708,22.708,0,0,1,4.3,1.562c-1.2,2.626-1.537,5.854-.04,7.738a7.509,7.509,0,0,1-.954.514C25.042,20.605,29.405,12.915,26.677,10.851Zm10.306,5.334a8.94,8.94,0,0,1-1.424.584A4.947,4.947,0,0,1,34.143,17a1.96,1.96,0,0,1-1.094-.337A24.1,24.1,0,0,0,35.428,13.6c.64.428,1.263.861,1.87,1.293q.439.31.881.621C37.794,15.748,37.4,15.979,36.983,16.184Zm6.933,2.045a10.094,10.094,0,0,1-3.874-2.179,23.009,23.009,0,0,1,2.695-1.889C49.774,10.332,49.5,19.545,43.917,18.229Z",
+										"transform": "translate(0 0)"
+									},
+									"children": []
+								}
+							]
+						},
+						{
+							"type": "element",
+							"tagName": "g",
+							"properties": {
+								"id": "menu-desktop",
+								"transform": "translate(844 28)"
+							},
+							"children": [
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "Online_courses",
+										"data-name": "Online courses",
+										"class": "cls-5",
+										"transform": "translate(287 13)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 0
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "ONLINE COURSES"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "Study",
+										"class": "cls-5",
+										"transform": "translate(480 13)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 0
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "STUDY"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "Student_work",
+										"data-name": "Student work",
+										"class": "cls-5",
+										"transform": "translate(0 13)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 0
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "STUDENT WORK"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "School",
+										"class": "cls-5",
+										"transform": "translate(179 13)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 0
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "SCHOOL"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "Contact_us",
+										"data-name": "Contact us",
+										"class": "cls-5",
+										"transform": "translate(932 13)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 0
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "CONTACT US"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "Handbook",
+										"class": "cls-5",
+										"transform": "translate(573 13)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 0
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "HANDBOOK"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "Prices",
+										"class": "cls-5",
+										"transform": "translate(711 13)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 0
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "PRICES"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "Dex_free",
+										"data-name": "Dex free",
+										"class": "cls-5",
+										"transform": "translate(809 13)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 0
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "DEX FREE"
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"type": "element",
+							"tagName": "g",
+							"properties": {
+								"id": "Group_1083",
+								"data-name": "Group 1083"
+							},
+							"children": [
+								{
+									"type": "element",
+									"tagName": "g",
+									"properties": {
+										"id": "Group_893",
+										"data-name": "Group 893",
+										"transform": "translate(-102 108)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "g",
+											"properties": {
+												"id": "Group_882",
+												"data-name": "Group 882",
+												"transform": "translate(682 1871)"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "text",
+													"properties": {
+														"id": "MODULE_1_Introduction_to_Graphic_Design_Module_1_offers_an_overview_of_what_graphic_design_is_and_the_immense_professional_opportunities_it_provides._Students_will_be_inspired_and_enlightened_whilst_being_taken_on_a_journey_to_the_great_works_of_past_and_",
+														"data-name": "MODULE 1\nIntroduction to Graphic Design\n\nModule 1 offers an overview of what graphic design is and the immense professional opportunities it provides. Students will be inspired and enlightened whilst being taken on a journey to the great works of past and ",
+														"class": "cls-6",
+														"transform": "translate(162)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 0,
+																"y": 48
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "MODULE 1"
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"class": "cls-7"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 108
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "INTRODUCTION TO GRAPHIC DESIGN"
+																		}
+																	]
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"class": "cls-8"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 168
+																	},
+																	"children": []
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 228
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "Module 1 offers an overview of what graphic design is and the "
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 288
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "immense professional opportunities it provides. students will be "
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 348
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "inspired and enlightened whilst being taken on a journey to the "
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 408
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "great works of past and present iconic graphic designers. You will "
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 468
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "be introduced to the most popular designer sites encompassing "
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 528
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "work within the various industries that designers work in."
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 588
+																	},
+																	"children": []
+																}
+															]
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "g",
+													"properties": {
+														"id": "Rectangle_1253",
+														"data-name": "Rectangle 1253",
+														"class": "cls-9",
+														"transform": "translate(0 55)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "rect",
+															"properties": {
+																"class": "cls-33",
+																"width": 33,
+																"height": 5
+															},
+															"children": []
+														},
+														{
+															"type": "element",
+															"tagName": "rect",
+															"properties": {
+																"class": "cls-35",
+																"x": 0.5,
+																"y": 0.5,
+																"width": 32,
+																"height": 4
+															},
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "g",
+											"properties": {
+												"id": "Group_891",
+												"data-name": "Group 891",
+												"transform": "translate(682 2515)"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "text",
+													"properties": {
+														"id": "CONTENT_OF_MODULE_1_Definition:_A_definition_of_graphic_design_and_its_specialised_industries._History:_The_history_of_written_communication_from_ancient_to_present_times_with_visual_examples_of_pivotal_movements_and_designer_work._Specialities:_Explan",
+														"data-name": "CONTENT OF MODULE 1\n\nDefinition: \nA definition of graphic design and its specialised industries.\nHistory: \nThe history of written communication from ancient to present times with visual examples of pivotal movements and designer work.\nSpecialities: \nExplan",
+														"class": "cls-6",
+														"transform": "translate(162)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 0,
+																"y": 48
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "CONTENT OF MODULE 1"
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"class": "cls-8"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 108
+																	},
+																	"children": []
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"class": "cls-10"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 168
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "Definition: "
+																		}
+																	]
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"class": "cls-8"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 228
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "A definition of graphic design and its specialised industries."
+																		}
+																	]
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"class": "cls-10"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 288
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "History:"
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"class": "cls-11",
+																		"y": 288
+																	},
+																	"children": []
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"class": "cls-8"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 348
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "The history of written communication from ancient to present "
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 408
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "times with visual examples of pivotal movements and designer "
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 468
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "work."
+																		}
+																	]
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"class": "cls-10"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 528
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "Specialities"
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"class": "cls-11",
+																		"y": 528
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": ": "
+																		}
+																	]
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"class": "cls-8"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 588
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "Explanation of the various specialities within the industry of graphic "
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 648
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "design. an understanding of graphic design’s role in future "
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 708
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "industries."
+																		}
+																	]
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"class": "cls-10"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 768
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "Social Networks:"
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"class": "cls-11",
+																		"y": 768
+																	},
+																	"children": []
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"class": "cls-8"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 828
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "Introduction to professional organisations and affiliations that will "
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 888
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "enrich the student’s understanding of the profession."
+																		}
+																	]
+																}
+															]
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "g",
+													"properties": {
+														"id": "Rectangle_1253-2",
+														"data-name": "Rectangle 1253",
+														"class": "cls-9",
+														"transform": "translate(0 31)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "rect",
+															"properties": {
+																"class": "cls-33",
+																"width": 33,
+																"height": 5
+															},
+															"children": []
+														},
+														{
+															"type": "element",
+															"tagName": "rect",
+															"properties": {
+																"class": "cls-35",
+																"x": 0.5,
+																"y": 0.5,
+																"width": 32,
+																"height": 4
+															},
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "line",
+											"properties": {
+												"id": "Line_145",
+												"data-name": "Line 145",
+												"class": "cls-12",
+												"x2": 3,
+												"y2": 2185,
+												"transform": "translate(679.5 1871.5)"
+											},
+											"children": []
+										},
+										{
+											"type": "element",
+											"tagName": "g",
+											"properties": {
+												"id": "Group_959",
+												"data-name": "Group 959",
+												"transform": "translate(2 91)"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "g",
+													"properties": {
+														"id": "Group_892",
+														"data-name": "Group 892",
+														"transform": "translate(680 3402)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "text",
+															"properties": {
+																"id": "LEARNING_OUTCOMES_OF_MODULE_1_",
+																"data-name": "LEARNING OUTCOMES OF MODULE 1\n\n",
+																"class": "cls-6",
+																"transform": "translate(162)"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 48
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "LEARNING OUTCOMES OF MODULE 1"
+																		}
+																	]
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "g",
+															"properties": {
+																"id": "Rectangle_1253-3",
+																"data-name": "Rectangle 1253",
+																"class": "cls-9",
+																"transform": "translate(0 25)"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "rect",
+																	"properties": {
+																		"class": "cls-33",
+																		"width": 33,
+																		"height": 5
+																	},
+																	"children": []
+																},
+																{
+																	"type": "element",
+																	"tagName": "rect",
+																	"properties": {
+																		"class": "cls-35",
+																		"x": 0.5,
+																		"y": 0.5,
+																		"width": 32,
+																		"height": 4
+																	},
+																	"children": []
+																}
+															]
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "text",
+													"properties": {
+														"id": "A_definition_of_graphic_design_An_introduction_to_pivotal_historic_and_contemporary_designers_An_introduction_to_the_various_specialities_included_in_the_graphic_design_profession_An_introduction_to_online_design_resources_that_will_inspire_and_enrich_s",
+														"data-name": "A definition of graphic design\n\nAn introduction to pivotal historic and contemporary designers\n\nAn introduction to the various specialities included in the graphic design profession\n\nAn introduction to online design resources that will inspire and enrich s",
+														"class": "cls-13",
+														"transform": "translate(843 3568)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 0,
+																"y": 29
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "A DEFINITION OF GRAPHIC DESIGN"
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 0,
+																"y": 79
+															},
+															"children": []
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 0,
+																"y": 129
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "AN INTRODUCTION TO PIVOTAL HISTORIC AND "
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 0,
+																"y": 179
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "CONTEMPORARY DESIGNERS"
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 0,
+																"y": 229
+															},
+															"children": []
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 0,
+																"y": 279
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "AN INTRODUCTION TO THE VARIOUS SPECIALITIES "
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 0,
+																"y": 329
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "INCLUDED IN THE GRAPHIC DESIGN PROFESSION"
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 0,
+																"y": 379
+															},
+															"children": []
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 0,
+																"y": 429
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "AN INTRODUCTION TO ONLINE DESIGN RESOURCES "
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 0,
+																"y": 479
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "THAT WILL INSPIRE AND ENRICH STUDENT’S EDUCATION "
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 0,
+																"y": 529
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "THROUGHOUT THE MODULE."
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "g",
+									"properties": {
+										"id": "Group_1082",
+										"data-name": "Group 1082"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "g",
+											"properties": {
+												"id": "Group_899",
+												"data-name": "Group 899",
+												"transform": "translate(-1075 -898.255)"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "rect",
+													"properties": {
+														"id": "Rectangle_1269-2",
+														"data-name": "Rectangle 1269",
+														"class": "cls-2",
+														"width": 335,
+														"height": 291,
+														"transform": "translate(1262 3666.255)"
+													},
+													"children": []
+												},
+												{
+													"type": "element",
+													"tagName": "text",
+													"properties": {
+														"id": "IMAGE",
+														"class": "cls-14",
+														"transform": "translate(1274 3768.255)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 36.895,
+																"y": 67
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "IMAGE"
+																}
+															]
+														}
+													]
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "g",
+											"properties": {
+												"id": "Group_960",
+												"data-name": "Group 960",
+												"transform": "translate(-1075 -1267.255)"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "rect",
+													"properties": {
+														"id": "Rectangle_1269-3",
+														"data-name": "Rectangle 1269",
+														"class": "cls-2",
+														"width": 335,
+														"height": 291,
+														"transform": "translate(1262 3666.255)"
+													},
+													"children": []
+												},
+												{
+													"type": "element",
+													"tagName": "text",
+													"properties": {
+														"id": "IMAGE-2",
+														"data-name": "IMAGE",
+														"class": "cls-14",
+														"transform": "translate(1274 3768.255)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 36.895,
+																"y": 67
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "IMAGE"
+																}
+															]
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "text",
+													"properties": {
+														"id": "IMAGE-3",
+														"data-name": "IMAGE",
+														"class": "cls-14",
+														"transform": "translate(1274 3768.255)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 36.895,
+																"y": 67
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "IMAGE"
+																}
+															]
+														}
+													]
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "g",
+											"properties": {
+												"id": "Group_1080",
+												"data-name": "Group 1080",
+												"transform": "translate(-1075 -1687.255)"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "rect",
+													"properties": {
+														"id": "Rectangle_1269-4",
+														"data-name": "Rectangle 1269",
+														"class": "cls-2",
+														"width": 335,
+														"height": 291,
+														"transform": "translate(1262 3666.255)"
+													},
+													"children": []
+												},
+												{
+													"type": "element",
+													"tagName": "text",
+													"properties": {
+														"id": "IMAGE-4",
+														"data-name": "IMAGE",
+														"class": "cls-14",
+														"transform": "translate(1274 3768.255)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 36.895,
+																"y": 67
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "IMAGE"
+																}
+															]
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "text",
+													"properties": {
+														"id": "IMAGE-5",
+														"data-name": "IMAGE",
+														"class": "cls-14",
+														"transform": "translate(1274 3768.255)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 36.895,
+																"y": 67
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "IMAGE"
+																}
+															]
+														}
+													]
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "g",
+											"properties": {
+												"id": "Group_900",
+												"data-name": "Group 900",
+												"transform": "translate(-1075 -529.255)"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "rect",
+													"properties": {
+														"id": "Rectangle_1269-5",
+														"data-name": "Rectangle 1269",
+														"class": "cls-2",
+														"width": 335,
+														"height": 291,
+														"transform": "translate(1262 3666.255)"
+													},
+													"children": []
+												},
+												{
+													"type": "element",
+													"tagName": "text",
+													"properties": {
+														"id": "IMAGE-6",
+														"data-name": "IMAGE",
+														"class": "cls-14",
+														"transform": "translate(1274 3768.255)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 36.895,
+																"y": 67
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "IMAGE"
+																}
+															]
+														}
+													]
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "g",
+											"properties": {
+												"id": "Group_901",
+												"data-name": "Group 901",
+												"transform": "translate(-1075 -160.255)"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "rect",
+													"properties": {
+														"id": "Rectangle_1269-6",
+														"data-name": "Rectangle 1269",
+														"class": "cls-2",
+														"width": 335,
+														"height": 291,
+														"transform": "translate(1262 3666.255)"
+													},
+													"children": []
+												},
+												{
+													"type": "element",
+													"tagName": "text",
+													"properties": {
+														"id": "IMAGE-7",
+														"data-name": "IMAGE",
+														"class": "cls-14",
+														"transform": "translate(1274 3768.255)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 36.895,
+																"y": 67
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "IMAGE"
+																}
+															]
+														}
+													]
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "g",
+											"properties": {
+												"id": "Group_1081",
+												"data-name": "Group 1081",
+												"transform": "translate(-1075 208.745)"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "rect",
+													"properties": {
+														"id": "Rectangle_1269-7",
+														"data-name": "Rectangle 1269",
+														"class": "cls-2",
+														"width": 335,
+														"height": 291,
+														"transform": "translate(1262 3666.255)"
+													},
+													"children": []
+												},
+												{
+													"type": "element",
+													"tagName": "text",
+													"properties": {
+														"id": "IMAGE-8",
+														"data-name": "IMAGE",
+														"class": "cls-14",
+														"transform": "translate(1274 3768.255)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 36.895,
+																"y": 67
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "IMAGE"
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"type": "element",
+							"tagName": "g",
+							"properties": {
+								"id": "Group_904",
+								"data-name": "Group 904",
+								"transform": "translate(0 -57)"
+							},
+							"children": [
+								{
+									"type": "element",
+									"tagName": "g",
+									"properties": {
+										"id": "Group_1098",
+										"data-name": "Group 1098",
+										"transform": "translate(179 1292)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "text",
+											"properties": {
+												"id": "COURSE_OUTLINE",
+												"data-name": "COURSE \nOUTLINE",
+												"class": "cls-15"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"class": "cls-16"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 0,
+																"y": 144
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "COURSE "
+																}
+															]
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 304
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "OUTLINE"
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "g",
+									"properties": {
+										"id": "schhol_description",
+										"data-name": "schhol description",
+										"transform": "translate(179 1679)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "text",
+											"properties": {
+												"id": "The_12_modules_within_the_course_have_been_holistically_designed_around_the_15_units_of_competency_comprised_in_the_CUA40715_Certificate_IV_in_Design_training_package._We_teach_you_from_the_ground_up.",
+												"data-name": "The 12 modules within the course have been holistically designed around the 15 units of competency comprised in the CUA40715 Certificate IV in Design training package.\nWe teach you from the ground up.",
+												"class": "cls-17"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 29
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "The 12 modules within the course have been holistically designed around the 15 units "
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 79
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "of competency comprised in the CUA40715 Certificate IV in Design training package."
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 129
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "We teach you from the ground up."
+														}
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"type": "element",
+							"tagName": "text",
+							"properties": {
+								"id": "CERTIFICATE_IV_IN_DESIGN",
+								"data-name": "CERTIFICATE IV IN DESIGN",
+								"class": "cls-18",
+								"transform": "translate(309 157)"
+							},
+							"children": [
+								{
+									"type": "element",
+									"tagName": "tspan",
+									"properties": {
+										"x": 0,
+										"y": 288
+									},
+									"children": [
+										{
+											"type": "text",
+											"value": "CERTIFICATE "
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "tspan",
+									"properties": {
+										"x": 0,
+										"y": 588
+									},
+									"children": [
+										{
+											"type": "text",
+											"value": "IV IN DESIGN"
+										}
+									]
+								}
+							]
+						},
+						{
+							"type": "element",
+							"tagName": "g",
+							"properties": {
+								"id": "Group_895",
+								"data-name": "Group 895",
+								"transform": "translate(784 2046)"
+							},
+							"children": [
+								{
+									"type": "element",
+									"tagName": "rect",
+									"properties": {
+										"id": "Rectangle_1268",
+										"data-name": "Rectangle 1268",
+										"class": "cls-2",
+										"width": 735,
+										"height": 678,
+										"transform": "translate(222 2759)"
+									},
+									"children": []
+								}
+							]
+						},
+						{
+							"type": "element",
+							"tagName": "g",
+							"properties": {
+								"id": "Group_909",
+								"data-name": "Group 909",
+								"transform": "translate(32 -53)"
+							},
+							"children": [
+								{
+									"type": "element",
+									"tagName": "g",
+									"properties": {
+										"id": "Group_1097",
+										"data-name": "Group 1097",
+										"transform": "translate(155 4526)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "text",
+											"properties": {
+												"id": "WANT_TO_GET_STARTED_",
+												"data-name": "WANT TO GET STARTED?",
+												"class": "cls-15"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 144
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "WANT TO GET "
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 304
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "STARTED?"
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "You_can_enrol_any_day_of_the_year._As_we_are_online_and_training_is_self_paced_there_is_no_pressure._Enrol_when_you_are_ready_to_start_from_anywhere_in_the_world.",
+										"data-name": "You can enrol any day of the year. As we are online and training is self paced, there is no pressure. Enrol when you are ready to start, from anywhere in the world.",
+										"class": "cls-19",
+										"transform": "translate(163 4965)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 38
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "YOU CAN ENROL ANY DAY OF THE YEAR. AS WE ARE "
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 98
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "ONLINE AND TRAINING IS SELF PACED, THERE IS NO "
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 158
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "PRESSURE. ENROL WHEN YOU ARE READY TO START, "
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 218
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "FROM ANYWHERE IN THE WORLD."
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"type": "element",
+							"tagName": "g",
+							"properties": {
+								"id": "Group_907",
+								"data-name": "Group 907",
+								"transform": "translate(49 -97)"
+							},
+							"children": [
+								{
+									"type": "element",
+									"tagName": "g",
+									"properties": {
+										"id": "Group_1095",
+										"data-name": "Group 1095",
+										"transform": "translate(138 5452)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "text",
+											"properties": {
+												"id": "PRICES-2",
+												"data-name": "PRICES",
+												"class": "cls-15"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 144
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "PRICES"
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "Check_our_plans_for_the_CUA40715_Certificate_IV_in_Design",
+										"data-name": "Check our plans for the CUA40715 Certificate IV in Design",
+										"class": "cls-20",
+										"transform": "translate(138 5704)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 38
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "CHECK OUR PLANS FOR THE CUA40715 CERTIFICATE IV IN DESIGN"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "Request_a_quote_for_your_employer:_CUA40715_Certificate_IV_in_Design",
+										"data-name": "Request a quote for your employer: \nCUA40715 Certificate IV in Design",
+										"class": "cls-21",
+										"transform": "translate(138 5814)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 38,
+												"xml:space": "preserve"
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "REQUEST A QUOTE FOR YOUR EMPLOYER: "
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 98
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "CUA40715 CERTIFICATE IV IN DESIGN"
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"type": "element",
+							"tagName": "g",
+							"properties": {
+								"id": "Group_906",
+								"data-name": "Group 906",
+								"transform": "translate(105 49)"
+							},
+							"children": [
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "THE_QUALIFICATION_IN_PERSPECTIVE",
+										"data-name": "THE QUALIFICATION IN PERSPECTIVE",
+										"class": "cls-22",
+										"transform": "translate(85 608)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 48
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "THE QUALIFICATION IN PERSPECTIVE"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "WHY_CHOOSE_THIS_QUALIFICATION_",
+										"data-name": "WHY CHOOSE THIS QUALIFICATION\n",
+										"class": "cls-23",
+										"transform": "translate(85 693)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 48
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "WHY CHOOSE THIS QUALIFICATION"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "THE_COURSE_ETHOS_",
+										"data-name": "THE COURSE ETHOS\n",
+										"class": "cls-23",
+										"transform": "translate(85 782)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 48
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "THE COURSE ETHOS"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "UNITS_OF_COMPETENCY",
+										"data-name": "UNITS OF COMPETENCY",
+										"class": "cls-23",
+										"transform": "translate(82 871)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 48
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "UNITS OF COMPETENCY"
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"type": "element",
+							"tagName": "g",
+							"properties": {
+								"id": "COMPONENT_FOOTER",
+								"transform": "translate(0 6035)"
+							},
+							"children": [
+								{
+									"type": "element",
+									"tagName": "g",
+									"properties": {
+										"id": "Rectangle_1211",
+										"data-name": "Rectangle 1211",
+										"class": "cls-25"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "rect",
+											"properties": {
+												"class": "cls-33",
+												"width": 1920,
+												"height": 2369
+											},
+											"children": []
+										},
+										{
+											"type": "element",
+											"tagName": "rect",
+											"properties": {
+												"class": "cls-35",
+												"x": 0.5,
+												"y": 0.5,
+												"width": 1919,
+												"height": 2368
+											},
+											"children": []
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "g",
+									"properties": {
+										"id": "schhol_description-2",
+										"data-name": "schhol description",
+										"transform": "translate(32 144)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "text",
+											"properties": {
+												"id": "WE_SEE_THE_WORLD_DIFFERENTLY._WE_ARE_DESIGNERS._",
+												"data-name": "WE SEE THE WORLD DIFFERENTLY. WE ARE DESIGNERS. ",
+												"class": "cls-26"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 154
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "WE SEE THE "
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 329
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "WORLD "
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 504
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "DIFFERENTLY. "
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 679
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "WE ARE "
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 854
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "DESIGNERS. "
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "g",
+									"properties": {
+										"id": "Group_829",
+										"data-name": "Group 829",
+										"transform": "translate(40 1147.001)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "g",
+											"properties": {
+												"id": "Group_828",
+												"data-name": "Group 828",
+												"transform": "translate(0 1)"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "g",
+													"properties": {
+														"id": "Group_825",
+														"data-name": "Group 825"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "g",
+															"properties": {
+																"id": "Group_823",
+																"data-name": "Group 823"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "g",
+																	"properties": {
+																		"id": "schhol_description-3",
+																		"data-name": "schhol description",
+																		"transform": "translate(0 -0.002)"
+																	},
+																	"children": [
+																		{
+																			"type": "element",
+																			"tagName": "text",
+																			"properties": {
+																				"id": "See_the_world_differently_too_Subscribe_be_one_of_us_",
+																				"data-name": "See the world \ndifferently too?\nSubscribe, be one of us\n\n\n",
+																				"class": "cls-22"
+																			},
+																			"children": [
+																				{
+																					"type": "element",
+																					"tagName": "tspan",
+																					"properties": {
+																						"x": 0,
+																						"y": 48
+																					},
+																					"children": [
+																						{
+																							"type": "text",
+																							"value": "SEE THE WORLD "
+																						}
+																					]
+																				},
+																				{
+																					"type": "element",
+																					"tagName": "tspan",
+																					"properties": {
+																						"x": 0,
+																						"y": 98
+																					},
+																					"children": [
+																						{
+																							"type": "text",
+																							"value": "DIFFERENTLY TOO?"
+																						}
+																					]
+																				},
+																				{
+																					"type": "element",
+																					"tagName": "tspan",
+																					"properties": {
+																						"x": 0,
+																						"y": 148
+																					},
+																					"children": [
+																						{
+																							"type": "text",
+																							"value": "SUBSCRIBE, BE ONE OF US"
+																						}
+																					]
+																				},
+																				{
+																					"type": "element",
+																					"tagName": "tspan",
+																					"properties": {
+																						"x": 0,
+																						"y": 198
+																					},
+																					"children": []
+																				}
+																			]
+																		},
+																		{
+																			"type": "element",
+																			"tagName": "line",
+																			"properties": {
+																				"id": "Line_138",
+																				"data-name": "Line 138",
+																				"class": "cls-27",
+																				"x2": 756,
+																				"transform": "translate(0 240)"
+																			},
+																			"children": []
+																		}
+																	]
+																}
+															]
+														},
+														{
+															"type": "element",
+															"tagName": "text",
+															"properties": {
+																"id": "We_are_too_busy_with_students_to_have_the_time_to_spam_you_read_our_Privacy_Notice",
+																"data-name": "We are too busy with students to have the time to spam you, read our Privacy Notice",
+																"class": "cls-28",
+																"transform": "translate(0 270.999)"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 0
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "WE ARE TOO BUSY WITH STUDENTS TO HAVE THE TIME TO SPAM YOU, READ OUR "
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"class": "cls-29",
+																		"y": 0
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "PRIVACY NOTICE"
+																		}
+																	]
+																}
+															]
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "text",
+													"properties": {
+														"id": "EMAIL",
+														"class": "cls-30",
+														"transform": "translate(0 213.999)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": 0,
+																"y": 0
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "EMAIL"
+																}
+															]
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "text",
+													"properties": {
+														"id": "OK",
+														"class": "cls-30",
+														"transform": "translate(756 213.999)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": -31.52,
+																"y": 0
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "OK"
+																}
+															]
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "text",
+													"properties": {
+														"id": "OK-2",
+														"data-name": "OK",
+														"class": "cls-30",
+														"transform": "translate(1692 213.999)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "tspan",
+															"properties": {
+																"x": -31.52,
+																"y": 0
+															},
+															"children": [
+																{
+																	"type": "text",
+																	"value": "OK"
+																}
+															]
+														}
+													]
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "g",
+											"properties": {
+												"id": "Group_827",
+												"data-name": "Group 827",
+												"transform": "translate(928)"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "g",
+													"properties": {
+														"id": "Group_824",
+														"data-name": "Group 824"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "g",
+															"properties": {
+																"id": "schhol_description-4",
+																"data-name": "schhol description",
+																"transform": "translate(0 -0.002)"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "text",
+																	"properties": {
+																		"id": "Want_us_to_call_you_About_a_course_WE_LOVE_A_CHAT_",
+																		"data-name": "Want us to call you\nAbout a course?\nWE LOVE A CHAT!\n\n",
+																		"class": "cls-22"
+																	},
+																	"children": [
+																		{
+																			"type": "element",
+																			"tagName": "tspan",
+																			"properties": {
+																				"x": 0,
+																				"y": 48
+																			},
+																			"children": [
+																				{
+																					"type": "text",
+																					"value": "WANT US TO CALL YOU"
+																				}
+																			]
+																		},
+																		{
+																			"type": "element",
+																			"tagName": "tspan",
+																			"properties": {
+																				"x": 0,
+																				"y": 98
+																			},
+																			"children": [
+																				{
+																					"type": "text",
+																					"value": "ABOUT A COURSE?"
+																				}
+																			]
+																		},
+																		{
+																			"type": "element",
+																			"tagName": "tspan",
+																			"properties": {
+																				"x": 0,
+																				"y": 148
+																			},
+																			"children": [
+																				{
+																					"type": "text",
+																					"value": "WE LOVE A CHAT!"
+																				}
+																			]
+																		},
+																		{
+																			"type": "element",
+																			"tagName": "tspan",
+																			"properties": {
+																				"x": 0,
+																				"y": 198
+																			},
+																			"children": []
+																		}
+																	]
+																},
+																{
+																	"type": "element",
+																	"tagName": "path",
+																	"properties": {
+																		"id": "Path_966",
+																		"data-name": "Path 966",
+																		"class": "cls-31",
+																		"d": "M0,0H764",
+																		"transform": "translate(0 240)"
+																	},
+																	"children": []
+																}
+															]
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "g",
+													"properties": {
+														"id": "Group_826",
+														"data-name": "Group 826",
+														"transform": "translate(8 196)"
+													},
+													"children": [
+														{
+															"type": "element",
+															"tagName": "text",
+															"properties": {
+																"id": "PHONE",
+																"class": "cls-30",
+																"transform": "translate(0 18.999)"
+															},
+															"children": [
+																{
+																	"type": "element",
+																	"tagName": "tspan",
+																	"properties": {
+																		"x": 0,
+																		"y": 0
+																	},
+																	"children": [
+																		{
+																			"type": "text",
+																			"value": "PHONE"
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "ENROL_Prices_Plans_Enrolments_Frequently_Asked_Questions_Terms_Conditions_Contact_Us_",
+										"data-name": "ENROL\nPrices, Plans &amp; Enrolments\nFrequently Asked Questions\nTerms &amp; Conditions\nContact Us\n",
+										"class": "cls-32",
+										"transform": "translate(32 1557)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 29
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "ENROL"
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 64
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "Prices, Plans &amp; Enrolments"
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 99
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "Frequently Asked Questions"
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 134
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "Terms &amp; Conditions"
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 169
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "Contact Us"
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "g",
+									"properties": {
+										"id": "Group_819",
+										"data-name": "Group 819",
+										"transform": "translate(32 1882)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "text",
+											"properties": {
+												"id": "THE_COMMUNITY_Alumni_Social_Student_Testimonials_Credits_",
+												"data-name": "THE COMMUNITY\nAlumni &amp; Social\nStudent Testimonials\nCredits\n",
+												"class": "cls-32"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 29
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "THE COMMUNITY"
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 64
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "Alumni &amp; Social"
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 99
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "Student Testimonials"
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 134
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "Credits"
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 169
+													},
+													"children": []
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "text",
+											"properties": {
+												"id": "THE_SCHOOL_About_Us_Meet_the_Tutors_Contact_us_",
+												"data-name": "THE SCHOOL\nAbout Us\nMeet the Tutors\nContact us\n",
+												"class": "cls-32",
+												"transform": "translate(468)"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 29
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "THE SCHOOL"
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 64
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "About Us"
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 99
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "Meet the Tutors"
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 134
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "Contact us"
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 169
+													},
+													"children": []
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "text",
+											"properties": {
+												"id": "FREE_DESIGN_EXERCISES_DEX_Library_DEX_Gallery_",
+												"data-name": "FREE DESIGN EXERCISES\nDEX Library\nDEX Gallery\n",
+												"class": "cls-32",
+												"transform": "translate(936)"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 29
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "FREE DESIGN EXERCISES"
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 64
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "DEX Library"
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 99
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "DEX Gallery"
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 134
+													},
+													"children": []
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "text",
+											"properties": {
+												"id": "REFERENCES_Privacy_Copyright_Complaints_Appeals_Unique_Student_Identifier",
+												"data-name": "REFERENCES\nPrivacy\nCopyright\nComplaints &amp; Appeals\nUnique Student Identifier",
+												"class": "cls-32",
+												"transform": "translate(1404)"
+											},
+											"children": [
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 29
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "REFERENCES"
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 64
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "Privacy"
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 99
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "Copyright"
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 134
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "Complaints &amp; Appeals"
+														}
+													]
+												},
+												{
+													"type": "element",
+													"tagName": "tspan",
+													"properties": {
+														"x": 0,
+														"y": 169
+													},
+													"children": [
+														{
+															"type": "text",
+															"value": "Unique Student Identifier"
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+								{
+									"type": "element",
+									"tagName": "text",
+									"properties": {
+										"id": "STUDENT_HANDBOOK_About_our_courses_About_The_Graphic_Design_School_Help_and_Support_Study_Online_Equipment_I_need_Fees_Plans",
+										"data-name": "STUDENT HANDBOOK\nAbout our courses\nAbout The Graphic Design School\nHelp and Support\nStudy Online\nEquipment I need\nFees &amp; Plans",
+										"class": "cls-32",
+										"transform": "translate(493 1557)"
+									},
+									"children": [
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 29
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "STUDENT HANDBOOK"
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 64
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "About our courses"
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 99
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "About The Graphic Design "
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 134
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "School"
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 169
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "Help and Support"
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 204
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "Study Online"
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 239
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "Equipment I need"
+												}
+											]
+										},
+										{
+											"type": "element",
+											"tagName": "tspan",
+											"properties": {
+												"x": 0,
+												"y": 274
+											},
+											"children": [
+												{
+													"type": "text",
+													"value": "Fees &amp; Plans"
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			],
+			"metadata": ""
+		}
+	]
+}

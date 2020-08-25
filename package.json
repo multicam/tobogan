@@ -4,7 +4,6 @@
   "description": "TGDS 2020",
   "license": "MIT",
   "scripts": {
-    "clear": "rm -Rf build/* && rm -Rf .cache/* && rm -Rf _site/",
     "update": "npm-check -u && rm package-lock.json ; yarn",
     "sass:watch": "sass style/:style/ --no-source-map --charset --watch",
     "sass:build": "sass style/:style/ --no-source-map --charset",
@@ -18,7 +17,24 @@
     "prod:sass": "yarn sass:build",
     "prod:parcel": "parcel build js/*.js --out-dir build/js",
     "serve": "serve build/",
-    "dev:content": "nodemon --watch _scripts/* --watch ../../tgds/tgds-content/_demo/* _scripts/"
+    "clear": "rm -Rf build/* && rm -Rf .cache/* && rm -Rf _site/",
+    "dev:content:build": "nodemon -e yaml,json,md --watch /media/ssd1/tgds/tgds-content/_demo _scripts/build.js",
+    "content:server": "nodemon _scripts/server.js"
+  },
+  "nodemonConfig": {
+    "verbose": true,
+    "ignore": [
+      ".git",
+      "node_modules/**",
+      "_site/**"
+    ],
+    "watch": [
+      "_scripts/**",
+      "/media/ssd1/tgds/tgds-content/_demo/**"
+    ]
+  },
+  "content": {
+    "location": "/media/ssd1/tgds/tgds-content/_demo/"
   },
   "devDependencies": {
     "@babel/core": "^7.11.4",
@@ -26,8 +42,10 @@
     "@babel/preset-env": "^7.11.0",
     "@shoelace-style/shoelace": "^2.0.0-beta.9",
     "bluebird": "^3.7.2",
+    "body-parser": "^1.19.0",
     "chalk": "^4.1.0",
     "chokidar": "^3.4.2",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "gsap": "^3.5.0",
     "lodash": "^4.17.20",
@@ -36,9 +54,11 @@
     "node-yaml": "^4.0.1",
     "npm-run-all": "^4.1.5",
     "parcel-bundler": "^1.12.4",
-    "sass": "^1.26.10"
+    "response-time": "^2.3.2",
+    "sass": "^1.26.10",
+    "svg-parser": "^2.0.4"
   },
-  "content": {
-    "location": "/media/ssd1/tgds/tgds-content/_demo/"
+  "dependencies": {
+    "markdown-it": "^11.0.0"
   }
 }

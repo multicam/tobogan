@@ -152,6 +152,14 @@ main {
 		padding: 1rem;
 		position: relative;
 
+		&.no-padding {
+			padding: 0;
+		}
+
+		.padding {
+			padding: 1rem;
+		}
+
 		h1 {
 			margin-top: 18vw;
 			font-weight: 700;

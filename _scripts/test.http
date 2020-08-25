@@ -1,0 +1,11 @@
+###
+GET http://localhost:3009
+Accept: application/json
+
+###
+GET http://localhost:3009/courses
+Accept: application/json
+
+###
+GET http://localhost:3009/courses/certiv
+Accept: application/json

@@ -5,6 +5,7 @@ const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, k
 const
 	rewrites = [
 		'/courses',
+		'/courses2',
 		'/student-work'
 	],
 	stylesheets = [
@@ -45,12 +46,38 @@ const proxy_patchy = () => (req, res, next) => {
 
 module.exports = function (eleventyConfig) {
 
+	const MarkdownIt = require("markdown-it");
+	const mdRender = new MarkdownIt();
+
+	eleventyConfig.addFilter("renderUsingMarkdown", function(rawString) {
+		return mdRender.render(dispatchEvent);
+	});
+
+
+	eleventyConfig.addFilter('custom_dump', obj => {
+
+		const getCircularReplacer = () => {
+			const seen = new WeakSet();
+			return (key, value) => {
+				if (typeof value === "object" && value !== null) {
+					if (seen.has(value)) {
+						return;
+					}
+					seen.add(value);
+				}
+				return value;
+			};
+		};
+
+		return JSON.stringify(obj, getCircularReplacer(), 2);
+	});
+
 	// sass_install('style/')
 
-	eleventyConfig.addPassthroughCopy('style/*.css');
-	eleventyConfig.addPassthroughCopy('images');
   eleventyConfig.addPassthroughCopy('img');
+	eleventyConfig.addPassthroughCopy('images');
   eleventyConfig.addPassthroughCopy('js/components');
+	eleventyConfig.addPassthroughCopy('style/*.css');
 
 
 	eleventyConfig.addPassthroughCopy('favicon.ico')
@@ -66,7 +93,6 @@ module.exports = function (eleventyConfig) {
 		},
 		middleware: [ proxy_patchy() ]
 	});
-
 
   // You can return your Config object (optional).
   return {

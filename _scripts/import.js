@@ -5,7 +5,7 @@ const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, k
 const walk_svg = (res,svg) => {
 
 	if( svg.properties && svg.properties['data-name']) {
-		log(svg)
+		// log(svg)
 		res.push(svg.properties['data-name'])
 	}
 

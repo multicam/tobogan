@@ -2,30 +2,46 @@
 const fs = require('fs'), path = require('path'), yaml = require('node-yaml'), promise = require('bluebird'), {} = require('lodash')
 const log = console.log, logt = console.table, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys
 
-const loadYaml = async (dir,leaf) => {
-	const filename = path.join( dir, leaf ? leaf : 'index.yaml' )
+const loadYaml = async nameInput => {
+	const filename = fs.existsSync(nameInput+'.yaml') ? nameInput+'.yaml' : path.join( nameInput, 'index.yaml' )
 	log('|>', filename)
-	return fs.existsSync(filename) ? await yaml.read(filename) : await yaml.read(filename+'.yaml') || {}
+	return await yaml.read(filename) || {}
 }
-
-const pagesIndex = {}
 
 const parse = async location => {
 
-	log('parsing', location)
-
 	let root = await loadYaml(location)
 
-	log('-- a', root.pages)
+	// log('-- a', root.pages)
 
 	if( root.pages && root.pages.length ) {
+
 		for(let i in root.pages ) {
 			let page = root.pages[i]
+
 			if( page.path ) {
-				log('++',page.path)
-				page = {...page, ...await parse(page.path)}
+				page = {...page, ...await parse(path.join(location,page.path))}
+				log('-- b',page)
+			}
+
+			if( page.pages && page.pages.length ) {
+
+				for( j in page.pages ) {
+					let p = page.pages[j]
+
+					if( p.path ) {
+						p = {...p,...await parse(path.join(location,p.path))}
+						delete p.path
+						log('-- c',p)
+
+						root.pages.push(p)
+					}
+				}
+
+				delete page.pages
 			}
 		}
+
 	}
 
 	return root

@@ -18,7 +18,7 @@
     "prod:parcel": "parcel build js/*.js --out-dir build/js",
     "serve": "serve build/",
     "clear": "rm -Rf build/* && rm -Rf .cache/* && rm -Rf _site/",
-    "dev:content:build": "nodemon -e yaml,json,md --watch /media/ssd1/tgds/tgds-content/_demo _scripts/build.js",
+    "dev:content:build": "nodemon -e yaml,json,md,js --watch /media/ssd1/tgds/tgds-content/_demo --watch _scripts/ _scripts/build.js",
     "content:server": "nodemon _scripts/server.js"
   },
   "nodemonConfig": {

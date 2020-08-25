@@ -50,7 +50,7 @@ module.exports = function (eleventyConfig) {
 	const mdRender = new MarkdownIt();
 
 	eleventyConfig.addFilter("renderUsingMarkdown", function(rawString) {
-		return mdRender.render(dispatchEvent);
+		return mdRender.render(rawString);
 	});
 
 

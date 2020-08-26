@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>{{ title }}</title>
+  <title></title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -44,7 +44,6 @@
   </main>
 
 	<footer id="foot">
-		{% include "_footer.njk" %}
 	</footer>
 
 </div>
@@ -52,8 +51,21 @@
 <canvas id="overlay">
 </canvas>
 
+<!--
+-->
+<script crossorigin src="//unpkg.com/react@16/umd/react.production.min.js"></script>
+<script crossorigin src="//unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+
+<script src="/js/plugins.js"></script>
+<script src="/js/main.js"></script>
 <script>
   window.addEventListener('orientationchange', () => window.location.reload());
+</script>
+
+<script type="application/javascript" src="/js/components/footer.js"></script>
+
+<script>
+	ReactDOM.render(React.createElement(FooterComponent), document.querySelector('#foot'));
 </script>
 
 {#{% include "_analytics.njk" %}#}

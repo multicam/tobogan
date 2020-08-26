@@ -1,3 +1,4 @@
+// -- ------------------------------------------------------------------------------------------------------------------
 
 const fs = require('fs'), path = require('path'), yaml = require('node-yaml'), promise = require('bluebird'), chalk = require('chalk')
 const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys
@@ -16,20 +17,20 @@ const perform_loads = async obj => {
 
 	const keys = keysOf(obj)
 
-	for(let i in keys) {
+	for( let i in keys ) {
 		const key = keys[i]
 
 		if( key === 'load' ) {
 
-			const pth = typeof obj[key] === 'object' ? obj[key].path : obj[key]
-			const filter = typeof obj[key] === 'object' ? obj[key].filter : null
+			const load_path = typeof obj[key] === 'object' ? obj[key].path : obj[key]
+			const load_filter = typeof obj[key] === 'object' ? obj[key].filter : null
 
-			log('>>>', obj[key], pth, filter )
+			log('>>>', obj[key], load_path, load_filter )
 
-			let temp = await loadYaml( path.join(_root_path, pth ))
-			if( filter) {
+			let temp = await loadYaml( path.join(_root_path, load_path ))
+			if( load_filter) {
 				temp = keysOf(temp).reduce( (r,i) => {
-					if( filter.includes(i) ) {
+					if( load_filter.includes(i) ) {
 						r[i] = temp[i]
 					}
 					return r
@@ -60,18 +61,13 @@ const parse = async location => {
 	_root_path = _root_path ? _root_path : location
 
 	let root = await loadYaml(location)
-
-	// recursive_load(root)
-
-	// log('-- a', root.pages)
-
 	if( root.pages && root.pages.length ) {
 
 		for(let i in root.pages ) {
 			let page = root.pages[i]
 
 			if( page.path ) {
-				page = {...page, ...await parse(path.join(_root_path, page.path))}
+				page = {...page, ...await parse(path.join(_root_path,page.path))}
 				delete page.path
 				root.pages[i] = {...page} // * deep
 				// log('-- b',page)
@@ -79,7 +75,7 @@ const parse = async location => {
 
 			if( page.pages && page.pages.length ) {
 
-				for( j in page.pages ) {
+				for( let j in page.pages ) {
 					let p = page.pages[j]
 
 					if( p.path ) {
@@ -98,16 +94,32 @@ const parse = async location => {
 	return perform_loads(root)
 }
 
-// -- run_on_flat ------------------------------------------------------------------------------------------------------
+// -- ------------------------------------------------------------------------------------------------------------------
+
+const index_on = (arr,ref) => arr.reduce( (r,i,n) => {
+	return r
+}, {})
+
+// -- run --------------------------------------------------------------------------------------------------------------
 
 const run_on_flat = (fn, exit = false) =>
 	promise.coroutine( function*() { yield fn() })().then( () => exit && process.exit() );
 
-run_on_flat(async () => {
+run_on_flat( async () => {
+	const pack = await require('../package.json')
 
-	const config = require('../package.json').content
-	const data = await parse(config.location)
-	log("|>",serialize(data,null,2))
-	log(data.pages[0])
+	log('|>', "build start...")
+
+	const data = await parse( pack.content.location )
+	data.index = index_on( data.pages, 'slug' )
+
+	require('fs').writeFileSync(path.join(__dirname,'../_data/site.json'), serialize(data),'utf8')
+
+	log("|>",data)
+
+	log('|>', "build end.")
+
 })
+
+// -- ------------------------------------------------------------------------------------------------------------------
 

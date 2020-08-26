@@ -1,0 +1,20 @@
+---
+layout: layout.njk
+permalink: "demo/{{ pp.loc | slug }}/"
+
+pagination:
+  data: demo_pages
+  size: 1
+  alias: pp
+
+---
+
+<section class="">
+
+	{%- for item in pagination.items %}
+		<div>{{ item | dump }}</div>
+	{% endfor -%}
+
+</section>
+
+{##}

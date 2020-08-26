@@ -97,6 +97,7 @@ const parse = async location => {
 // -- ------------------------------------------------------------------------------------------------------------------
 
 const index_on = (arr,ref) => arr.reduce( (r,i,n) => {
+	r[i[ref]] = n
 	return r
 }, {})
 
@@ -113,7 +114,8 @@ run_on_flat( async () => {
 	const data = await parse( pack.content.location )
 	data.index = index_on( data.pages, 'slug' )
 
-	require('fs').writeFileSync(path.join(__dirname,'../_data/site.json'), serialize(data),'utf8')
+	fs.writeFileSync(path.join(__dirname,'../_data/demo_pages.json'), serialize(data.pages),'utf8')
+	fs.writeFileSync(path.join(__dirname,'../_data/site.json'), serialize(data),'utf8')
 
 	log("|>",data)
 

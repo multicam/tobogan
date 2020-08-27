@@ -47,7 +47,7 @@
     "chokidar": "^3.4.2",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "gsap": "^3.5.0",
+    "gsap": "^3.5.1",
     "lodash": "^4.17.20",
     "node-sass": "^4.14.1",
     "node-sass-promise": "^1.0.0",

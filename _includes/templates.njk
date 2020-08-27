@@ -1,0 +1,12 @@
+{% macro render_course_individual (page) %}
+	--- invividual ---
+	<pre>{{ page | dump }}</pre>
+
+{% endmacro %}
+
+{% macro render_courses (page) %}
+	{% for course in page.content %}
+		<h2>{{ course.title }}</h2>
+		<p>{{ course.tagline }}</p>
+	{% endfor %}
+{% endmacro %}

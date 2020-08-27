@@ -1,6 +1,6 @@
 ---
 layout: layout.njk
-permalink: "demo/{{ pp.loc | slug }}/"
+permalink: "demo/{{ pp.permalink | url }}/"
 
 pagination:
   data: site.pages
@@ -8,22 +8,33 @@ pagination:
   alias: pp
 
 ---
+<div>---</div>
 
-{% if pp.template %}
-	{% include pp.template + ".njk" %}
-{% endif %}
 
-<section class="">
-	{{ pp | dump }}
-</section>
+{% from "templates.njk" import render_courses %}
+{% from "templates.njk" import render_course_individual %}
+{#	{% include pp.template + ".njk" %}#}
 
-<section class="">
-	{{ pp.content | dump }}
-</section>
+-|
+{% switch pp.render %}
 
+	{% case "--courses" %}
+		{{ render_courses(pp) }}
+
+	{% case "--course-individual" %}
+		{{ render_course_individual(pp) }}
+
+	{% default %}
+		{{ pp | dump}}
+
+{% endswitch %}
+|-
+
+<div>---</div>
 
 <section>
 	{{ page | dump }}
 </section>
 
 
+<style>pre{break-word: break-word;white-space: pre-wrap;}</style>

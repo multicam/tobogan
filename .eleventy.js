@@ -13,26 +13,26 @@ const
 	]
 
 
-const sass_watch = dir => {
-	log('sass install', dir)
-	chokidar.watch(dir).on('all', (event, path) => {
-		log(`chk ${path} on ${event} (${path_.basename(path)})`)
-		stylesheets.includes(path_.basename(path)) && event === 'change' && event === 'add' && sass_process(path).then( res => log('xxx', res)).catch(log)
-	});
-}
-
-const sass_process = file => {
-	const pos = file.lastIndexOf("."), resFile = file.substr(0, pos < 0 ? file.length : pos) + ".css";
-	return pos !== -1 && new promise((resolve, reject) => {
-		sass.render({file: file}, (error, result) => {
-			error && log(error) && reject(error);
-			log('->',resFile, result)
-			result && result.css && fs.writeFileSync(resFile, result.css, 'utf8')
-			resolve(true);
-		});
-	});
-
-}
+// const sass_watch = dir => {
+// 	log('sass install', dir)
+// 	chokidar.watch(dir).on('all', (event, path) => {
+// 		log(`chk ${path} on ${event} (${path_.basename(path)})`)
+// 		stylesheets.includes(path_.basename(path)) && event === 'change' && event === 'add' && sass_process(path).then( res => log('xxx', res)).catch(log)
+// 	});
+// }
+//
+// const sass_process = file => {
+// 	const pos = file.lastIndexOf("."), resFile = file.substr(0, pos < 0 ? file.length : pos) + ".css";
+// 	return pos !== -1 && new promise((resolve, reject) => {
+// 		sass.render({file: file}, (error, result) => {
+// 			error && log(error) && reject(error);
+// 			log('->',resFile, result)
+// 			result && result.css && fs.writeFileSync(resFile, result.css, 'utf8')
+// 			resolve(true);
+// 		});
+// 	});
+//
+// }
 
 const proxy_patchy = () => (req, res, next) => {
 	if( rewrites.includes(req.url) ) {
@@ -43,15 +43,18 @@ const proxy_patchy = () => (req, res, next) => {
 	next()
 }
 
-module.exports = function (eleventyConfig) {
+module.exports = eleventyConfig => {
 
 	const MarkdownIt = require("markdown-it");
 	const mdRender = new MarkdownIt();
 
+	eleventyConfig.addJavaScriptFunction('getContext', function(name) {
+		return (name) ? this.ctx[name] : this.ctx;
+	})
+
 	eleventyConfig.addFilter("renderUsingMarkdown", function(rawString) {
 		return mdRender.render(rawString);
 	});
-
 
 	eleventyConfig.addFilter('custom_dump', obj => {
 

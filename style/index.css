@@ -1050,3 +1050,6 @@ footer address {
   line-height: 2vw;
   text-align: left;
 }
+pre {
+  color: red;
+}

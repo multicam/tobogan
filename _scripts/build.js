@@ -114,7 +114,6 @@ run_on_flat( async () => {
 	const data = await parse( pack.content.location )
 	data.index = index_on( data.pages, 'slug' )
 
-	fs.writeFileSync(path.join(__dirname,'../_data/demo_pages.json'), serialize(data.pages),'utf8')
 	fs.writeFileSync(path.join(__dirname,'../_data/site.json'), serialize(data),'utf8')
 
 	log("|>",data)

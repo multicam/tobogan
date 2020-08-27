@@ -44,8 +44,10 @@ input::-moz-focus-inner {
 
 // -- colors
 
-$red: #d40a24;
-$yel: #ffe900;
+:root {
+	--red: #d40a24;
+	--yellow: #ffe900;
+}
 
 // -- misc
 
@@ -80,8 +82,8 @@ a {
 	color: #222222;
 
 	&:hover {
-		color: $red;
-		background: transparentize($red,.917)
+		color: var(--red);
+		background: transparentize(#833942,.917)
 	}
 }
 
@@ -125,16 +127,16 @@ body {
 }
 
 .red {
-	background: $red;
+	background: var(--red);
 }
 
-.yel {
-	color: $yel;
+.yel, .yellow {
+	color: var(--yellow);
 }
 
 .black {
 	background: #000;
-	color: $red;
+	color: var(--red);
 }
 
 .box {
@@ -172,7 +174,7 @@ main {
 			white-space: nowrap;
 
 			a {
-				text-decoration: $red;
+				text-decoration: var(--red);
 			}
 
 			h2 {
@@ -195,7 +197,7 @@ main {
 			margin: 6vw 12vw;
 
 			strong {
-				color: $red;
+				color: var(--red);
 			}
 		}
 
@@ -230,6 +232,26 @@ figure {
 		flex-direction: column;
 	}
 
+}
+
+.py1 {
+	padding-top: 1em;
+	padding-bottom: 1em;
+}
+
+.py2 {
+	padding-top: 2em;
+	padding-bottom: 2em;
+}
+
+.my1 {
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+.my2 {
+	margin-top: 2em;
+	margin-bottom: 2em;
 }
 
 @import "marquee";

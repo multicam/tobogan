@@ -674,6 +674,11 @@ input::-moz-focus-inner {
   pointer-events: none;
 }
 
+:root {
+  --red: #d40a24;
+  --yellow: #ffe900;
+}
+
 .debug {
   outline: 1px solid rgba(100, 0, 0, 0.2);
 }
@@ -700,8 +705,8 @@ a {
   color: #222222;
 }
 a:hover {
-  color: #d40a24;
-  background: rgba(212, 10, 36, 0.083);
+  color: var(--red);
+  background: rgba(131, 57, 66, 0.083);
 }
 
 figure {
@@ -742,16 +747,16 @@ body {
 }
 
 .red {
-  background: #d40a24;
+  background: var(--red);
 }
 
-.yel {
-  color: #ffe900;
+.yel, .yellow {
+  color: var(--yellow);
 }
 
 .black {
   background: #000;
-  color: #d40a24;
+  color: var(--red);
 }
 
 .box {
@@ -786,7 +791,7 @@ main section .slide {
   white-space: nowrap;
 }
 main section .slide a {
-  text-decoration: #d40a24;
+  text-decoration: var(--red);
 }
 main section .slide h2 {
   display: block;
@@ -804,7 +809,7 @@ main section blockquote {
   margin: 6vw 12vw;
 }
 main section blockquote strong {
-  color: #d40a24;
+  color: var(--red);
 }
 
 figure {
@@ -826,6 +831,26 @@ figure {
 .v2 .fcol {
   display: flex;
   flex-direction: column;
+}
+
+.py1 {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+.py2 {
+  padding-top: 2em;
+  padding-bottom: 2em;
+}
+
+.my1 {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.my2 {
+  margin-top: 2em;
+  margin-bottom: 2em;
 }
 
 .marquee {
@@ -945,7 +970,7 @@ footer h4 {
 footer .form input {
   flex: 1;
   border: none;
-  border-bottom: 1px solid #ffe900;
+  border-bottom: 1px solid var(--yellow);
   margin-right: 1rem;
   font-size: 1.5vw;
   padding: 0.5vw 0;
@@ -959,7 +984,7 @@ footer .form .button {
 }
 footer .form .button:hover {
   color: black;
-  background: #ffe900;
+  background: var(--yellow);
 }
 footer .form form {
   display: flex;
@@ -995,7 +1020,8 @@ footer address {
   justify-content: center;
 }
 .home .image .content {
-  background: #d40a24;
+  background: var(--red);
+  color: white;
   text-transform: uppercase;
   font-weight: 700;
   font-size: 1.5vw;

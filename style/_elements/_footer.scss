@@ -29,7 +29,7 @@ footer {
 		input {
 			flex: 1;
 			border: none;
-			border-bottom: 1px solid $yel;
+			border-bottom: 1px solid var(--yellow);
 			margin-right: 1rem;
 			font-size: 1.5vw;
 			padding: .5vw 0;
@@ -44,7 +44,7 @@ footer {
 
 			&:hover {
 				color: black;
-				background: $yel;
+				background: var(--yellow);
 			}
 		}
 

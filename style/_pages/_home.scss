@@ -18,7 +18,9 @@
 		justify-content: center;
 
 		.content {
-			background: $red;
+			background: var(--red);
+			color: white;
+
 			text-transform: uppercase;
 			font-weight: 700;
 			font-size: 1.5vw;

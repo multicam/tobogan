@@ -13,8 +13,8 @@ class: courses
         <h1>Courses</h1>
 
 				<div class="red">
-					<div>{{ site | dump }}</div>
-					<div>{{ site.index | dump }}</div>
+{#					<div>{{ site | dump }}</div>#}
+					<div>{{ site.pages[ site.index['courses'] ] | dump }}</div>
 				</div>
 
       </div>

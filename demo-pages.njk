@@ -3,18 +3,27 @@ layout: layout.njk
 permalink: "demo/{{ pp.loc | slug }}/"
 
 pagination:
-  data: demo_pages
+  data: site.pages
   size: 1
   alias: pp
 
 ---
 
+{% if pp.template %}
+	{% include pp.template + ".njk" %}
+{% endif %}
+
 <section class="">
-
-	{%- for item in pagination.items %}
-		<div>{{ item | dump }}</div>
-	{% endfor -%}
-
+	{{ pp | dump }}
 </section>
 
-{##}
+<section class="">
+	{{ pp.content | dump }}
+</section>
+
+
+<section>
+	{{ page | dump }}
+</section>
+
+

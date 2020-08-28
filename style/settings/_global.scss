@@ -18,6 +18,7 @@ html input[type="button"],
 html input[disabled],
 input::-moz-focus-inner {
 	border:none;
+	outline: none;
 	background-image:none;
 	background-color:transparent;
 	-webkit-box-shadow: none;

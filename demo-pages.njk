@@ -8,14 +8,11 @@ pagination:
   alias: pp
 
 ---
-<div>---</div>
-
 
 {% from "templates.njk" import render_courses %}
 {% from "templates.njk" import render_course_individual %}
 {#	{% include pp.template + ".njk" %}#}
 
--|
 {% switch pp.render %}
 
 	{% case "--courses" %}
@@ -28,13 +25,5 @@ pagination:
 		{{ pp | dump}}
 
 {% endswitch %}
-|-
-
-<div>---</div>
-
-<section>
-	{{ page | dump }}
-</section>
-
 
 <style>pre{break-word: break-word;white-space: pre-wrap;}</style>

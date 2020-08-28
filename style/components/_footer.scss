@@ -7,7 +7,7 @@ footer {
 
 	.tagline {
 
-		font-size: 6vw;
+		font-size: 8vw;
 		font-weight: 900;
 		margin-top: 6vw;
 	}
@@ -26,18 +26,28 @@ footer {
 
 	.form {
 
+
+		h3 {
+			font-size: 2.25vw;
+			line-height: 1em;
+			font-weight: 900;
+		}
+
 		input {
 			flex: 1;
 			border: none;
 			border-bottom: 1px solid var(--yellow);
-			margin-right: 1rem;
-			font-size: 1.5vw;
+			//margin-right: 1rem;
+			font-size: 1vw;
 			padding: .5vw 0;
 			color: white!important;
 			background: transparent;
+			font-weight: 900;
 		}
 
 		.button {
+			display: flex;
+			align-items: center;
 			padding: 0 .5rem;
 			font-weight: 700;
 			color: white;
@@ -46,32 +56,37 @@ footer {
 				color: black;
 				background: var(--yellow);
 			}
+			border-bottom: 1px solid var(--yellow);
 		}
 
 		form {
 			display: flex;
 		}
 
-		h3 {
-			font-size: 2.25vw;
-			line-height: 1em;
-		}
-
 		.note {
 			color: #cfcfcf;
 			font-variant: small-caps;
 			margin-top: .5rem;
-			font-size: .72em;
+			font-size: 1vw;
+			// --
 		}
 
 	}
 
 	.sitemap {
+		font-size: 1.5vw;
+		// need to clamp here
 
+		a {
+			&:hover {
+				color: var(--yellow);
+			}
+
+		}
 	}
 
-	address {
+	.address {
 		font-style: normal;
-		line-height: 2rem;
+		line-height: 2.5vw;
 	}
 }

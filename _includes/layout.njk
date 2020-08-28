@@ -31,7 +31,7 @@
 
 <div id="app">
 
-  <header>
+  <header class="white">
     <a href="/"><img src="/img/logo.svg" alt="TGDS Logo"/></a>
     <nav>
       <a href="/courses">courses</a>
@@ -43,7 +43,7 @@
     </nav>
   </header>
 
-  <main class={{ class }}>
+  <main class="{{ class | safe }} black">
     {{ content | safe }}
   </main>
 

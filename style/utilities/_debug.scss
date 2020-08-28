@@ -1,0 +1,15 @@
+.debug {
+	outline: 1px solid rgba(100,0,0,.2);
+
+	> div {
+		outline: 1px solid rgba(100,0,0,.2);
+		min-height: 2rem;
+
+		&:after {
+			content: '--d--';
+			font-size: .75rem;
+			line-height: 2rem;
+		}
+
+	}
+}

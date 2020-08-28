@@ -1,0 +1,23 @@
+.v2 {
+
+	.row {
+		padding: .25rem 1rem;
+	}
+
+	img {
+		width:100%;
+		min-height:100%;
+		object-fit: cover;
+	}
+
+	.item {
+		flex:1;
+		overflow:hidden;
+	}
+
+	.fcol {
+		display: flex;
+		flex-direction: column;
+	}
+
+}

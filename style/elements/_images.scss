@@ -1,0 +1,16 @@
+figure {
+	margin: 0;
+	padding: 0
+}
+
+figcaption {
+	padding: 1rem 0;
+	font-variant: small-caps;
+	text-transform: lowercase;
+
+	strong {
+		font-variant: none;
+		text-transform: uppercase;
+	}
+}
+

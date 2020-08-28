@@ -1,0 +1,33 @@
+
+body {
+	//font-family: 'Gotham SSm A', 'Gotham SSm B', sans-serif;
+	font-family: 'Gotham A', 'Gotham B', sans-serif;
+	color: #222222;
+}
+
+h1 {
+	font-weight: 300;
+}
+
+a {
+	color: #222222;
+
+	&:hover {
+		color: var(--red);
+		background: transparentize(#833942,.917)
+	}
+}
+
+
+::placeholder {
+	color: #aaa;
+	text-transform: uppercase;
+}
+
+.uc {
+	text-transform: uppercase;
+}
+
+.sc {
+	font-variant: small-caps;
+}

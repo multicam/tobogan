@@ -4,7 +4,7 @@
   "description": "A sample.",
   "start_url": "/",
   "icons": [{
-    "src": "images/icons/icon.png",
+    "src": "img/icons/icon.png",
     "type": "image/png",
     "sizes": "192x192"
   }],

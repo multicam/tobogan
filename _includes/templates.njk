@@ -5,11 +5,14 @@
 {% endmacro %}
 
 {% macro render_courses (page) %}
+
 	<h1>{{ page.title }}</h1>
+
 	{% for course in page.content %}
 		<section>
 			<h2>{{ course.title }}</h2>
 			<p>{{ course.tagline }}</p>
 		</section>
 	{% endfor %}
+
 {% endmacro %}

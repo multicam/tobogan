@@ -1,5 +1,19 @@
 
 .home {
+
+	h1 {
+		font-weight: 300;
+	}
+
+	a {
+		color: #222222;
+
+		&:hover {
+			color: var(--red);
+			background: transparentize(#833942,.917)
+		}
+	}
+
 	.image {
 		position: absolute;
 		top: 1px;

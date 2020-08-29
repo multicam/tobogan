@@ -1,20 +1,41 @@
 
+.py0 {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
 .py1 {
-	padding-top: 1em;
-	padding-bottom: 1em;
+	padding-top: 1vw;
+	padding-bottom: 1vw;
 }
 
 .py2 {
-	padding-top: 2em;
-	padding-bottom: 2em;
+	padding-top: 2vw;
+	padding-bottom: 2vw;
+}
+
+
+.px0 {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.px1 {
+	padding-left: 1vw;
+	padding-right: 1vw;
+}
+
+.px2 {
+	padding-left: 2vw;
+	padding-right: 2vw;
 }
 
 .my1 {
-	margin-top: 1em;
-	margin-bottom: 1em;
+	margin-top: 1vw;
+	margin-bottom: 1vw;
 }
 
 .my2 {
-	margin-top: 2em;
-	margin-bottom: 2em;
+	margin-top: 2vw;
+	margin-bottom: 2vw;
 }

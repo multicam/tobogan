@@ -1,21 +1,8 @@
 
 body {
-	//font-family: 'Gotham SSm A', 'Gotham SSm B', sans-serif;
+	// font-family: 'Gotham SSm A', 'Gotham SSm B', sans-serif;
 	font-family: 'Gotham A', 'Gotham B', sans-serif;
 	color: #222222;
-}
-
-h1 {
-	font-weight: 300;
-}
-
-a {
-	color: #222222;
-
-	&:hover {
-		color: var(--red);
-		background: transparentize(#833942,.917)
-	}
 }
 
 
@@ -30,4 +17,46 @@ a {
 
 .sc {
 	font-variant: small-caps;
+}
+
+blockquote {
+	margin: 0;
+	font-size: 1vw;
+	line-height: 2vw;
+	text-align: left;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin: 0;
+	line-height: 2vw;
+	font-weight: 800;
+}
+
+h1 {
+	letter-spacing: 0;
+	line-height: 3vw;
+	font-size: 3vw;
+	text-transform: uppercase;
+}
+
+h2 {
+	font-size: 8vw;
+	line-height: 8vw;
+	text-transform: uppercase;
+	font-weight: 900;
+}
+
+p {
+	font-size: 2vw;
+	line-height: 3vw;
+}
+
+a {
+	text-transform: uppercase;
+	font-size: 2vw;
+	font-weight: 800;
+
+	&:hover {
+		color: var(--yellow);
+	}
 }

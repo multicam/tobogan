@@ -237,6 +237,15 @@ input::-moz-focus-inner {
   box-shadow: none;
 }
 
+pre {
+  break-word: break-word;
+  white-space: pre-wrap;
+}
+
+.v {
+  outline: 1px solid red !important;
+}
+
 :root {
   --red: #d40a24;
   --yellow: #ffe900;
@@ -260,41 +269,49 @@ input::-moz-focus-inner {
   color: #000;
 }
 
+.py0 {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .py1 {
-  padding-top: 1em;
-  padding-bottom: 1em;
+  padding-top: 1vw;
+  padding-bottom: 1vw;
 }
 
 .py2 {
-  padding-top: 2em;
-  padding-bottom: 2em;
+  padding-top: 2vw;
+  padding-bottom: 2vw;
+}
+
+.px0 {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.px1 {
+  padding-left: 1vw;
+  padding-right: 1vw;
+}
+
+.px2 {
+  padding-left: 2vw;
+  padding-right: 2vw;
 }
 
 .my1 {
-  margin-top: 1em;
-  margin-bottom: 1em;
+  margin-top: 1vw;
+  margin-bottom: 1vw;
 }
 
 .my2 {
-  margin-top: 2em;
-  margin-bottom: 2em;
+  margin-top: 2vw;
+  margin-bottom: 2vw;
 }
 
 body {
   font-family: "Gotham A", "Gotham B", sans-serif;
   color: #222222;
-}
-
-h1 {
-  font-weight: 300;
-}
-
-a {
-  color: #222222;
-}
-a:hover {
-  color: var(--red);
-  background: rgba(131, 57, 66, 0.083);
 }
 
 ::placeholder {
@@ -310,13 +327,54 @@ a:hover {
   font-variant: small-caps;
 }
 
+blockquote {
+  margin: 0;
+  font-size: 1vw;
+  line-height: 2vw;
+  text-align: left;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  line-height: 2vw;
+  font-weight: 800;
+}
+
+h1 {
+  letter-spacing: 0;
+  line-height: 3vw;
+  font-size: 3vw;
+  text-transform: uppercase;
+}
+
+h2 {
+  font-size: 8vw;
+  line-height: 8vw;
+  text-transform: uppercase;
+  font-weight: 900;
+}
+
+p {
+  font-size: 2vw;
+  line-height: 3vw;
+}
+
+a {
+  text-transform: uppercase;
+  font-size: 2vw;
+  font-weight: 800;
+}
+a:hover {
+  color: var(--yellow);
+}
+
 figure {
   margin: 0;
   padding: 0;
 }
 
 figcaption {
-  padding: 1rem 0;
+  padding: 1vw 0;
   font-variant: small-caps;
   text-transform: lowercase;
 }
@@ -825,11 +883,30 @@ main section blockquote strong {
   color: var(--red);
 }
 
+.column-alt section {
+  display: flex;
+  justify-content: flex-end;
+}
+.column-alt section .content {
+  text-align: right;
+  flex: 0 0 40vw;
+}
+.column-alt section .tagline {
+  font-weight: 800;
+}
+.column-alt section:nth-of-type(2n+1) {
+  justify-content: flex-start;
+}
+.column-alt section:nth-of-type(2n+1) .content {
+  text-align: left;
+}
+
 header {
   top: 0;
   position: sticky;
   display: flex;
   z-index: 9999;
+  padding-left: 0.75vw;
 }
 header img {
   margin: 0.5rem;
@@ -849,6 +926,8 @@ header a {
   text-transform: uppercase;
   font-size: 0.75rem;
   font-weight: 700;
+  display: flex;
+  align-content: center;
 }
 
 footer {
@@ -916,56 +995,6 @@ footer .sitemap a:hover {
 footer .address {
   font-style: normal;
   line-height: 2.5vw;
-}
-
-.home .image {
-  position: absolute;
-  top: 1px;
-  left: 1px;
-  bottom: 1px;
-  right: 1px;
-  width: 50vw;
-  height: calc(1080 / 1620 * 50vw);
-  margin: auto;
-  background: url("../img/cheneeta/dr2.png") 50% 50% no-repeat;
-  background-size: cover;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.home .image .content {
-  background: var(--red);
-  color: white;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 1.5vw;
-  line-height: 2vw;
-  text-align: center;
-  display: block;
-}
-.home .image .content span {
-  display: inline-block;
-}
-
-.student section {
-  padding: 0 1rem;
-}
-.student h1, .student h2, .student h3, .student h4, .student h5, .student h6 {
-  margin: 0;
-}
-.student h1 {
-  letter-spacing: 0;
-  line-height: 3vw;
-  font-size: 2vw;
-}
-.student blockquote {
-  margin: 0;
-  font-size: 1vw;
-  line-height: 2vw;
-  text-align: left;
-}
-pre {
-  color: red;
 }
 
 .debug {

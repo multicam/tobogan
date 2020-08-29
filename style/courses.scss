@@ -1,0 +1,24 @@
+pre { color: firebrick }
+
+.courses {
+
+	.menu {
+
+		transition: all .25s;
+		opacity: 1;
+
+		&:hover {
+
+			.mobile {
+				opacity: .51;
+				transform: rotateZ(.25deg);
+			}
+		}
+
+	}
+
+	a { color: white;}
+	a:hover {
+		opacity: 1;
+	}
+}

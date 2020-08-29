@@ -9,6 +9,7 @@
 @import "design-tokens/spacing";
 @import "design-tokens/typography";
 
+
 // -- elements
 
 @import "elements/images";
@@ -16,17 +17,12 @@
 @import "skeleton/grid";
 @import "skeleton/overlay";
 @import "skeleton/structure";
+@import "skeleton/layouts";
 
 // -- components
 
 @import "components/header";
 @import "components/footer";
-
-// -- pages -- to split later
-
-@import "_pages/home";
-@import "_pages/student";
-@import "_pages/courses";
 
 // ---
 

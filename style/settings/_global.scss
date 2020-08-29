@@ -25,3 +25,12 @@ input::-moz-focus-inner {
 	-moz-box-shadow: none;
 	box-shadow: none;
 }
+
+pre {
+	break-word: break-word;
+	white-space: pre-wrap;
+}
+
+.v {
+	outline: 1px solid red !important;
+}

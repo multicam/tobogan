@@ -1,4 +1,4 @@
-const chalk = require('chalk'), chokidar = require('chokidar'), promise = require('bluebird'), sass = require('node-sass'), path_ = require('path'), fs = require('fs')
+const chalk = require('chalk'), chokidar = require('chokidar'), promise = require('bluebird'), sass = require('node-sass'), path_ = require('path'), fs = require('fs'), {defaults} = require('lodash')
 
 const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys
 
@@ -19,18 +19,18 @@ const proxy_patchy = () => (req, res, next) => {
 
 module.exports = eleventyConfig => {
 
+	// -- filter
+
 	const MarkdownIt = require("markdown-it");
 	const mdRender = new MarkdownIt();
-
-	eleventyConfig.addJavaScriptFunction('getContext', function(name) {
-		return (name) ? this.ctx[name] : this.ctx;
-	})
 
 	eleventyConfig.addFilter("renderUsingMarkdown", function(rawString) {
 		return mdRender.render(rawString);
 	});
 
-	eleventyConfig.addFilter('custom_dump', obj => {
+	// --
+
+	eleventyConfig.addFilter('c_dump', obj => {
 
 		const getCircularReplacer = () => {
 			const seen = new WeakSet();
@@ -48,7 +48,17 @@ module.exports = eleventyConfig => {
 		return JSON.stringify(obj, getCircularReplacer(), 2);
 	});
 
-	// sass_install('style/')
+	// -- shortcodes
+
+	eleventyConfig.addShortcode('getContext', function(name) {
+		return (name) ? this.ctx[name] : this.ctx;
+	})
+
+	// --
+
+	eleventyConfig.addShortcode( "fallback", (triedValue,fallbackValue) => triedValue ? triedValue : fallbackValue ? fallbackValue : '' )
+
+	// -- pass-through
 
   eleventyConfig.addPassthroughCopy('img');
 	eleventyConfig.addPassthroughCopy('images');
@@ -58,6 +68,8 @@ module.exports = eleventyConfig => {
 
 	eleventyConfig.addPassthroughCopy('favicon.ico')
 	eleventyConfig.addPassthroughCopy('site.webmanifest')
+
+	// -- browsersync
 
 	eleventyConfig.setBrowserSyncConfig({
 		notify: true,
@@ -70,7 +82,7 @@ module.exports = eleventyConfig => {
 		middleware: [ proxy_patchy() ]
 	});
 
-  // You can return your Config object (optional).
+  // you can return your config object (optional).
 
   return {
     templateFormats: [

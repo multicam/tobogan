@@ -1,6 +1,6 @@
 ---
 layout: layout.njk
-permalink: "demo/{{ pp.permalink | url }}/"
+permalink: "{{ pp.permalink | url }}/"
 
 pagination:
   data: site.pages
@@ -9,17 +9,14 @@ pagination:
 
 ---
 
-{% from "templates.njk" import render_courses %}
-{% from "templates.njk" import render_course_individual %}
-{#	{% include pp.template + ".njk" %}#}
-
+{% import "templates.njk" as template %}
 {% switch pp.render %}
 
 	{% case "--courses" %}
-		{{ render_courses(pp) }}
+		{{ template.render_courses(pp) }}
 
 	{% case "--course-individual" %}
-		{{ render_course_individual(pp) }}
+		{{ template.render_course_individual(pp) }}
 
 	{% default %}
 		{{ pp | dump}}

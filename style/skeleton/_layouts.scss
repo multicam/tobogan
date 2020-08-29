@@ -1,0 +1,26 @@
+.column-alt {
+
+	section {
+
+		display: flex;
+		justify-content: flex-end;
+
+		.content {
+			text-align: right;
+			flex: 0 0 40vw;
+		}
+
+		.tagline {
+			font-weight: 800;
+		}
+
+		&:nth-of-type(2n+1) {
+			justify-content: flex-start;
+
+			.content {
+				text-align: left;
+			}
+		}
+	}
+}
+

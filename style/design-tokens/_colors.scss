@@ -1,11 +1,16 @@
 
 :root {
-	--red: #d40a24;
+	--red: #b51429;
+	--blue: #36368f;
 	--yellow: #ffe900;
 }
 
 .red {
 	background: var(--red);
+}
+
+.blue {
+	background: var(--blue);
 }
 
 .yel, .yellow {

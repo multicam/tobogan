@@ -2,6 +2,8 @@ pre { color: firebrick }
 
 .courses {
 
+	perspective: 30vw;
+
 	.menu {
 
 		transition: all .25s;
@@ -11,7 +13,7 @@ pre { color: firebrick }
 
 			.mobile {
 				opacity: .51;
-				transform: rotateZ(.25deg);
+				transform: rotateX(-5deg);
 			}
 		}
 

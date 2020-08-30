@@ -56,8 +56,8 @@ class: home
 
 <section id="random">
   <blockquote>
-    ...
-  </blockquote>
+		{{ collections.all | safe }}
+	</blockquote>
 </section>
 
 <link type="text/css" rel="stylesheet" href="/style/home.css" />

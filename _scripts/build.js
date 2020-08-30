@@ -1,13 +1,23 @@
 // -- ------------------------------------------------------------------------------------------------------------------
 
-const fs = require('fs'), path = require('path'), yaml = require('node-yaml'), promise = require('bluebird'), chalk = require('chalk')
+const fs = require('fs'), path = require('path'), yaml = require('node-yaml'), promise = require('bluebird'), chalk = require('chalk'), {get} = require('lodash')
 const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys
+
+// -- template logic ---------------------------------------------------------------------------------------------------
+
+const
+	templateSitePath = '/media/ssd1/multicam/tobogan/_includes/template'
 
 // -- loadYaml ---------------------------------------------------------------------------------------------------------
 
 const loadYaml = async nameInput => {
-	const filename = fs.existsSync(nameInput+'.yaml') ? nameInput+'.yaml' : path.join( nameInput, 'index.yaml' )
+
+	const filename = fs.existsSync(nameInput+'.yaml') ?
+		nameInput+'.yaml' :
+		path.join( nameInput, 'index.yaml' )
+
 	log('|>', filename)
+
 	return await yaml.read(filename) || {}
 }
 
@@ -96,10 +106,38 @@ const parse = async location => {
 
 // -- ------------------------------------------------------------------------------------------------------------------
 
+// TODO :: -- move to lib
+
 const index_on = (arr,ref) => arr.reduce( (r,i,n) => {
 	r[i[ref]] = n
 	return r
 }, {})
+
+// -- generate_missing_templates ---------------------------------------------------------------------------------------
+
+const generate_missing_templates = async site => {
+
+	const pagesList = site.pages.map( i => ({
+		permalink: i.permalink,
+		layout: i.layout
+	}))
+
+
+	for( let i in pagesList ) if( pagesList[i].layout ) {
+
+		const templateFilename = path.join(templateSitePath,pagesList[i].layout+'.njk')
+		pagesList[i].filename = templateFilename
+
+		if( !fs.existsSync(templateFilename) ) {
+			fs.writeFileSync(templateFilename,`---\nlayout: ../layout.njk\n---\n`,'utf8')
+		}
+
+		pagesList[i].found = fs.existsSync(templateFilename)
+	}
+
+	log( templateSitePath, pagesList )
+	// log(temp.map(i => path.join(templateSitePath,i.permalink+'.njk')))
+}
 
 // -- run --------------------------------------------------------------------------------------------------------------
 
@@ -109,14 +147,15 @@ const run_on_flat = (fn, exit = false) =>
 run_on_flat( async () => {
 	const pack = await require('../package.json')
 
-	log('|>', "build start...")
-
+	log('|>', "parsing package...")
 	const data = await parse( pack.content.location )
 	data.index = index_on( data.pages, 'slug' )
 
 	fs.writeFileSync(path.join(__dirname,'../_data/site.json'), serialize(data),'utf8')
 
 	log("|>",data)
+
+	await generate_missing_templates(data)
 
 	log('|>', "build end.")
 

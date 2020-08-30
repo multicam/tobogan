@@ -1,6 +1,6 @@
 {# ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### #}
 
-{% macro render_course_individual (page) %}
+{% macro renderer_course_individual (page) %}
 	--- invividual ---
 	<pre>{{ page | dump }}</pre>
 
@@ -8,7 +8,7 @@
 
 {# ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### #}
 
-{% macro render_courses (page) %}
+{% macro renderer_courses (page) %}
 
 	<div class="p2 courses">
 		<h1 class="px2">{{ page.title }}</h1>

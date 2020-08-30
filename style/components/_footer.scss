@@ -67,17 +67,27 @@ footer {
 			color: #cfcfcf;
 			font-variant: small-caps;
 			margin-top: .5rem;
-			font-size: 1vw;
 			// --
+		}
+
+		.note, note a {
+			font-size: 1vw;
 		}
 
 	}
 
 	.sitemap {
 		font-size: 1.5vw;
+		font-weight: 300;
 		// need to clamp here
 
+		h3 {
+			margin-top: 2em;
+		}
+
 		a {
+			font-weight: 300;
+
 			&:hover {
 				color: var(--yellow);
 			}

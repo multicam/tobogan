@@ -1,0 +1,24 @@
+
+<div class="p2 courses">
+	<h1 class="px2">{{ pageConfig.title }}</h1>
+
+	<div class="column-alt px1">
+		{% for course in pageConfig.content %}
+
+			<section class="menu px0 px1">
+				<div class="content">
+					<div class="mobile">
+						<h2 class="title">{% if course.titleShort %}{{ course.titleShort }}{% else %}{{ course.title }}{% endif %}</h2>
+						<p class="tagline">{{ course.tagline }}</p>
+					</div>
+					<a href={{ course.permalink }}>Discover More</a>
+				</div>
+			</section>
+
+			{# <pre>{{ course | c_dump }}</pre> #}
+
+		{% endfor %}
+	</div>
+</div>
+
+<link rel="stylesheet" href="/style/courses.css" />

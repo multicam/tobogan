@@ -1,0 +1,21 @@
+pre {
+  color: firebrick;
+}
+
+.courses {
+  perspective: 30vw;
+}
+.courses .menu {
+  transition: all 0.25s;
+  opacity: 1;
+}
+.courses .menu:hover .mobile {
+  opacity: 0.51;
+  transform: rotateX(-5deg);
+}
+.courses a {
+  color: white;
+}
+.courses a:hover {
+  opacity: 1;
+}

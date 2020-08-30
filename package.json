@@ -7,15 +7,20 @@
     "start": "npm-run-all --parallel dev:eleventy dev:sass dev:parcel",
     "build": "run-s prod:eleventy prod:sass prod:parcel",
     "serve": "serve build/",
-    "dev:eleventy": "ELEVENTY_ENV=development eleventy --serve",
+
+    "dev:eleventy": "DEBUG=1 ELEVENTY_ENV=development eleventy --serve",
     "prod:eleventy": "ELEVENTY_ENV=production eleventy --output=./build",
     "eleventy:debug": "DEBUG=* npx eleventy",
+
     "dev:sass": "npm run sass:watch",
     "prod:sass": "npm run sass:build",
+
     "sass:watch": "sass style/:style/ --no-source-map --charset --watch",
     "sass:build": "sass style/:style/ --no-source-map --charset",
+
     "prod:parcel": "parcel build js/*.js --out-dir build/js",
     "dev:parcel": "parcel watch js/*.js --out-dir _site/js",
+
     "clear": "rm -Rf build/* && rm -Rf .cache/* && rm -Rf _site/",
     "content:build": "nodemon -e yaml,json,md,js --watch /media/ssd1/tgds/tgds-content/_demo --watch _scripts/ _scripts/build.js",
     "content:server": "nodemon _scripts/server.js",

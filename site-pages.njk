@@ -13,6 +13,6 @@ pagination:
 	{% set path = 'template/'+pageConfig.layout+'.njk' %}
 	{% include path ignore missing %}
 {% else %}
-	<div class="red">{{ pageConfig | c_dump }}</div>
+	<div class="red">{{ pageConfig | dump }}</div>
 {% endif %}
 

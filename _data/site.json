@@ -1,1 +1,175 @@
-{"title":"Experimental data model for TGDS public website","organisation":{"name":"The Graphic Design School"},"pages":[{"slug":"courses","permalink":"/courses","pages":[{"permalink":"/courses/certificate-iv-in-design","path":"/courses/certiv"},{"permalink":"/courses/design-at-work","path":"/courses/dw"},{"permalink":"/courses/intensive-foundations","path":"/courses/ifc"},{"permalink":"/courses/web-design-course","path":"/courses/wdc"}],"title":"Courses","layout":"courses","navigation":[{"label":"Certificate IV In Design","to":"/courses/certificate-iv-in-design"},{"label":"Design At Work","to":"/courses/design-at-work"},{"label":"Web Design","to":"/courses/web-design"},{"label":"Intensive Foundation","to":"/courses/intensive-foundation"}],"content":[{"permalink":"/courses/certiv","title":"CUA40715 Certificate IV in Design","titleShort":"Certificate IV in Design","tagline":"Need some hefty design skills but without the qual? Save bit of dough with the IFC, our second most popular course.","loaded":true},{"permalink":"/courses/intensive-foundation","title":"Intensive Foundation Course","tagline":"Need some hefty design skills but without the qual? Save bit of dough with the IFC, our second most popular course.","loaded":true},{"permalink":"/courses/web-design-course","title":"Web Design Course","tagline":"If you need some mad UI skills, an add on course for Graphic design graduates. web taught the TGDS way.","loaded":true},{"permalink":"/courses/design-at-work","title":"Design @ Work","tagline":"Need some design skills for work? Struggle through Word or powerpoint no more, use our templates in Indesign and get design stuff quick.","loaded":true}]},{"slug":"about-us","permalink":"/about-us"},{"slug":"support","permalink":"/support"},{"slug":"faqs","permalink":"/faqs","title":"Frequently Asked Questions","titleShort":"FAQS","layout":"faqs"},{"slug":"online-study","permalink":"/online-study"},{"slug":"enrolment-form","permalink":"/enrolment-form"},{"permalink":"/courses/certiv","slug":"courses-certiv","layout":"single-course","title":"CUA40715 Certificate IV in Design","titleShort":"Certificate IV in Design","tagline":"Need some hefty design skills but without the qual? Save bit of dough with the IFC, our second most popular course.","description":"The government accredited CUA40715 Certificate IV in Design qualification is recognised by employers and industry groups Australia wide. This qualification is part of the national vocational education and training (VET) system, competency based and based on Training Packages. There are no pre-requisites of entry into this course. We teach you from the ground up.\n","modules":[{"module":1,"title":"INTRODUCTION TO GRAPHIC DESIGN","description":"Module 1 offers an overview of what graphic design is and the immense professional opportunities it provides. students will be inspired and enlightened whilst being taken on a journey to the great works of past and present iconic graphic designers. You will be introduced to the most popular designer sites encompassing work within the various industries that designers work in.\n","content":"**Definition**: A Definition Of Graphic Design And Its Specialised Industries.\n**History**: The History Of Written Communication From Ancient To Present Times With Visual Examples Of Pivotal Movements And Designer Work.\n**Specialities**: Explanation Of The Various Specialities Within The Industry Of Graphic Design. An Understanding Of Graphic Design’s Role In Future Industries.\n**Social Networks**: Introduction To Professional Organisations And Affiliations That Will Enrich The Student’s Understanding Of The Profession.\n","outcomes":"A Definition Of Graphic Design\nAn Introduction To Pivotal Historic And Contemporary Designers\nAn Introduction To The Various Specialities Included In The Graphic Design ProfessionAn\nIntroduction To Online Design Resources That Will Inspire And Enrich Student’s Education Throughout The Module.\n","loaded":true},{"module":2,"title":"DESIGN BASICS","description":"In this module, students will begin putting design elements and principles into practice. Students will begin to make decisions using the visual language of a designer. By doing simple studies, this module will introduce students to Adobe Illustrator™ software.\n","content":"Vocabulary: Design elements and principles.\nStudies: Illustrated studies reinforcing the concepts and vocabulary of design. Refinement of final studies using Adobe Illustrator™ software.\nSoftware: Introduction to vector-based computer software Adobe Illustrator™.\n","outcomes":"A working knowledge of design elements and how to use them.\nA working knowledge of design principles and how to use them.\nAn introduction to design vocabulary needed to evaluate solutions and communicate as a designer.\nAbility to manipulate space to communicate specific objectives.\n","loaded":true}]},{"permalink":"/courses/design-at-work","slug":"design-at-work","title":"Design @ Work","tagline":"Need some design skills for work? Struggle through Word or powerpoint no more, use our templates in Indesign and get design stuff quick."},{"permalink":"/courses/intensive-foundation","slug":"intensive-foundation","title":"Intensive Foundation Course","tagline":"Need some hefty design skills but without the qual? Save bit of dough with the IFC, our second most popular course."},{"permalink":"/courses/web-design-course","slug":"web-design","title":"Web Design Course","tagline":"If you need some mad UI skills, an add on course for Graphic design graduates. web taught the TGDS way."}],"index":{"courses":0,"about-us":1,"support":2,"faqs":3,"online-study":4,"enrolment-form":5,"courses-certiv":6,"design-at-work":7,"intensive-foundation":8,"web-design":9}}
+{
+	"title": "Experimental data model for TGDS public website",
+	"organisation": {
+		"name": "The Graphic Design School"
+	},
+	"pages": [
+		{
+			"slug": "courses",
+			"permalink": "/courses",
+			"pages": [
+				{
+					"permalink": "/courses/certificate-iv-in-design",
+					"path": "/courses/certiv"
+				},
+				{
+					"permalink": "/courses/design-at-work",
+					"path": "/courses/dw"
+				},
+				{
+					"permalink": "/courses/intensive-foundations",
+					"path": "/courses/ifc"
+				},
+				{
+					"permalink": "/courses/web-design-course",
+					"path": "/courses/wdc"
+				}
+			],
+			"title": "Courses",
+			"layout": "courses",
+			"navigation-set": [
+				{
+					"label": "Certificate IV In Design",
+					"to": "/courses/certificate-iv-in-design"
+				},
+				{
+					"label": "Design At Work",
+					"to": "/courses/design-at-work"
+				},
+				{
+					"label": "Web Design",
+					"to": "/courses/web-design"
+				},
+				{
+					"label": "Intensive Foundation",
+					"to": "/courses/intensive-foundation"
+				}
+			],
+			"content": [
+				{
+					"permalink": "/courses/certiv",
+					"title": "CUA40715 Certificate IV in Design",
+					"titleShort": "Certificate IV in Design",
+					"tagline": "Need some hefty design skills but without the qual? Save bit of dough with the IFC, our second most popular course.",
+					"loaded": true
+				},
+				{
+					"permalink": "/courses/intensive-foundation",
+					"title": "Intensive Foundation Course",
+					"tagline": "Need some hefty design skills but without the qual? Save bit of dough with the IFC, our second most popular course.",
+					"loaded": true
+				},
+				{
+					"permalink": "/courses/web-design-course",
+					"title": "Web Design Course",
+					"tagline": "If you need some mad UI skills, an add on course for Graphic design graduates. web taught the TGDS way.",
+					"loaded": true
+				},
+				{
+					"permalink": "/courses/design-at-work",
+					"title": "Design @ Work",
+					"tagline": "Need some design skills for work? Struggle through Word or powerpoint no more, use our templates in Indesign and get design stuff quick.",
+					"loaded": true
+				}
+			],
+			"navigation": {
+				"path": "/courses/index.yaml",
+				"filter": [
+					"url"
+				]
+			}
+		},
+		{
+			"slug": "student-work",
+			"permalink": "/student-work",
+			"title": "Student Work"
+		},
+		{
+			"slug": "about-us",
+			"permalink": "/about-us"
+		},
+		{
+			"slug": "support",
+			"permalink": "/support"
+		},
+		{
+			"slug": "faqs",
+			"permalink": "/faqs",
+			"title": "Frequently Asked Questions",
+			"titleShort": "FAQS",
+			"layout": "faqs"
+		},
+		{
+			"slug": "online-study",
+			"permalink": "/online-study"
+		},
+		{
+			"slug": "enrolment-form",
+			"permalink": "/enrolment-form"
+		},
+		{
+			"permalink": "/courses/certiv",
+			"slug": "courses-certiv",
+			"layout": "single-course",
+			"title": "CUA40715 Certificate IV in Design",
+			"titleShort": "Certificate IV in Design",
+			"tagline": "Need some hefty design skills but without the qual? Save bit of dough with the IFC, our second most popular course.",
+			"description": "The government accredited CUA40715 Certificate IV in Design qualification is recognised by employers and industry groups Australia wide. This qualification is part of the national vocational education and training (VET) system, competency based and based on Training Packages. There are no pre-requisites of entry into this course. We teach you from the ground up.\n",
+			"modules": [
+				{
+					"module": 1,
+					"title": "INTRODUCTION TO GRAPHIC DESIGN",
+					"description": "Module 1 offers an overview of what graphic design is and the immense professional opportunities it provides. students will be inspired and enlightened whilst being taken on a journey to the great works of past and present iconic graphic designers. You will be introduced to the most popular designer sites encompassing work within the various industries that designers work in.\n",
+					"content": "**Definition**: A Definition Of Graphic Design And Its Specialised Industries.\n**History**: The History Of Written Communication From Ancient To Present Times With Visual Examples Of Pivotal Movements And Designer Work.\n**Specialities**: Explanation Of The Various Specialities Within The Industry Of Graphic Design. An Understanding Of Graphic Design’s Role In Future Industries.\n**Social Networks**: Introduction To Professional Organisations And Affiliations That Will Enrich The Student’s Understanding Of The Profession.\n",
+					"outcomes": "A Definition Of Graphic Design\nAn Introduction To Pivotal Historic And Contemporary Designers\nAn Introduction To The Various Specialities Included In The Graphic Design ProfessionAn\nIntroduction To Online Design Resources That Will Inspire And Enrich Student’s Education Throughout The Module.\n",
+					"loaded": true
+				},
+				{
+					"module": 2,
+					"title": "DESIGN BASICS",
+					"description": "In this module, students will begin putting design elements and principles into practice. Students will begin to make decisions using the visual language of a designer. By doing simple studies, this module will introduce students to Adobe Illustrator™ software.\n",
+					"content": "Vocabulary: Design elements and principles.\nStudies: Illustrated studies reinforcing the concepts and vocabulary of design. Refinement of final studies using Adobe Illustrator™ software.\nSoftware: Introduction to vector-based computer software Adobe Illustrator™.\n",
+					"outcomes": "A working knowledge of design elements and how to use them.\nA working knowledge of design principles and how to use them.\nAn introduction to design vocabulary needed to evaluate solutions and communicate as a designer.\nAbility to manipulate space to communicate specific objectives.\n",
+					"loaded": true
+				}
+			],
+			"navigation": {
+				"path": "/courses/index.yaml",
+				"filter": [
+					"title"
+				]
+			}
+		},
+		{
+			"permalink": "/courses/design-at-work",
+			"slug": "design-at-work",
+			"title": "Design @ Work",
+			"tagline": "Need some design skills for work? Struggle through Word or powerpoint no more, use our templates in Indesign and get design stuff quick."
+		},
+		{
+			"permalink": "/courses/intensive-foundation",
+			"slug": "intensive-foundation",
+			"title": "Intensive Foundation Course",
+			"tagline": "Need some hefty design skills but without the qual? Save bit of dough with the IFC, our second most popular course."
+		},
+		{
+			"permalink": "/courses/web-design-course",
+			"slug": "web-design",
+			"title": "Web Design Course",
+			"tagline": "If you need some mad UI skills, an add on course for Graphic design graduates. web taught the TGDS way."
+		}
+	],
+	"index": {
+		"courses": 0,
+		"student-work": 1,
+		"about-us": 2,
+		"support": 3,
+		"faqs": 4,
+		"online-study": 5,
+		"enrolment-form": 6,
+		"courses-certiv": 7,
+		"design-at-work": 8,
+		"intensive-foundation": 9,
+		"web-design": 10
+	}
+}

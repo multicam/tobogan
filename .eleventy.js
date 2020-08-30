@@ -10,7 +10,7 @@ const
 
 const proxy_patchy = () => (req, res, next) => {
 	if( rewrites.includes(req.url) ) {
-		req.url += '.html'
+		req.url += '/'
 	}
 
 	console.log('==',chalk.grey.italic(req.url))
@@ -20,8 +20,7 @@ const proxy_patchy = () => (req, res, next) => {
 module.exports = eleventyConfig => {
 
 	eleventyConfig.setLiquidOptions({
-		dynamicPartials: true,
-		strict_filters: true
+		dynamicPartials: true
 	});
 
 	// -- filter

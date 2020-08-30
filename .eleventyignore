@@ -2,3 +2,4 @@ microfrontend/*/node_modules/
 build/*
 .yarn/*
 README.md
+_components/*

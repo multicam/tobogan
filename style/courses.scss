@@ -4,17 +4,14 @@ pre { color: firebrick }
 
 	perspective: 30vw;
 
-	.menu {
-
+	.menu .mobile {
 		transition: all .25s;
 		opacity: 1;
 
-		&:hover {
 
-			.mobile {
-				opacity: .51;
-				transform: rotateX(-5deg);
-			}
+		&:hover {
+			transform: translateX(.25vw);
+			opacity: .51;
 		}
 
 	}

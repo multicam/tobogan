@@ -5,13 +5,13 @@ pre {
 .courses {
   perspective: 30vw;
 }
-.courses .menu {
+.courses .menu .mobile {
   transition: all 0.25s;
   opacity: 1;
 }
-.courses .menu:hover .mobile {
+.courses .menu .mobile:hover {
+  transform: translateX(0.25vw);
   opacity: 0.51;
-  transform: rotateX(-5deg);
 }
 .courses a {
   color: white;

@@ -238,8 +238,8 @@ input::-moz-focus-inner {
 }
 
 pre {
-  break-word: break-word;
   white-space: pre-wrap;
+  break-word: break-word;
 }
 
 .v {
@@ -341,14 +341,14 @@ blockquote {
 
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
-  line-height: 2vw;
+  line-height: 1.5em;
   font-weight: 800;
 }
 
 h1 {
   letter-spacing: 0;
-  line-height: 3vw;
-  font-size: 3vw;
+  font-size: 17vw;
+  font-weight: 900;
   text-transform: uppercase;
 }
 

@@ -1,15 +1,18 @@
 ---
 layout: "layout.njk"
-permalink: "{{ pp.permalink | url }}/"
+permalink: "{{ pageConfig.permalink | url }}/"
 
 pagination:
   data: site.pages
   size: 1
-  alias: pp
+  alias: pageConfig
 
 ---
 
-{% import "templates.njk" as template %}
+{% if pageConfig.layout %}
+	{% set path = 'template/'+pageConfig.layout+'.njk' %}
+	{% include path ignore missing %}
+{% else %}
+	<div class="red">{{ pageConfig | c_dump }}</div>
+{% endif %}
 
-<div class="blue">{{ template | c_dump }}</div>
-<div class="red">{{ pp | c_dump }}</div>

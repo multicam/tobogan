@@ -19,6 +19,11 @@ const proxy_patchy = () => (req, res, next) => {
 
 module.exports = eleventyConfig => {
 
+	eleventyConfig.setLiquidOptions({
+		dynamicPartials: true,
+		strict_filters: true
+	});
+
 	// -- filter
 
 	const MarkdownIt = require("markdown-it");

@@ -115,8 +115,17 @@ const index_on = (arr,ref) => arr.reduce( (r,i,n) => {
 
 // -- generate_missing_templates ---------------------------------------------------------------------------------------
 
+const generate_empty_template = name => `
+
+--- ${name.toUpperCase()} ---
+
+<div class="blue">{{ pageConfig | dump }}</div>
+
+	`
+
 const generate_missing_templates = async site => {
 
+	log('|>','generate_missing_templates')
 	const pagesList = site.pages.map( i => ({
 		permalink: i.permalink,
 		layout: i.layout
@@ -129,7 +138,7 @@ const generate_missing_templates = async site => {
 		pagesList[i].filename = templateFilename
 
 		if( !fs.existsSync(templateFilename) ) {
-			fs.writeFileSync(templateFilename,`---\nlayout: ../layout.njk\n---\n`,'utf8')
+			fs.writeFileSync(templateFilename,generate_empty_template(pagesList[i].layout),'utf8')
 		}
 
 		pagesList[i].found = fs.existsSync(templateFilename)

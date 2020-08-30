@@ -954,8 +954,11 @@ footer h4 {
   font-weight: 300;
   margin: 1rem 0;
 }
+footer .form {
+  margin-top: 4vw;
+}
 footer .form h3 {
-  font-size: 2.25vw;
+  font-size: 3vw;
   line-height: 1em;
   font-weight: 900;
 }
@@ -982,15 +985,14 @@ footer .form .button:hover {
   background: var(--yellow);
 }
 footer .form form {
+  margin-top: 2vw;
   display: flex;
 }
 footer .form .note {
   color: #cfcfcf;
   font-variant: small-caps;
   margin-top: 0.5rem;
-}
-footer .form .note, footer .form note a {
-  font-size: 1vw;
+  font-size: 1.15vw;
 }
 footer .sitemap {
   font-size: 1.5vw;

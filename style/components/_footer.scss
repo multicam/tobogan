@@ -26,9 +26,10 @@ footer {
 
 	.form {
 
+		margin-top: 4vw;
 
 		h3 {
-			font-size: 2.25vw;
+			font-size: 3vw;
 			line-height: 1em;
 			font-weight: 900;
 		}
@@ -60,6 +61,7 @@ footer {
 		}
 
 		form {
+			margin-top: 2vw;
 			display: flex;
 		}
 
@@ -67,11 +69,8 @@ footer {
 			color: #cfcfcf;
 			font-variant: small-caps;
 			margin-top: .5rem;
+			font-size: 1.15vw;
 			// --
-		}
-
-		.note, note a {
-			font-size: 1vw;
 		}
 
 	}

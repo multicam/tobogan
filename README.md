@@ -1,5 +1,8 @@
 # tobogan
 
+
+## scss folder structure
+
 `
 /scss/
 ├── 1-settings

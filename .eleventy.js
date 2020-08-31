@@ -12,12 +12,15 @@ const proxy_patchy = () => (req, res, next) => {
 	if( rewrites.includes(req.url) ) {
 		req.url += '/'
 	}
-
 	console.log('==',chalk.grey.italic(req.url))
 	next()
 }
 
+// -- ------------------------------------------------------------------------------------------------------------------
+
 module.exports = eleventyConfig => {
+
+	eleventyConfig.passthroughFileCopy = true,
 
 	eleventyConfig.setLiquidOptions({
 		dynamicPartials: true
@@ -30,26 +33,6 @@ module.exports = eleventyConfig => {
 
 	eleventyConfig.addFilter("renderUsingMarkdown", function(rawString) {
 		return mdRender.render(rawString);
-	});
-
-	// --
-
-	eleventyConfig.addFilter('c_dump', obj => {
-
-		const getCircularReplacer = () => {
-			const seen = new WeakSet();
-			return (key, value) => {
-				if (typeof value === "object" && value !== null) {
-					if (seen.has(value)) {
-						return;
-					}
-					seen.add(value);
-				}
-				return value;
-			};
-		};
-
-		return JSON.stringify(obj, getCircularReplacer(), 2);
 	});
 
 	// -- shortcodes
@@ -83,31 +66,28 @@ module.exports = eleventyConfig => {
 				log('BrowserSync config', bs.config)
 			}
 		},
-		middleware: [ proxy_patchy() ]
+		middleware: [
+			proxy_patchy()
+		]
 	});
 
   // you can return your config object (optional).
 	eleventyConfig.addPairedShortcode("postcss", async code => {
-		const rawFilepath = path.join(__dirname, `../src/_includes/entry.css`);
-		new promise( (resolve,reject) => {
-			postcss([
-				require("precss"),
-				require("postcss-import"),
-				require("postcss-custom-selectors"),
-				require("autoprefixer"),
-				require("cssnano")
-			])
-				.process(code, { from: rawFilepath })
-				.then(result => result.css);
-		})
+		// const rawFilepath = path.join(__dirname, code);
+		// await new promise( (resolve,reject) => {
+		// 	postcss([
+		// 		require("precss"),
+		// 		require("postcss-import"),
+		// 		require("postcss-custom-selectors"),
+		// 		require("autoprefixer"),
+		// 		require("cssnano")
+		// 	])
+		// 		.process(code, { from: rawFilepath })
+		// 		.catch( reject )
+		// 		.then(result => resolve( result.css ));
+		// })
+		return `<code>${code}</code>`
 	})
 
-	return {
-		dir: {
-			input: "src",
-			output: "www"
-		},
-		passthroughFileCopy: true
-
-  }
+	return eleventyConfig
 }

@@ -25,9 +25,9 @@ const generate_toc = (html,level) => {
 					res.push(attribs.id)
 				}
 			},
-			ontext(text) {
-				// log("-->", text);
-			}
+			// ontext(text) {
+			// 	log("-->", text);
+			// }
 		},
 		{decodeEntities: true}
 	)
@@ -205,6 +205,8 @@ const generate_missing_templates = async site => {
 
 	// log( templateSitePath, pagesList )
 	// log(temp.map(i => path.join(templateSitePath,i.permalink+'.njk')))
+
+
 }
 
 // -- run --------------------------------------------------------------------------------------------------------------
@@ -226,6 +228,7 @@ run_on_flat( async () => {
 	await generate_missing_templates(data)
 
 	// log( data.pages[ data.index['courses-certiv'] ])
+
 	log('|>', "build end.")
 
 })

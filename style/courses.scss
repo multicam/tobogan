@@ -21,3 +21,43 @@ pre { color: firebrick }
 		opacity: 1;
 	}
 }
+
+.course {
+
+	h1 {
+		line-height: 1em;
+		font-size:6vw;
+		max-width: 50%;
+	}
+
+	h2 {
+		font-size: 8vw;
+		font-weight: 900;
+	}
+
+	.outline {
+		padding: 0 2vw;
+		display: flex;
+	}
+
+	.images-container {
+		width: 20vw;
+	}
+
+	.module-nav {
+		margin-bottom: 2.5vw;
+
+		h3 {
+			font-size: 2vw;
+			line-height: 1.25;
+			text-transform: uppercase;
+		}
+
+		p {
+			max-width: 45vw;
+		}
+		span {
+			display: block;
+		}
+	}
+}

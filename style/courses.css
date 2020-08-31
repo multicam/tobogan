@@ -19,3 +19,34 @@ pre {
 .courses a:hover {
   opacity: 1;
 }
+
+.course h1 {
+  line-height: 1em;
+  font-size: 6vw;
+  max-width: 50%;
+}
+.course h2 {
+  font-size: 8vw;
+  font-weight: 900;
+}
+.course .outline {
+  padding: 0 2vw;
+  display: flex;
+}
+.course .images-container {
+  width: 20vw;
+}
+.course .module-nav {
+  margin-bottom: 2.5vw;
+}
+.course .module-nav h3 {
+  font-size: 2vw;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+.course .module-nav p {
+  max-width: 45vw;
+}
+.course .module-nav span {
+  display: block;
+}

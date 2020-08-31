@@ -1,3 +1,27 @@
 
+<div class="course">
+	<h1>{{ pageConfig.title }}</h1>
+
+	<h2>Course Outline</h2>
+
+	<div class="outline">
+		<div class="images-container">
+
+		</div>
+		<div class="modules-container">
+		{% for modu in pageConfig.modules -%}
+			<div class="module-nav">
+				<h3><span>Module {{ modu.module }}</span><span>{{ modu.title }}</span></h3>
+				<p>{{ modu.description | safe }}</p>
+			</div>
+		{% endfor %}
+		</div>
+	</div>
+</div>
+
+
+<link rel="stylesheet" href="/style/courses.css" />
+
+
 --- SINGLE COURSE ---
 <div class="blue">{{ pageConfig | dump }}</div>

@@ -1,12 +1,52 @@
 // -- ------------------------------------------------------------------------------------------------------------------
 
-const fs = require('fs'), path = require('path'), yaml = require('node-yaml'), promise = require('bluebird'), chalk = require('chalk'), {get} = require('lodash')
+const fs = require('fs'), path = require('path'), yaml = require('node-yaml'), promise = require('bluebird'), chalk = require('chalk'), {get} = require('lodash'), chokidar = require('chokidar'), sass = require('node-sass'), fm = require('front-matter'), htmlparser2 = require("htmlparser2")
+
 const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys
+
+// -- setup markdown ---------------------------------------------------------------------------------------------------
+
+const markdown = require("markdown-it")({
+	html: true,
+	linkify: true,
+	typographer: true,
+	highlight: true
+})
+	.use(require('markdown-it-anchor'), { level: 2 })
+
+// -- generate_toc -----------------------------------------------------------------------------------------------------
+
+const generate_toc = (html,level) => {
+	const res = [], nameTag = `h${level}`
+	const parser = new htmlparser2.Parser({
+			onopentag(name, attribs) {
+				if (name === nameTag) {
+					log("--", attribs);
+					res.push(attribs.id)
+				}
+			},
+			ontext(text) {
+				// log("-->", text);
+			}
+		},
+		{decodeEntities: true}
+	)
+
+	parser.write(html)
+	parser.end()
+
+	return res;
+}
 
 // -- template logic ---------------------------------------------------------------------------------------------------
 
 const
-	templateSitePath = '/media/ssd1/multicam/tobogan/_includes/template'
+	templateSitePath = '/media/ssd1/multicam/tobogan/_includes/template',
+	nvigationLevel = 3  // -- this is the global md anchor level for navigation (convention)
+
+// -- collapse_white_space ---------------------------------------------------------------------------------------------
+
+const collapse_white_space = value => String(value).replace(/\s+/g, ' ')
 
 // -- loadYaml ---------------------------------------------------------------------------------------------------------
 
@@ -21,6 +61,15 @@ const loadYaml = async nameInput => {
 	return await yaml.read(filename) || {}
 }
 
+// -- loadMd -----------------------------------------------------------------------------------------------------------
+
+const loadMd = async nameInput => {
+	if(fs.existsSync(nameInput)) {
+		const frontMatter = fm( fs.readFileSync(nameInput, 'utf8').toString() )
+		return markdown.render(frontMatter.body)
+	}
+}
+
 // -- perform_loads ----------------------------------------------------------------------------------------------------
 
 const perform_loads = async obj => {
@@ -30,14 +79,25 @@ const perform_loads = async obj => {
 	for( let i in keys ) {
 		const key = keys[i]
 
-		if( key === 'load' ) {
+		const load_path = typeof obj[key] === 'object' ? obj[key].path : obj[key] // object or string
+		const load_filter = typeof obj[key] === 'object' ? obj[key].filter : null // array or null
 
-			const load_path = typeof obj[key] === 'object' ? obj[key].path : obj[key]
-			const load_filter = typeof obj[key] === 'object' ? obj[key].filter : null
+		if( key === 'md' ) {
 
-			log('>>>', obj[key], load_path, load_filter )
+			log('>> MD <<', obj[key], load_path, load_filter )
+			const converted = await loadMd(path.join(_root_path,load_path))
+			obj = {
+				toc: generate_toc(converted, nvigationLevel),
+				html: converted
+			}
+			// ---
+		}
+		else if( key === 'load' ) {
+
+			log('>> YAML <<', obj[key], load_path, load_filter )
 
 			let temp = await loadYaml( path.join(_root_path, load_path ))
+
 			if( load_filter) {
 				temp = keysOf(temp).reduce( (r,i) => {
 					if( load_filter.includes(i) ) {
@@ -58,6 +118,8 @@ const perform_loads = async obj => {
 				obj[key][i] = await perform_loads(obj[key][i])
 			}
 		}
+
+		// ---
 	}
 
 	return obj
@@ -106,12 +168,8 @@ const parse = async location => {
 
 // -- ------------------------------------------------------------------------------------------------------------------
 
-// TODO :: -- move to lib
-
-const index_on = (arr,ref) => arr.reduce( (r,i,n) => {
-	r[i[ref]] = n
-	return r
-}, {})
+// TODO :: -- move to a lib
+const index_on = (arr,ref) => arr.reduce( (r,i,n) => { r[i[ref]] = n ;  return r }, {})
 
 // -- generate_missing_templates ---------------------------------------------------------------------------------------
 
@@ -125,7 +183,7 @@ const generate_empty_template = name => `
 
 const generate_missing_templates = async site => {
 
-	log('|>','generate_missing_templates')
+	log('|>','generating missing templates...')
 	const pagesList = site.pages.map( i => ({
 		permalink: i.permalink,
 		layout: i.layout
@@ -138,13 +196,14 @@ const generate_missing_templates = async site => {
 		pagesList[i].filename = templateFilename
 
 		if( !fs.existsSync(templateFilename) ) {
+			log('|> generating template', templateFilename)
 			fs.writeFileSync(templateFilename,generate_empty_template(pagesList[i].layout),'utf8')
 		}
 
 		pagesList[i].found = fs.existsSync(templateFilename)
 	}
 
-	log( templateSitePath, pagesList )
+	// log( templateSitePath, pagesList )
 	// log(temp.map(i => path.join(templateSitePath,i.permalink+'.njk')))
 }
 
@@ -162,10 +221,11 @@ run_on_flat( async () => {
 
 	fs.writeFileSync(path.join(__dirname,'../_data/site.json'), serialize(data),'utf8')
 
-	log("|>",data)
+	// log("|>",data)
 
 	await generate_missing_templates(data)
 
+	// log( data.pages[ data.index['courses-certiv'] ])
 	log('|>', "build end.")
 
 })

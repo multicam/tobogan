@@ -1,41 +1,22 @@
 
-.py0 {
-	padding-top: 0;
-	padding-bottom: 0;
-}
+.py0 { padding-top: 0; padding-bottom: 0; }
+.py1 { padding-top: 1vw; padding-bottom: 1vw; }
+.py2 { padding-top: 2vw; padding-bottom: 2vw; }
 
-.py1 {
-	padding-top: 1vw;
-	padding-bottom: 1vw;
-}
+.px0 { padding-left: 0; padding-right: 0; }
+.px1 { padding-left: 1vw; padding-right: 1vw; }
+.px2 { padding-left: 2vw; padding-right: 2vw; }
 
-.py2 {
-	padding-top: 2vw;
-	padding-bottom: 2vw;
-}
+.my1 { margin-top: 1vw; margin-bottom: 1vw; }
+.my2 { margin-top: 2vw; margin-bottom: 2vw; }
 
+.mt2 { margin-top: 2vw }
+.mt4 { margin-top: 4vw }
+.mt8 { margin-top: 8vw }
+.mt12 { margin-top: 12vw }
 
-.px0 {
-	padding-left: 0;
-	padding-right: 0;
-}
+.mb2 { margin-bottom: 2vw }
 
-.px1 {
-	padding-left: 1vw;
-	padding-right: 1vw;
-}
-
-.px2 {
-	padding-left: 2vw;
-	padding-right: 2vw;
-}
-
-.my1 {
-	margin-top: 1vw;
-	margin-bottom: 1vw;
-}
-
-.my2 {
-	margin-top: 2vw;
-	margin-bottom: 2vw;
-}
+.max-10 { max-width: 10ch }
+.max-20 { max-width: 20ch }
+.max-45 { max-width: 45ch }

@@ -314,6 +314,38 @@ pre {
   margin-bottom: 2vw;
 }
 
+.mt2 {
+  margin-top: 2vw;
+}
+
+.mt4 {
+  margin-top: 4vw;
+}
+
+.mt8 {
+  margin-top: 8vw;
+}
+
+.mt12 {
+  margin-top: 12vw;
+}
+
+.mb2 {
+  margin-bottom: 2vw;
+}
+
+.max-10 {
+  max-width: 10ch;
+}
+
+.max-20 {
+  max-width: 20ch;
+}
+
+.max-45 {
+  max-width: 45ch;
+}
+
 body {
   font-family: "Gotham A", "Gotham B", sans-serif;
   color: #222222;

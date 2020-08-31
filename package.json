@@ -7,20 +7,15 @@
     "start": "npm-run-all --parallel dev:eleventy dev:sass dev:parcel",
     "build": "run-s prod:eleventy prod:sass prod:parcel",
     "serve": "serve build/",
-
     "dev:eleventy": "DEBUG=1 ELEVENTY_ENV=development eleventy --serve",
     "prod:eleventy": "ELEVENTY_ENV=production eleventy --output=./build",
     "eleventy:debug": "DEBUG=* npx eleventy",
-
     "dev:sass": "npm run sass:watch",
     "prod:sass": "npm run sass:build",
-
     "sass:watch": "sass style/:style/ --no-source-map --charset --watch",
     "sass:build": "sass style/:style/ --no-source-map --charset",
-
     "prod:parcel": "parcel build js/*.js --out-dir build/js",
     "dev:parcel": "parcel watch js/*.js --out-dir _site/js",
-
     "clear": "rm -Rf build/* && rm -Rf .cache/* && rm -Rf _site/",
     "content:build": "nodemon -e yaml,json,md,js --watch /media/ssd1/tgds/tgds-content/_demo --watch _scripts/ _scripts/build.js",
     "content:server": "nodemon _scripts/server.js",
@@ -53,9 +48,12 @@
     "chokidar": "^3.4.2",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "front-matter": "^4.0.2",
     "gsap": "^3.5.1",
+    "htmlparser2": "^4.1.0",
     "lodash": "^4.17.20",
     "markdown-it": "^11.0.0",
+    "markdown-it-anchor": "^5.3.0",
     "node-sass": "^4.14.1",
     "node-sass-promise": "^1.0.0",
     "node-yaml": "^4.0.1",

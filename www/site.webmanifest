@@ -1,0 +1,15 @@
+{
+  "name": "TGDS",
+  "short_name": "TGDS",
+  "description": "A sample.",
+  "start_url": "/",
+  "icons": [{
+    "src": "img/icons/icon.png",
+    "type": "image/png",
+    "sizes": "192x192"
+  }],
+  "theme_color": "#fafafa",
+  "background_color": "#fafafa",
+  "display": "standalone",
+  "related_applications": []
+}

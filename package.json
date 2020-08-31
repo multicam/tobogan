@@ -15,10 +15,10 @@
     "sass:watch": "sass style/:style/ --no-source-map --charset --watch",
     "sass:build": "sass style/:style/ --no-source-map --charset",
     "prod:parcel": "parcel build js/*.js --out-dir build/js",
-    "postcss": "postcss style/tailwind.css --o style/tailwind.css --watch",
     "dev:parcel": "parcel watch js/*.js --out-dir _site/js",
     "clear": "rm -Rf build/* && rm -Rf .cache/* && rm -Rf _site/",
     "tailwind:build": "npx tailwindcss build style/tailwind-base.css --o style/tailwind.css",
+		"tailwind:shake": "postcss style/tailwind.css --o style/tailwind-post.css --watch",
     "content:build": "nodemon -e yaml,json,md,js --watch /media/ssd1/tgds/tgds-content/_demo --watch _scripts/ _scripts/build.js",
     "content:server": "nodemon _scripts/server.js",
     "update": "npm-check -u && rm package-lock.json ; yarn"

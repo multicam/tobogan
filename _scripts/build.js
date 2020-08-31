@@ -41,7 +41,7 @@ const generate_toc = (html,level) => {
 // -- template logic ---------------------------------------------------------------------------------------------------
 
 const
-	templateSitePath = '/media/ssd1/multicam/tobogan/_includes/template',
+	templateSitePath = '/media/ssd1/multicam/tobogan/src/_includes/template',
 	nvigationLevel = 3  // -- this is the global md anchor level for navigation (convention)
 
 // -- collapse_white_space ---------------------------------------------------------------------------------------------

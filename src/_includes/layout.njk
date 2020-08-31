@@ -16,7 +16,9 @@
   <link rel="apple-touch-icon" href="/img/icons/icon.png">
 
   <meta name="theme-color" content="#afafaf">
-
+	{% postcss %}
+		<link rel="stylesheet" href="/style/tailwind.css">
+	{% endpostcss %}
   <link rel="stylesheet" type="text/css" href="/style/fonts.css" />
   <link rel="stylesheet" href="/style/index.css">
 
@@ -56,6 +58,8 @@
 <script>
   window.addEventListener('orientationchange', () => window.location.reload());
 </script>
+
+<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
 
 {#{% include "_analytics.njk" %}#}
 

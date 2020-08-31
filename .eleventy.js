@@ -87,13 +87,27 @@ module.exports = eleventyConfig => {
 	});
 
   // you can return your config object (optional).
+	eleventyConfig.addPairedShortcode("postcss", async code => {
+		const rawFilepath = path.join(__dirname, `../src/_includes/entry.css`);
+		new promise( (resolve,reject) => {
+			postcss([
+				require("precss"),
+				require("postcss-import"),
+				require("postcss-custom-selectors"),
+				require("autoprefixer"),
+				require("cssnano")
+			])
+				.process(code, { from: rawFilepath })
+				.then(result => result.css);
+		})
+	})
 
-  return {
-    templateFormats: [
-      'html',
-      'md',
-      'njk'
-    ],
-    passthroughFileCopy: true,
+	return {
+		dir: {
+			input: "src",
+			output: "www"
+		},
+		passthroughFileCopy: true
+
   }
 }

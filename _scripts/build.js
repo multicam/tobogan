@@ -1,8 +1,15 @@
 // -- ------------------------------------------------------------------------------------------------------------------
 
 const fs = require('fs'), path = require('path'), yaml = require('node-yaml'), promise = require('bluebird'), chalk = require('chalk'), {get} = require('lodash'), chokidar = require('chokidar'), sass = require('node-sass'), fm = require('front-matter'), htmlparser2 = require("htmlparser2")
+const {isUrl} = require('./utils')
 
-const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys
+const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys, indexOn = (arr,col) => arr.reduce( (r,i,n) => { r[i[col]] = n ;  return r }, {})
+
+// -- template logic ---------------------------------------------------------------------------------------------------
+
+const
+	templateSitePath = '/media/ssd1/multicam/tobogan/_includes/template',
+	navigationLevel = 3  // -- this is the global md anchor level for navigation (convention)
 
 // -- setup markdown ---------------------------------------------------------------------------------------------------
 
@@ -37,12 +44,6 @@ const generate_toc = (html,level) => {
 
 	return res;
 }
-
-// -- template logic ---------------------------------------------------------------------------------------------------
-
-const
-	templateSitePath = '/media/ssd1/multicam/tobogan/_includes/template',
-	nvigationLevel = 3  // -- this is the global md anchor level for navigation (convention)
 
 // -- collapse_white_space ---------------------------------------------------------------------------------------------
 
@@ -82,12 +83,16 @@ const perform_loads = async obj => {
 		const load_path = typeof obj[key] === 'object' ? obj[key].path : obj[key] // object or string
 		const load_filter = typeof obj[key] === 'object' ? obj[key].filter : null // array or null
 
-		if( key === 'md' ) {
+		if( key === 'json' ) {
+			log('>> JSON <<', obj[key], load_path, load_filter )
+
+		}
+		else	if( key === 'md' ) {
 
 			log('>> MD <<', obj[key], load_path, load_filter )
 			const converted = await loadMd(path.join(_root_path,load_path))
 			obj = {
-				toc: generate_toc(converted, nvigationLevel),
+				toc: generate_toc(converted, navigationLevel),
 				html: converted
 			}
 			// ---
@@ -166,11 +171,6 @@ const parse = async location => {
 	return perform_loads(root)
 }
 
-// -- ------------------------------------------------------------------------------------------------------------------
-
-// TODO :: -- move to a lib
-const index_on = (arr,ref) => arr.reduce( (r,i,n) => { r[i[ref]] = n ;  return r }, {})
-
 // -- generate_missing_templates ---------------------------------------------------------------------------------------
 
 const generate_empty_template = name => `
@@ -219,7 +219,7 @@ run_on_flat( async () => {
 
 	log('|>', "parsing package...")
 	const data = await parse( pack.content.location )
-	data.index = index_on( data.pages, 'slug' )
+	data.index = indexOn( data.pages, 'slug' )
 
 	fs.writeFileSync(path.join(__dirname,'../_data/site.json'), serialize(data),'utf8')
 

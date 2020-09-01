@@ -10,6 +10,9 @@
 
 		</div>
 		<div class="modules-container">
+		{% if pageConfig.outline %}
+			{{ pageConfig.outline.html | safe }}
+		{% endif %}
 		{% for m in pageConfig.modules -%}
 			<div class="module-nav">
 				<a href="{{ pageConfig.permalink }}">

@@ -21,10 +21,12 @@
 
 // -- components
 
-@import "../_components/header/style";
-@import "../_components/footer/style";
+@import "../_includes/components/header/style";
+@import "../_includes/components/footer/style";
 
 // ---
 
 @import "utilities/debug";
 @import "shame";
+
+// ---

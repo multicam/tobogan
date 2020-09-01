@@ -1,0 +1,48 @@
+{% set courses = [ 'certiv', 'ifc', 'wdc', 'dw' ] %}
+{% set currency = 'aud' %}
+{% set _data =  pageConfig.data[currency] %}
+
+
+<div class="prices">
+	<h1>{{ pageConfig.title }}</h1>
+	<p class="max-45">{{ pageConfig.description }}</p>
+
+	{% for c in courses %}
+		{% set course = _data.courses[c] %}
+
+		<div class="course-wrap" x-data="{ lit: false }">
+
+			<div class="course-name uc" @class="{'on': lit}"><strong>{{ course.name | shorten }}</strong></div>
+
+			{% for p, plan in course.plans %}
+				{% if not plan.hidden %}
+					<div class="plan-wrap" @click="lit: true" @click.away="open = false">
+						<div>Payment Option {{ plan.opt }}:</div>
+						<div class="name">{{ plan.name }}</div>
+						<div class="value">{{ _data.symbol }}{{ plan.price.value }}</div>
+						<div class="info">{{ _data.symbol }}{{ plan.price.value }}</div>
+						<div>Total: {{ _data.symbol }}{{ plan.price.total }}</div>
+{#						<pre class="max-20">{{ plan | dump }}</pre>#}
+					</div>
+				{% endif %}
+			{% endfor %}
+
+			<pre>{{ plan | dump }}</pre>
+
+		</div>
+		<div class="reveal-wrap">
+			<div>- More information</div>
+
+		</div>
+	{% endfor %}
+
+{#	{% for curr, data in pageConfig.data %}#}
+{#		<pre>{{ data |dump }}</pre>#}
+{#	{% endfor %}#}
+
+	<pre>{{ pageConfig.data[currency] | dump }}</pre>
+
+</div>
+<link rel="stylesheet" href="/style/prices.css" />
+
+

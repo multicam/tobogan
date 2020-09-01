@@ -35,6 +35,11 @@ module.exports = eleventyConfig => {
 		return mdRender.render(rawString);
 	});
 
+	eleventyConfig.addFilter("shorten", function(rawString) {
+		return String(rawString)
+			.replace('CUA40715 ','');
+	});
+
 	// -- shortcodes
 
 	eleventyConfig.addShortcode('getContext', function(name) {

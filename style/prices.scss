@@ -1,0 +1,63 @@
+.prices {
+	span {
+		display: block;
+	}
+
+	padding: 4vw;
+	font-weight: 800;
+	font-size: 1.5vw;
+
+	h1 {
+		font-size: 7vw;
+		line-height: 1;
+		max-width: 14ch
+	}
+
+	p {
+		font-size: 2vw;
+		line-height: 1.5;
+	}
+}
+
+.course-wrap {
+	display: flex;
+	height: 30vw;
+	margin: 3vw 0;
+
+	.course-name { outline: 1px red solid;
+		width: 2vw;
+		white-space: nowrap;
+
+		.on {
+			color: var(--yellow);
+		}
+
+
+		strong {
+			display: block;
+			transform-origin: center;
+			transform: rotateZ(-90deg) translateX(-28vw);
+		}
+	}
+}
+
+.plan-wrap {
+	margin: 0 2.5vw;
+	padding: 3vw 2vw;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+
+	background: var(--grey90);
+
+	&:hover {
+		background: var(--yellow);
+		color: var(--black);
+	}
+}
+
+
+.value {
+	font-size: 4vw;
+}

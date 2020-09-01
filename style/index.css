@@ -250,6 +250,9 @@ pre {
   --red: #b51429;
   --blue: #36368f;
   --yellow: #ffe900;
+  --black: #000;
+  --white: #fff;
+  --grey90: #181818;
 }
 
 .red {
@@ -265,13 +268,13 @@ pre {
 }
 
 .black {
-  background: #000;
-  color: #fff;
+  background: var(--black);
+  color: var(--white);
 }
 
 .white {
-  background: #fff;
-  color: #000;
+  background: var(--white);
+  color: var(--black);
 }
 
 .py0 {

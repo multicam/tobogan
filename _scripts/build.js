@@ -1,7 +1,7 @@
 // -- ------------------------------------------------------------------------------------------------------------------
 
-const fs = require('fs'), path = require('path'), yaml = require('node-yaml'), promise = require('bluebird'), chalk = require('chalk'), {get} = require('lodash'), chokidar = require('chokidar'), sass = require('node-sass'), fm = require('front-matter'), htmlparser2 = require("htmlparser2")
-const {isUrl} = require('./utils')
+const fs = require('fs'), path = require('path'), yaml = require('node-yaml'), promise = require('bluebird'), chalk = require('chalk'), {get} = require('lodash'), chokidar = require('chokidar'), sass = require('node-sass'), fm = require('front-matter'), htmlparser2 = require("htmlparser2"), fetch = require('isomorphic-unfetch')
+const {isUrl} = require('./utils/index.js')
 
 const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys, indexOn = (arr,col) => arr.reduce( (r,i,n) => { r[i[col]] = n ;  return r }, {})
 
@@ -71,6 +71,16 @@ const loadMd = async nameInput => {
 	}
 }
 
+// -- loadJson ---------------------------------------------------------------------------------------------------------
+
+const loadJson = async (url) => {
+	if( isUrl(url) ) {
+		const res = await fetch(url)
+		return res.json()
+	}
+	return require(path.join(_root_path,url))
+}
+
 // -- perform_loads ----------------------------------------------------------------------------------------------------
 
 const perform_loads = async obj => {
@@ -85,6 +95,8 @@ const perform_loads = async obj => {
 
 		if( key === 'json' ) {
 			log('>> JSON <<', obj[key], load_path, load_filter )
+
+			obj = await loadJson(load_path)
 
 		}
 		else	if( key === 'md' ) {

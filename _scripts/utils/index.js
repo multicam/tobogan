@@ -1,13 +1,10 @@
 const protocolAndDomainRE = /^(?:\w+:)?\/\/(\S+)$/;
-
 const localhostDomainRE = /^localhost[\:?\d]*(?:[^\:?\d]\S*)?$/
 const nonLocalhostDomainRE = /^[^\s\.]+\.\S{2,}$/;
 
-// -- ------------------------------------------------------------------------------------------------------------------
-
 exports.isUrl = string => {
 
-	if (typeof string !== 'string') {
+		if (typeof string !== 'string') {
 		return false;
 	}
 
@@ -24,4 +21,3 @@ exports.isUrl = string => {
 	return localhostDomainRE.test(everythingAfterProtocol) || nonLocalhostDomainRE.test(everythingAfterProtocol)
 }
 
-// -- ------------------------------------------------------------------------------------------------------------------

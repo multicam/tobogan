@@ -19,19 +19,21 @@
 	}
 }
 
+.on {
+	color: var(--yellow);
+}
+
 .course-wrap {
 	display: flex;
 	height: 30vw;
 	margin: 3vw 0;
 
-	.course-name { outline: 1px red solid;
+	transition: all 1s cubic-bezier(.05, .69, .14, 1);
+
+	.course-name {
+		//outline: 1px red solid;
 		width: 2vw;
 		white-space: nowrap;
-
-		.on {
-			color: var(--yellow);
-		}
-
 
 		strong {
 			display: block;
@@ -42,6 +44,10 @@
 }
 
 .plan-wrap {
+	color: var(--white);
+	text-decoration:none;
+	opacity: 1!important;
+
 	margin: 0 2.5vw;
 	padding: 3vw 2vw;
 	display: flex;
@@ -51,13 +57,26 @@
 
 	background: var(--grey90);
 
+	//transition: all .3s var(--transition-base);
+	transition: all 1s cubic-bezier(.05, .69, .14, 1);
+
 	&:hover {
+		cursor: pointer;
 		background: var(--yellow);
-		color: var(--black);
+		color: var(--grey90);
 	}
 }
 
 
 .value {
 	font-size: 4vw;
+}
+
+.reveal-wrap a {
+	text-decoration: none;
+	color: inherit;
+
+	&:hover {
+		color: var(--yellow)
+	}
 }

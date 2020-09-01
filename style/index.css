@@ -317,6 +317,10 @@ pre {
   margin-bottom: 2vw;
 }
 
+.m2 {
+  margin: 2vw;
+}
+
 .mt2 {
   margin-top: 2vw;
 }
@@ -948,7 +952,7 @@ header {
   padding-left: 0.75vw;
 }
 header img {
-  margin: 0.5rem;
+  margin: 1rem 0;
   height: 2rem;
 }
 header nav {

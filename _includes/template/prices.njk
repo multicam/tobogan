@@ -10,29 +10,32 @@
 	{% for c in courses %}
 		{% set course = _data.courses[c] %}
 
-		<div class="course-wrap" x-data="{ lit: false }">
+		<div class="course-wrap" x-data="{ isOn: false }" @mouseleave="isOn = false">
 
-			<div class="course-name uc" @class="{'on': lit}"><strong>{{ course.name | shorten }}</strong></div>
+			<div class="course-name uc" x-bind:class="{ 'on': isOn }"><strong>{{ course.name | shorten }}</strong></div>
 
 			{% for p, plan in course.plans %}
 				{% if not plan.hidden %}
-					<div class="plan-wrap" @click="lit: true" @click.away="open = false">
-						<div>Payment Option {{ plan.opt }}:</div>
-						<div class="name">{{ plan.name }}</div>
-						<div class="value">{{ _data.symbol }}{{ plan.price.value }}</div>
-						<div class="info">{{ _data.symbol }}{{ plan.price.value }}</div>
+					<a class="plan-wrap uc" @mouseover="isOn = true" href="/enrol?course={{ course.courseId }}&option={{ plan.opt }}&currency={{ currency }}">
+						<div class="center">
+							<div>Payment Option {{ plan.opt }}:</div>
+							<div class="name">{{ plan.name }}</div>
+						</div>
+						<div class="center">
+							<div class="value">{{ _data.symbol }}{{ plan.price.value }}</div>
+							<div class="info">{% if plan.price.value === plan.price.total %}One time{% else %}Monthly{% endif %}</div>
+						</div>
 						<div>Total: {{ _data.symbol }}{{ plan.price.total }}</div>
 {#						<pre class="max-20">{{ plan | dump }}</pre>#}
-					</div>
+					</a>
 				{% endif %}
 			{% endfor %}
 
-			<pre>{{ plan | dump }}</pre>
 
 		</div>
 		<div class="reveal-wrap">
-			<div>- More information</div>
-
+			<a class="uc" href="#">- More information</a>
+			<pre>{{ plan | dump }}</pre>
 		</div>
 	{% endfor %}
 

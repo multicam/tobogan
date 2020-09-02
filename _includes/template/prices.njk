@@ -12,7 +12,7 @@
 
 		<div class="course-wrap" x-data="{ isOn: false }" @mouseleave="isOn = false">
 
-			<div class="course-name uc" x-bind:class="{ 'on': isOn }"><strong>{{ course.name | shorten }}</strong></div>
+			<div class="course-name uc" :class="{ 'on': isOn }"><strong>{{ course.name | shorten }}</strong></div>
 
 			{% for p, plan in course.plans %}
 				{% if not plan.hidden %}

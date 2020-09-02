@@ -1,0 +1,67 @@
+.prices {
+  padding: 4vw;
+  font-weight: 800;
+  font-size: 1.5vw;
+}
+.prices span {
+  display: block;
+}
+.prices h1 {
+  font-size: 7vw;
+  line-height: 1;
+  max-width: 14ch;
+}
+.prices p {
+  font-size: 2vw;
+  line-height: 1.5;
+}
+
+.on {
+  color: var(--yellow);
+}
+
+.course-wrap {
+  display: flex;
+  height: 30vw;
+  margin: 3vw 0;
+  transition: all 1s cubic-bezier(0.05, 0.69, 0.14, 1);
+}
+.course-wrap .course-name {
+  width: 2vw;
+  white-space: nowrap;
+}
+.course-wrap .course-name strong {
+  display: block;
+  transform-origin: center;
+  transform: rotateZ(-90deg) translateX(-28vw);
+}
+
+.plan-wrap {
+  color: var(--white);
+  text-decoration: none;
+  margin: 0 2.5vw;
+  padding: 3vw 2vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--grey90);
+  transition: all 0.3s var(--transition-dyn);
+}
+.plan-wrap:hover {
+  cursor: pointer;
+  background: var(--yellow);
+  color: var(--grey90);
+}
+
+.value {
+  font-size: 4vw;
+}
+
+.reveal-wrap a {
+  text-decoration: none;
+  color: inherit;
+}
+.reveal-wrap a:hover {
+  color: var(--yellow);
+}

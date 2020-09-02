@@ -1,11 +1,12 @@
-
 <div class="p2 courses">
-	<h1 class="px2">{{ pageConfig.title }}</h1>
 
-	<div class="column-alt px1">
+{#	{% include '../components/page-title/simple.njk' %}#}
+	{% include '../components/page-title/animated.njk' %}
+
+	<div class="column-alt">
 		{% for course in pageConfig.content %}
 
-			<section class="menu px0 px1">
+			<section class="menu px0">
 				<div class="content">
 					<div class="mobile">
 						<h2 class="title">{% if course.titleShort %}{{ course.titleShort }}{% else %}{{ course.title }}{% endif %}</h2>

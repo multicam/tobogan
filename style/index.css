@@ -353,6 +353,23 @@ pre {
   max-width: 45ch;
 }
 
+:root {
+  --padding-y: 8vw;
+  --padding-x: 6vw;
+}
+
+.px {
+  padding: 0 var(--padding-x);
+}
+
+.nx {
+  margin: 0 calc( -1 * var(--padding-x));
+}
+
+.pt {
+  padding-top: var(--padding-y);
+}
+
 body {
   font-family: "Gotham A", "Gotham B", sans-serif;
   color: #222222;
@@ -416,6 +433,54 @@ a:hover {
   --transition-dyn: cubic-bezier(0.930, 0.325, 0.035, 0.730);
 }
 
+@keyframes slide {
+  0%, 100% {
+    transform: translateX(-50vw);
+  }
+  50% {
+    transform: translateX(50vw);
+  }
+}
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes grain {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-5%, -10%);
+  }
+  20% {
+    transform: translate(-15%, 5%);
+  }
+  30% {
+    transform: translate(7%, -25%);
+  }
+  40% {
+    transform: translate(-5%, 25%);
+  }
+  50% {
+    transform: translate(-15%, 10%);
+  }
+  60% {
+    transform: translate(15%, 0%);
+  }
+  70% {
+    transform: translate(0%, 15%);
+  }
+  80% {
+    transform: translate(3%, 35%);
+  }
+  90% {
+    transform: translate(-10%, 10%);
+  }
+}
 figure {
   margin: 0;
   padding: 0;
@@ -429,6 +494,35 @@ figcaption {
 figcaption strong {
   font-variant: none;
   text-transform: uppercase;
+}
+
+.page-title.animated h1 {
+  overflow: hidden;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition-dyn) 0.3s;
+}
+.page-title.animated h1 span {
+  display: block;
+  white-space: nowrap;
+  word-spacing: -0.25em;
+  font-size: 12vw;
+  line-height: 0.75;
+  font-weight: 300;
+}
+.page-title.animated h1 span.a1 {
+  transform: translateX(50vw);
+  animation: marquee 8s ease infinite;
+}
+.page-title.animated h1 span.a2 {
+  animation: marquee 32s linear infinite;
+}
+.page-title.animated h1 span.a3 {
+  animation: marquee 16s linear infinite;
+}
+.page-title.animated h1:hover {
+  color: var(--grey90);
 }
 
 :root {

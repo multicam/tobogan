@@ -3,14 +3,15 @@ layout: layout.njk
 ---
 {% set variables = site.pages[site.index['prices']].data %}
 
---- ENROL ---
---- request ---
+<div>--- request ---</div>
+
 <div x-data="{
 	params: new URLSearchParams(location.search)
 }">
-	<div x-text="location.search"></div>
-	<div x-text="params.get('currency')"></div>
+	<div>course: <i x-text="params.get('course')"></i></div>
+	<div>currency: <i x-text="params.get('currency')"></i></div>
+	<div>option: <i x-text="params.get('option')"></i></div>
 </div>
 
---- variables ---
+<div>--- variables ---</div>
 <pre>{{ variables | dump }}</pre>

@@ -1,0 +1,36 @@
+
+.page-title {
+	&.animated {
+		h1 {
+			overflow: hidden;
+			text-align: center;
+			display: flex;
+			flex-direction: column;
+
+			span {
+				display: block;
+				white-space: nowrap;
+				word-spacing: -.25em;
+
+				font-size: 12vw;
+				line-height: .75;
+				font-weight: 300;
+
+				//&.a1 { animation: slide 12s ease infinite; }
+				//&.a2 { animation: slide 8s ease infinite; }
+				//&.a3 { animation: slide 16s ease infinite; }
+
+				&.a1 { transform: translateX(50vw); animation: marquee 8s ease infinite; }
+				&.a2 { animation: marquee 32s linear infinite; }
+				&.a3 { animation: marquee 16s linear infinite; }
+
+			}
+
+			transition: var(--transition-dyn) .3s;
+
+			&:hover {
+				color: var(--grey90)
+			}
+		}
+	}
+}

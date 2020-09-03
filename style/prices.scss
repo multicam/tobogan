@@ -25,7 +25,7 @@
 
 .course-wrap {
 	display: flex;
-	height: 30vw;
+	height: 35vw;
 	margin: 3vw 0;
 
 	transition: all 1s cubic-bezier(.05, .69, .14, 1);
@@ -44,6 +44,7 @@
 }
 
 .plan-wrap {
+	flex: 0 0 20vw;
 	color: var(--white);
 	text-decoration:none;
 

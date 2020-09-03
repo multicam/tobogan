@@ -67,7 +67,11 @@ const loadYaml = async nameInput => {
 const loadMd = async nameInput => {
 	if(fs.existsSync(nameInput)) {
 		const frontMatter = fm( fs.readFileSync(nameInput, 'utf8').toString() )
-		return markdown.render(frontMatter.body)
+		const body = await markdown.render(frontMatter.body)
+		return {
+			...frontMatter,
+			html: body
+		}
 	}
 }
 
@@ -93,36 +97,52 @@ const perform_loads = async obj => {
 		const load_path = typeof obj[key] === 'object' ? obj[key].path : obj[key] // object or string
 		const load_filter = typeof obj[key] === 'object' ? obj[key].filter : null // array or null
 
+		const filter_result = ob => load_filter ?
+			keysOf(ob).reduce( (r,i) => {
+				if( load_filter.includes(i) ) {
+					r[i] = ob[i]
+				}
+				return r
+			},{}) :
+			ob
+
+		// ---
+
 		if( key === 'json' ) {
 			log('>> JSON <<', obj[key], load_path, load_filter )
 
-			obj = await loadJson(load_path)
-
+			obj = filter_result(
+				await loadJson(load_path)
+			)
 		}
 		else	if( key === 'md' ) {
 
 			log('>> MD <<', obj[key], load_path, load_filter )
 			const converted = await loadMd(path.join(_root_path,load_path))
-			obj = {
-				toc: generate_toc(converted, navigationLevel),
-				html: converted
-			}
+
+			obj = filter_result({
+				...converted,
+				toc: generate_toc(converted.html, navigationLevel)
+			})
+
 			// ---
 		}
 		else if( key === 'load' ) {
 
-			log('>> YAML <<', obj[key], load_path, load_filter )
+			log('>> YAML <<', obj[key], load_path )
 
-			let temp = await loadYaml( path.join(_root_path, load_path ))
+			let temp = filter_result(
+				await loadYaml( path.join(_root_path, load_path ))
+			)
 
-			if( load_filter) {
-				temp = keysOf(temp).reduce( (r,i) => {
-					if( load_filter.includes(i) ) {
-						r[i] = temp[i]
-					}
-					return r
-				},{})
-			}
+			// if( load_filter) {
+			// 	temp = keysOf(temp).reduce( (r,i) => {
+			// 		if( load_filter.includes(i) ) {
+			// 			r[i] = temp[i]
+			// 		}
+			// 		return r
+			// 	},{})
+			// }
 
 			delete obj[key]
 			obj = {...obj, ...temp, loaded: true }

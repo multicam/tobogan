@@ -26,7 +26,6 @@
 							<div class="info">{% if plan.price.value === plan.price.total %}One time{% else %}Monthly{% endif %}</div>
 						</div>
 						<div>Total: {{ _data.symbol }}{{ plan.price.total }}</div>
-{#						<pre class="max-20">{{ plan | dump }}</pre>#}
 					</a>
 				{% endif %}
 			{% endfor %}

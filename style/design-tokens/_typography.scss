@@ -22,26 +22,25 @@ body {
 blockquote {
 	margin: 0;
 	font-size: 1vw;
-	line-height: 2vw;
+	line-height: 2;
 	text-align: left;
 }
 
 h1, h2, h3, h4, h5, h6 {
 	margin: 0;
-	line-height: 1.5em;
+	line-height: 1.5;
 	font-weight: 800;
 }
 
 h1 {
-	letter-spacing: 0;
-	font-size: 17vw;
-	font-weight: 900;
+	font-size: 10vw;
+	font-weight: 800;
 	text-transform: uppercase;
 }
 
 h2 {
 	font-size: 8vw;
-	line-height: 8vw;
+	line-height: 1;
 	text-transform: uppercase;
 	font-weight: 900;
 }

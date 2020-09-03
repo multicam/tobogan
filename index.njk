@@ -3,26 +3,25 @@ layout: layout.njk
 permalink: /
 class: home
 ---
+{% set courses = site.pages[site.index['courses']] %}
+
+<pre>{{ courses | dump }}</pre>
 
 <section id="hello">
-  <div class="container">
 
-    <div class="row">
-      <div class="col-12">
-        <div class="box red full"></div>
-        <h1>The Graphic <br/>Design School</h1>
-      </div>
-    </div>
-  </div>
+	<h1>The Graphic <br/>Design School</h1>
+
+	<p class="'tagline">Online and at your own pace.  The first solely online design school in the world, since 2008.</p>
+	<p>Our students are our everything. Their work is our pride and joy!</p>
+
 </section>
 
 <section id="sw" class="red">
+
   <div class="slide slide_students">
     <div class="s1"><h2 >Student work</h2></div>
     <div class="s2"><h2 >Student work</h2></div>
     <div class="s3"><h2 >Student work</h2></div>
-    <div class="s4"><h2 >Student work</h2></div>
-    <div class="s5"><h2 >Student work</h2></div>
   </div>
 
   <div class="image">
@@ -36,28 +35,38 @@ class: home
       </div>
     </div>
   </div>
+
 </section>
 
-<section id="quote">
-  <blockquote>
-    THE GRAPHIC DESIGN SCHOOL DELIVERS A PLACE TO BE CREATIVE, UNLEASH YOUR IDEAS AND GIVES YOU THE FREEDOM TO DO SOMETHING YOU LOVE, <strong>REALLY LOVE</strong>. ONLINE AND AT YOUR OWN PACE. THE FIRST ONLINE DESIGN SCHOOL IN THE WORLD, SINCE 2008.
-  </blockquote>
-</section>
+{#<section id="quote">#}
+{#  <blockquote>#}
+{#    THE GRAPHIC DESIGN SCHOOL DELIVERS A PLACE TO BE CREATIVE, UNLEASH YOUR IDEAS AND GIVES YOU THE FREEDOM TO DO SOMETHING YOU LOVE, <strong>REALLY LOVE</strong>. ONLINE AND AT YOUR OWN PACE. THE FIRST ONLINE DESIGN SCHOOL IN THE WORLD, SINCE 2008.#}
+{#  </blockquote>#}
+{#</section>#}
 
 <section id="courses" class="black">
-  <div class="slide slide_courses">
-    <div class="s1 slide_1"><a href="#"><h2 >CERTIFICATE IV IN DESIGN</h2></a></div>
-    <div class="s2 slide_2"><a href="#"><h2 >INTENSIVE FOUNDATION COURSE</h2></a></div>
-    <div class="s3 slide_3"><a href="#"><h2 >DESIGN AT WORK COURSE</h2></a></div>
-    <div class="s4 slide_4"><a href="#"><h2 >WEB DESIGN COURSE</h2></a></div>
-  </div>
+{#  <div class="slide slide_courses">#}
+{#    <div class="s1 slide_1"><a href="#"><h2 >CERTIFICATE IV IN DESIGN</h2></a></div>#}
+{#    <div class="s2 slide_2"><a href="#"><h2 >INTENSIVE FOUNDATION COURSE</h2></a></div>#}
+{#    <div class="s3 slide_3"><a href="#"><h2 >DESIGN AT WORK COURSE</h2></a></div>#}
+{#    <div class="s4 slide_4"><a href="#"><h2 >WEB DESIGN COURSE</h2></a></div>#}
+{#  </div>#}
+
+	{% for course in courses.content %}
+		<div class="card">
+			<div>{{ course.title }}</div>
+			<div>{{ course.specs }}</div>
+			<div>{{ course.tagline }}</div>
+		</div>
+		{{ course | dump }}
+	{% endfor %}
 </section>
 
 
-<section id="random">
-  <blockquote>
-		{{ collections.all | safe }}
-	</blockquote>
+
+<section id="testis">
+	{{ site.pages[site.index['home']] | dump }}
 </section>
+
 
 <link type="text/css" rel="stylesheet" href="/style/home.css" />

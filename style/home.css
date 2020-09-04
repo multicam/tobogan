@@ -2,11 +2,19 @@
   font-weight: 800;
 }
 .home h1 {
-  font-size: 9vw;
+  display: block;
+  font-weight: 900;
   line-height: 1;
 }
-.home .tagline {
-  font-size: 1.5vw;
+.home h2 {
+  text-align: center;
+  font-size: 3.5vw;
+  margin: 4vw 0;
+}
+.home #hi .tagline {
+  font-size: 1.75vw;
+  line-height: 1.5;
+  margin-bottom: 6vw;
 }
 .home a {
   color: #222222;
@@ -15,14 +23,29 @@
   color: var(--highlight);
   background: rgba(131, 57, 66, 0.083);
 }
+.home .slide {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.home .slide a {
+  text-decoration: none;
+}
+.home .slide h2 {
+  display: block;
+  font-size: 15vw;
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 0.85em;
+  margin: 0;
+}
 .home .image {
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
-  width: 50vw;
-  height: calc(1080 / 1620 * 50vw);
+  width: 45vw;
+  height: calc(1080 / 1620 * 45vw);
   margin: auto;
   background: url("../img/cheneeta/dr2.png") 50% 50% no-repeat;
   background-size: cover;
@@ -44,7 +67,55 @@
   display: inline-block;
 }
 
-#hello-trigger {
+#sw {
+  position: relative;
+}
+#sw .marquee {
+  background: white;
   position: absolute;
-  top: 150vw;
+  top: 50%;
+  width: 100%;
+  transform: translateY(-50%);
+}
+
+.courses--cards {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card {
+  flex-basis: 19vw;
+  padding: 2vw 1vw;
+  display: flex;
+  flex-direction: column;
+}
+.card h3 {
+  font-size: 2vw;
+  line-height: 1;
+  min-height: 3em;
+}
+.card p {
+  font-weight: 300;
+  color: #ccc;
+}
+.card p.specs {
+  color: var(--yellow);
+}
+.card p.text {
+  font-size: 2vw;
+  line-height: 1.25;
+  flex: 1;
+}
+.card a {
+  align-self: center;
+  justify-self: flex-end;
+  display: block;
+  font-size: 1.5vw;
+  color: var(--yellow);
+}
+.card a:hover {
+  color: var(--white);
+}
+.card pre {
+  font-size: 2vw;
 }

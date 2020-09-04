@@ -2,24 +2,24 @@
 .marquee {
 	position: relative;
 	overflow: hidden;
-	--offset: -20vw;
-	--move-initial: calc(10% + var(--offset));
-	--move-final: calc(-0% + var(--offset));
+	--offset: -15vw;
+	--move-initial: calc( 0);
+	--move-final: calc( var(--offset));
 }
 
 .marquee__inner {
 	width: fit-content;
 	display: flex;
 	position: relative;
-	transform: translate3d(var(--move-initial), 0, 0);
+	transform: translateX(var(--move-initial));
 	animation: marquee 5s linear infinite;
 	animation-play-state: paused;
 }
 
 .marquee span {
-	font-size: 1.5vw;
-	font-weight: 500;
-	//padding: 0 1vw;
+	font-size: 1.25vw;
+	font-weight: 700;
+	text-transform: uppercase;
 }
 
 .marquee .marquee__inner {
@@ -28,11 +28,10 @@
 
 @keyframes marquee {
 	0% {
-		transform: translate3d(var(--move-initial), 0, 0);
+		transform: translateX(var(--move-initial));
 	}
 
 	100% {
-		transform: translate3d(var(--move-final), 0, 0);
+		transform: translateX(var(--move-final));
 	}
 }
-

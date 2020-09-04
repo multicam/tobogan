@@ -1,20 +1,23 @@
 ---
 layout: layout.njk
 permalink: /
-class: home
+myClasses: [ home white ]
 ---
+
 {% set courses = site.pages[site.index['courses']] %}
 
-<section id="hello" >
+<section >
 
-	<h1>The Graphic <br/>Design School</h1>
+	<div id="hi" class="mt4 w100">
+		<h1 >The Graphic <br/>Design School</h1>
+	</div>
 
-	<p class="tagline uc max-45">Online and at your own pace.  The first solely online design school in the world, since 2008.<br>
+	<p class="tagline uc">Online and at your own pace.<br>The first solely online design school in the world, since 2008.<br>
 	Our students are our everything. Their work is our pride and joy!</p>
 
 </section>
 
-<section id="sw" class="red">
+<section id="sw" class="red nx">
 
   <div class="slide slide_students">
     <div class="s1"><h2 >Student work</h2></div>
@@ -24,51 +27,58 @@ class: home
 
   <div class="image">
     <div class="content">
-      <div class="marquee">
-				<div class="marquee__inner">
-					{% for i in range(0, 15) -%}
-						<span>Enter&nbsp;</span>
-					{%- endfor %}
-				</div>
-      </div>
     </div>
   </div>
 
-</section>
-
-{#<section id="quote">#}
-{#  <blockquote>#}
-{#    THE GRAPHIC DESIGN SCHOOL DELIVERS A PLACE TO BE CREATIVE, UNLEASH YOUR IDEAS AND GIVES YOU THE FREEDOM TO DO SOMETHING YOU LOVE, <strong>REALLY LOVE</strong>. ONLINE AND AT YOUR OWN PACE. THE FIRST ONLINE DESIGN SCHOOL IN THE WORLD, SINCE 2008.#}
-{#  </blockquote>#}
-{#</section>#}
-
-<div id="hello-trigger"></div>
-
-<section id="courses" class="black">
-{#  <div class="slide slide_courses">#}
-{#    <div class="s1 slide_1"><a href="#"><h2 >CERTIFICATE IV IN DESIGN</h2></a></div>#}
-{#    <div class="s2 slide_2"><a href="#"><h2 >INTENSIVE FOUNDATION COURSE</h2></a></div>#}
-{#    <div class="s3 slide_3"><a href="#"><h2 >DESIGN AT WORK COURSE</h2></a></div>#}
-{#    <div class="s4 slide_4"><a href="#"><h2 >WEB DESIGN COURSE</h2></a></div>#}
-{#  </div>#}
-
-	{% for course in courses.content %}
-		<div class="card">
-			<div>{{ course.title }}</div>
-			<div>{{ course.specs }}</div>
-			<div>{{ course.tagline }}</div>
+	<div class="marquee">
+		<div class="marquee__inner">
+			{% for i in range(0, 25) -%}
+				<span>Enter&nbsp;</span>
+			{%- endfor %}
 		</div>
-		{{ course | dump }}
-	{% endfor %}
+	</div>
+
 </section>
+
+<div id="hi-trigger" />
+
+<section id="courses" class="courses">
+
+	<h2>Online Courses</h2>
+
+	<div class="courses--cards">
+		{% for course in courses.content %}
+			<div class="card black">
+				<h3 class="uc">{{ course.title }}</h3>
+				<p class="specs">{{ course.specs }}</p>
+				<p class="text">{{ course.tagline }}</p>
+{# <pre>{{ course | dump }}</pre>#}
+				<a href="{{ course.permalink }}" class="uc">Discover More</a>
+			</div>
+
+		{% endfor %}
+	</div>
+</section>
+
 
 <section id="testis">
-	{{ site.pages[site.index['home']] | dump }}
+	<h2>Some really nice things said about us by some really, really nice people</h2>
+	<pre>{{ site.pages[site.index['home']] | dump }}</pre>
 </section>
 
+
+<section class="blank">
+	---
+</section>
 <canvas id="overlay" />
 
 
 <link type="text/css" rel="stylesheet" href="/style/home.css" />
 
 <script type="text/javascript" src="/js/home.js"></script>
+
+{#<section id="quote">#}
+{#  <blockquote>#}
+{#    THE GRAPHIC DESIGN SCHOOL DELIVERS A PLACE TO BE CREATIVE, UNLEASH YOUR IDEAS AND GIVES YOU THE FREEDOM TO DO SOMETHING YOU LOVE, <strong>REALLY LOVE</strong>. ONLINE AND AT YOUR OWN PACE. THE FIRST ONLINE DESIGN SCHOOL IN THE WORLD, SINCE 2008.#}
+{#  </blockquote>#}
+{#</section>#}

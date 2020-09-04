@@ -5,22 +5,22 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys
 
+log('home -- ')
+
 gsap.registerPlugin(ScrollTrigger);
 
 ScrollTrigger.defaults({
 	toggleActions: "restart pause resume pause"
 });
 
-log('home -- ')
-
-gsap.to("#hello h1", {
+gsap.to("#hi", {
 		ease: 'expo',
 		scale: .1,
 		transformOrigin: 'top left',
 		duration: 1.5,
 		delay: .5,
 		scrollTrigger: {
-			trigger: "#hello-trigger",
+			trigger: "#hi-trigger",
 			scrub: true
 		}
 	})

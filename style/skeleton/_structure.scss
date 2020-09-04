@@ -22,25 +22,6 @@ main {
 	section {
 		position: relative;
 
-		.slide {
-			overflow: hidden;
-			white-space: nowrap;
-
-			a {
-				text-decoration: var(--red);
-			}
-
-
-			h2 {
-				display: block;
-				font-size: 12vw;
-				font-weight: 300;
-				text-transform: uppercase;
-				line-height: .8em;
-				margin: 0;
-			}
-		}
-
 		blockquote {
 
 			text-align: center;
@@ -57,4 +38,3 @@ main {
 
 	}
 }
-

@@ -278,21 +278,6 @@ pre {
   color: var(--black);
 }
 
-.py0 {
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.py1 {
-  padding-top: 1vw;
-  padding-bottom: 1vw;
-}
-
-.py2 {
-  padding-top: 2vw;
-  padding-bottom: 2vw;
-}
-
 .px0 {
   padding-left: 0;
   padding-right: 0;
@@ -306,6 +291,21 @@ pre {
 .px2 {
   padding-left: 2vw;
   padding-right: 2vw;
+}
+
+.py0 {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.py1 {
+  padding-top: 1vw;
+  padding-bottom: 1vw;
+}
+
+.py2 {
+  padding-top: 2vw;
+  padding-bottom: 2vw;
 }
 
 .my1 {
@@ -328,6 +328,10 @@ pre {
 
 .mt4 {
   margin-top: 4vw;
+}
+
+.mt6 {
+  margin-top: 6vw;
 }
 
 .mt8 {
@@ -672,6 +676,41 @@ figcaption strong {
   flex: 1;
 }
 
+.marquee {
+  position: relative;
+  overflow: hidden;
+  --offset: -15vw;
+  --move-initial: calc( 0);
+  --move-final: calc( var(--offset));
+}
+
+.marquee__inner {
+  width: fit-content;
+  display: flex;
+  position: relative;
+  transform: translateX(var(--move-initial));
+  animation: marquee 5s linear infinite;
+  animation-play-state: paused;
+}
+
+.marquee span {
+  font-size: 1.25vw;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.marquee .marquee__inner {
+  animation-play-state: running;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(var(--move-initial));
+  }
+  100% {
+    transform: translateX(var(--move-final));
+  }
+}
 :root {
   --gutter-width: 1rem;
   --outer-margin: 2rem;
@@ -1132,21 +1171,6 @@ body {
 
 main section {
   position: relative;
-}
-main section .slide {
-  overflow: hidden;
-  white-space: nowrap;
-}
-main section .slide a {
-  text-decoration: var(--red);
-}
-main section .slide h2 {
-  display: block;
-  font-size: 12vw;
-  font-weight: 300;
-  text-transform: uppercase;
-  line-height: 0.8em;
-  margin: 0;
 }
 main section blockquote {
   text-align: center;

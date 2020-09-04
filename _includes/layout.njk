@@ -31,36 +31,27 @@
 </head>
 <body>
 
-<div id="app" class="black">
+	<div id="app" class="{{ myClasses | safe }}">
 
-  <header class="white">
-    <a href="/"><img src="/img/logo.svg" alt="TGDS Logo"/></a>
-    <nav>
-      <a href="/courses">courses</a>
-      <a href="/student-work">student-work</a>
-      <a href="#">dex</a>
-      <a href="/prices">prices</a>
-      <a href="#">contact us</a>
-    </nav>
-  </header>
+		{% include "components/header/index.njk" %}
 
-  <main class="{{ class | safe }} black px">
-    {{ content | safe }}
-  </main>
 
-	<footer id="foot" class="black px">
+		<main class="px">
+			{{ content | safe }}
+		</main>
+
 		{% include "components/footer/index.njk" %}
-	</footer>
 
-</div>
+	</div>
 
-<script>
-  window.addEventListener('orientationchange', () => window.location.reload());
-</script>
 
-<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+	<script>
+		window.addEventListener('orientationchange', () => window.location.reload());
+	</script>
 
-{#{% include "_analytics.njk" %}#}
+	<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+
+	{#{% include "_analytics.njk" %}#}
 
 </body>
 

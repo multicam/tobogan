@@ -69,6 +69,8 @@ module.exports = eleventyConfig => {
 	eleventyConfig.addPassthroughCopy('favicon.ico')
 	eleventyConfig.addPassthroughCopy('site.webmanifest')
 
+
+
 	// -- browsersync
 
 	eleventyConfig.setBrowserSyncConfig({

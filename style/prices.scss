@@ -20,7 +20,7 @@
 }
 
 .on {
-	color: var(--yellow);
+	color: var(--highlight);
 }
 
 .course-wrap {
@@ -61,7 +61,7 @@
 
 	&:hover {
 		cursor: pointer;
-		background: var(--yellow);
+		background: var(--highlight);
 		color: var(--grey90);
 	}
 }
@@ -76,6 +76,6 @@
 	color: inherit;
 
 	&:hover {
-		color: var(--yellow)
+		color: var(--highlight)
 	}
 }

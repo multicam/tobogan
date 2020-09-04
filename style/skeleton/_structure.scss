@@ -20,16 +20,7 @@ body {
 main {
 
 	section {
-		padding: 1rem;
 		position: relative;
-
-		&.no-padding {
-			padding: 0;
-		}
-
-		.padding {
-			padding: 1rem;
-		}
 
 		.slide {
 			overflow: hidden;

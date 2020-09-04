@@ -16,7 +16,7 @@
 }
 
 .on {
-  color: var(--yellow);
+  color: var(--highlight);
 }
 
 .course-wrap {
@@ -50,7 +50,7 @@
 }
 .plan-wrap:hover {
   cursor: pointer;
-  background: var(--yellow);
+  background: var(--highlight);
   color: var(--grey90);
 }
 
@@ -63,5 +63,5 @@
   color: inherit;
 }
 .reveal-wrap a:hover {
-  color: var(--yellow);
+  color: var(--highlight);
 }

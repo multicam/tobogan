@@ -253,6 +253,7 @@ pre {
   --black: #000;
   --white: #fff;
   --grey90: #181818;
+  --highlight: var(--yellow);
 }
 
 .red {
@@ -368,6 +369,141 @@ pre {
 
 .pt {
   padding-top: var(--padding-y);
+}
+
+:root {
+  --sp-init: 1.7125rem;
+  --sp-ratio: 1.61803398875;
+  --sp1: var(--sp-init);
+  --sp2: calc(var(--sp1) * var(--sp-ratio));
+  --sp3: calc(var(--sp2) * var(--sp-ratio));
+  --sp4: calc(var(--sp3) * var(--sp-ratio));
+  --sp5: calc(var(--sp4) * var(--sp-ratio));
+  --sp6: calc(var(--sp5) * var(--sp-ratio));
+  --sp7: calc(var(--sp6) * var(--sp-ratio));
+  --sp8: calc(var(--sp7) * var(--sp-ratio));
+}
+
+.h1 {
+  height: var(--sp1);
+}
+
+.h2 {
+  height: var(--sp2);
+}
+
+.h3 {
+  height: var(--sp3);
+}
+
+.h4 {
+  height: var(--sp4);
+}
+
+.h5 {
+  height: var(--sp5);
+}
+
+.h6 {
+  height: var(--sp6);
+}
+
+.h7 {
+  height: var(--sp7);
+}
+
+.h8 {
+  height: var(--sp8);
+}
+
+.w1 {
+  width: var(--sp1);
+}
+
+.w2 {
+  width: var(--sp2);
+}
+
+.w3 {
+  width: var(--sp3);
+}
+
+.w4 {
+  width: var(--sp4);
+}
+
+.w5 {
+  width: var(--sp5);
+}
+
+.w6 {
+  width: var(--sp6);
+}
+
+.w7 {
+  width: var(--sp7);
+}
+
+.w8 {
+  width: var(--sp8);
+}
+
+.s1 {
+  flex-basis: var(--sp1);
+}
+
+.s2 {
+  flex-basis: var(--sp2);
+}
+
+.s3 {
+  flex-basis: var(--sp3);
+}
+
+.s4 {
+  flex-basis: var(--sp4);
+}
+
+.s5 {
+  flex-basis: var(--sp5);
+}
+
+.s6 {
+  flex-basis: var(--sp6);
+}
+
+.s7 {
+  flex-basis: var(--sp7);
+}
+
+.s8 {
+  flex-basis: var(--sp8);
+}
+
+.pp2 {
+  padding: var(--sp2);
+}
+
+.ppx2 {
+  padding-left: var(--sp2);
+  padding-right: var(--sp2);
+}
+
+.pm2 {
+  margin: var(--sp2);
+}
+
+.pmx2 {
+  margin-left: var(--sp2);
+  padding-right: var(--sp2);
+}
+
+.w100 {
+  width: 100%;
+}
+
+.h100 {
+  height: 100%;
 }
 
 body {
@@ -522,6 +658,18 @@ figcaption strong {
 }
 .page-title.animated h1:hover {
   color: var(--grey90);
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.f1 {
+  flex: 1;
 }
 
 :root {
@@ -983,14 +1131,7 @@ body {
 }
 
 main section {
-  padding: 1rem;
   position: relative;
-}
-main section.no-padding {
-  padding: 0;
-}
-main section .padding {
-  padding: 1rem;
 }
 main section .slide {
   overflow: hidden;
@@ -1016,6 +1157,10 @@ main section blockquote {
 }
 main section blockquote strong {
   color: var(--red);
+}
+
+.h-screen {
+  height: 100vh;
 }
 
 .column-alt section {

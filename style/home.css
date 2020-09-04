@@ -1,24 +1,26 @@
+.home {
+  font-weight: 800;
+}
 .home h1 {
   font-size: 9vw;
   line-height: 1;
 }
 .home .tagline {
   font-size: 1.5vw;
-  font-weight: 800;
 }
 .home a {
   color: #222222;
 }
 .home a:hover {
-  color: var(--red);
+  color: var(--highlight);
   background: rgba(131, 57, 66, 0.083);
 }
 .home .image {
   position: absolute;
-  top: 1px;
-  left: 1px;
-  bottom: 1px;
-  right: 1px;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
   width: 50vw;
   height: calc(1080 / 1620 * 50vw);
   margin: auto;
@@ -29,7 +31,7 @@
   justify-content: center;
 }
 .home .image .content {
-  background: var(--red);
+  background: var(--highlight);
   color: white;
   text-transform: uppercase;
   font-weight: 700;
@@ -40,4 +42,9 @@
 }
 .home .image .content span {
   display: inline-block;
+}
+
+#hello-trigger {
+  position: absolute;
+  top: 150vw;
 }

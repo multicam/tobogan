@@ -3,14 +3,117 @@ layout: admin.layout.njk
 permalink: admin.html
 class: admin
 ---
-<section id="hello">
-	<div class="container">
 
-		<div class="row">
-			<div class="col-12">
-				<div class="box red full"></div>
-				<h1>The Graphic <br/>Design School</h1>
-			</div>
+
+<!-- macros -->
+
+{% macro column_header(data) %}
+	<div class="header flex flex-col c">
+		<div class="h4 c">
+			{{ data.tops | safe }}
+		</div>
+		<div class="h3 c">
+			{{ data.bots | safe }}
 		</div>
 	</div>
+{% endmacro %}
+
+<!-- -->
+
+{% macro ht_side( stuff ) %}
+	-- LOGO --
+{% endmacro %}
+
+<!-- -->
+
+{% macro hb_side( stuff ) %}
+	<div class="c h1 pli flex">
+		{{ stuff | safe }}
+	</div>
+{% endmacro %}
+
+<!-- -->
+
+{% macro ht_list( stuff ) %}
+	<div class="flex flex-col">
+		<div class="h2 w100 c"></div>
+		<div class="h3 w100 c"></div>
+	</div>
+{% endmacro %}
+
+<!-- -->
+
+{% macro hb_list( stuff ) %}
+	<div class="c h3 flex">
+		<div class="h3 w3 c">1</div>
+		<div class="h3 w4 c">1</div>
+		<div class="h3 w4 c">1</div>
+		<div class="h3 w4 c">1</div>
+		<div class="h3 w3 c">1</div>
+	</div>
+{% endmacro %}
+
+<!-- -->
+
+{% macro ht_body( stuff ) %}
+	<div class="c h1 w100 pli flex">
+		{{ stuff | safe }}
+	</div>
+{% endmacro %}
+
+<!-- -->
+
+{% macro hb_body( stuff ) %}
+	<div class="c h3 flex ">
+		<div class="h3 w5 c">1</div>
+		<div class="h3 w4 c">1</div>
+		<div class="h3 w3 c">1</div>
+		<div class="h3 w4 c">1</div>
+		<div class="h3 w4 c">1</div>
+		<div class="h3 w5 c">1</div>
+	</div>
+{% endmacro %}
+
+<!-- -->
+
+
+<section class="sidebar s6 c">
+
+	{{ column_header({ title: sidebar, tops: ht_side('side'), bots: hb_side('side') }) }}
+
+	<div class="pp2">
+		-- side --
+	</div>
+
 </section>
+
+<section class="list s7 c">
+	{{ column_header({ title: 'list', tops: ht_list('list'), bots: hb_list('list') }) }}
+
+	<div class="h2 c"></div>
+	<div>
+		-- list --
+	</div>
+</section>
+
+<section class="body s8 c">
+	{{ column_header({ title: 'bod', tops: ht_body('body'), bots: hb_body('body') }) }}
+	<div class="h2 c"></div>
+	<div x-data="greet()">
+		-- body --
+		<button @click="showMessage()">coucou</button>
+		<div>Message: <span x-text="messageDisplay"></span></div>
+	</div>
+</section>
+
+<script>
+	function greet() {
+		return {
+			message: 'Hello Alpine.js',
+			messageDisplay: '',
+			showMessage() {
+				console.log(this.message)
+			}
+		}
+	}
+</script>

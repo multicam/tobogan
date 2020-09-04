@@ -1,6 +1,7 @@
 
 .home {
 
+	font-weight: 800;
 
 	h1 {
 		font-size: 9vw;
@@ -9,24 +10,24 @@
 
 	.tagline {
 		font-size: 1.5vw;
-		font-weight: 800;
 	}
 
 	a {
 		color: #222222;
 
 		&:hover {
-			color: var(--red);
+			color: var(--highlight);
 			background: transparentize(#833942,.917)
 		}
+
 	}
 
 	.image {
 		position: absolute;
-		top: 1px;
-		left: 1px;
-		bottom: 1px;
-		right: 1px;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
 		width: 50vw;
 		height: calc(1080 / 1620 * 50vw);
 		margin: auto;
@@ -39,7 +40,7 @@
 		justify-content: center;
 
 		.content {
-			background: var(--red);
+			background: var(--highlight);
 			color: white;
 
 			text-transform: uppercase;
@@ -55,4 +56,15 @@
 
 		}
 	}
+}
+
+#hello {
+	//position: absolute;
+	//left:0; right:0;
+	//height: 20vw;
+}
+
+#hello-trigger {
+	position: absolute;
+	top: 150vw
 }

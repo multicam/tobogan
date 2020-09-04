@@ -1,3 +1,27 @@
+.c {
+  outline: 1px solid rgba(125, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.r {
+  display: flex;
+  place-items: center;
+  place-content: center;
+}
+
+.pli {
+  place-items: center;
+}
+
+.plc {
+  place-content: center;
+}
+
 .admin {
+  height: 100vh;
+  overflow: hidden;
   background: none;
+}
+.admin > section > header {
+  outline: 1px solid rgba(255, 0, 0, 0.2);
 }

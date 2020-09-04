@@ -17,6 +17,12 @@
 @import "elements/images";
 @import "elements/page_title";
 
+// -- generic
+
+@import "generic/flex";
+
+// -- skeleton
+
 @import "skeleton/grid";
 @import "skeleton/overlay";
 @import "skeleton/structure";
@@ -33,3 +39,4 @@
 @import "shame";
 
 // ---
+

@@ -5,7 +5,7 @@ class: home
 ---
 {% set courses = site.pages[site.index['courses']] %}
 
-<section id="hello">
+<section id="hello" >
 
 	<h1>The Graphic <br/>Design School</h1>
 
@@ -42,6 +42,8 @@ class: home
 {#  </blockquote>#}
 {#</section>#}
 
+<div id="hello-trigger"></div>
+
 <section id="courses" class="black">
 {#  <div class="slide slide_courses">#}
 {#    <div class="s1 slide_1"><a href="#"><h2 >CERTIFICATE IV IN DESIGN</h2></a></div>#}
@@ -64,7 +66,9 @@ class: home
 	{{ site.pages[site.index['home']] | dump }}
 </section>
 
+<canvas id="overlay" />
+
 
 <link type="text/css" rel="stylesheet" href="/style/home.css" />
 
-<script>console.log('coucou')</script>
+<script type="text/javascript" src="/js/home.js"></script>

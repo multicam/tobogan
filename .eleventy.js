@@ -3,15 +3,23 @@ const chalk = require('chalk'), chokidar = require('chokidar'), promise = requir
 const log = console.log, serialize = JSON.stringify, deserialize = JSON.parse, keysOf = Object.keys
 
 const
-	rewrites = [
+	rewrites_with_slash = [
 		'/courses',
 		'/student-work'
+	],
+	rewrites_with_html = [
+		'/admin'
 	]
 
 const proxy_patchy = () => (req, res, next) => {
-	if( rewrites.includes(req.url) ) {
+
+	if( rewrites_with_slash.includes(req.url) ) {
 		req.url += '/'
 	}
+	else if( rewrites_with_html.includes(req.url) ) {
+		req.url += '.html'
+	}
+
 	console.log('==',chalk.grey.italic(req.url))
 	next()
 }

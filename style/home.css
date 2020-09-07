@@ -1,9 +1,14 @@
+:root {
+  --highlight: var(--blue);
+}
+
 .home {
   font-weight: 800;
 }
 .home h1 {
+  font-size: 9vw;
   display: block;
-  font-weight: 900;
+  font-weight: 700;
   line-height: 1;
 }
 .home h2 {
@@ -11,7 +16,10 @@
   font-size: 3.5vw;
   margin: 4vw 0;
 }
-.home #hi .tagline {
+.home h1, .home h2 {
+  color: var(--highlight);
+}
+.home .tagline {
   font-size: 1.75vw;
   line-height: 1.5;
   margin-bottom: 6vw;
@@ -33,7 +41,7 @@
 .home .slide h2 {
   display: block;
   font-size: 15vw;
-  font-weight: 800;
+  font-weight: 400;
   text-transform: uppercase;
   line-height: 0.85em;
   margin: 0;
@@ -57,7 +65,7 @@
   background: var(--highlight);
   color: white;
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 400;
   font-size: 1.5vw;
   line-height: 2vw;
   text-align: center;
@@ -110,7 +118,7 @@
   align-self: center;
   justify-self: flex-end;
   display: block;
-  font-size: 1.5vw;
+  font-size: 1vw;
   color: var(--yellow);
 }
 .card a:hover {
@@ -118,4 +126,29 @@
 }
 .card pre {
   font-size: 2vw;
+}
+
+.testis--slider {
+  display: flex;
+  overflow-x: hidden;
+}
+
+.testis--card {
+  flex: 1;
+}
+.testis--card img {
+  width: 100%;
+  height: auto;
+}
+.testis--card .quote {
+  padding: 2vw 6vw;
+  text-align: right;
+}
+.testis--card .quote a, .testis--card .quote p {
+  font-size: 2vw !important;
+  line-height: 1.25;
+}
+
+.marquee {
+  color: var(--black);
 }

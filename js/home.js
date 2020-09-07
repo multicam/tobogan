@@ -13,17 +13,16 @@ ScrollTrigger.defaults({
 	toggleActions: "restart pause resume pause"
 });
 
-gsap.to("#hi", {
-		ease: 'expo',
-		scale: .1,
-		transformOrigin: 'top left',
-		duration: 1.5,
-		delay: .5,
-		scrollTrigger: {
-			trigger: "#hi-trigger",
-			scrub: true
-		}
-	})
+// gsap.to("#hi", {
+// 		ease: 'expo',
+// 		scale: .1,
+// 		transformOrigin: 'top left',
+// 		duration: 1.5,
+// 		scrollTrigger: {
+// 			markers: true,
+// 			trigger: "#hi",
+// 		}
+// 	})
 
 
 // const timeline = gsap.timeline();

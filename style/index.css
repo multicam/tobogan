@@ -249,9 +249,14 @@ pre {
 :root {
   --red: #b51429;
   --blue: #36368f;
+  --blue: #2f00b3;
   --yellow: #ffe900;
   --black: #000;
   --white: #fff;
+  --grey50: #909090;
+  --grey60: #727272;
+  --grey70: #545454;
+  --grey80: #363636;
   --grey90: #181818;
   --highlight: var(--yellow);
 }
@@ -264,7 +269,7 @@ pre {
   background: var(--blue);
 }
 
-.yel, .yellow {
+.yel {
   color: var(--yellow);
 }
 
@@ -275,6 +280,11 @@ pre {
 
 .white {
   background: var(--white);
+  color: var(--black);
+}
+
+.yellow {
+  background: var(--yellow);
   color: var(--black);
 }
 
@@ -538,12 +548,11 @@ blockquote {
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
   line-height: 1.5;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 h1 {
   font-size: 10vw;
-  font-weight: 800;
   text-transform: uppercase;
 }
 
@@ -551,7 +560,6 @@ h2 {
   font-size: 8vw;
   line-height: 1;
   text-transform: uppercase;
-  font-weight: 900;
 }
 
 p {
@@ -561,7 +569,7 @@ p {
 
 a {
   text-transform: uppercase;
-  font-weight: 800;
+  font-weight: 700;
 }
 a:hover {
   color: var(--yellow);
@@ -695,6 +703,7 @@ figcaption strong {
 
 .marquee span {
   font-size: 1.25vw;
+  line-height: 1.5vw;
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -712,8 +721,8 @@ figcaption strong {
   }
 }
 :root {
-  --gutter-width: 1rem;
-  --outer-margin: 2rem;
+  --gutter-width: 1vw;
+  --outer-margin: 2vw;
   --gutter-compensation: calc((var(--gutter-width) * 0.5) * -1);
   --half-gutter-width: calc((var(--gutter-width) * 0.5));
   --xs-min: 30;
@@ -1239,9 +1248,9 @@ footer {
   background: black;
   padding: 1rem;
 }
-footer .tagline {
-  font-size: 8vw;
-  font-weight: 900;
+footer .statement {
+  font-size: 8vw !important;
+  font-weight: 700 !important;
   margin-top: 6vw;
 }
 footer a {
@@ -1257,10 +1266,13 @@ footer h4 {
 footer .form {
   margin-top: 4vw;
 }
+footer .form > .col-6 {
+  padding-right: 3vw;
+}
 footer .form h3 {
-  font-size: 3vw;
+  font-size: 2.75vw;
   line-height: 1em;
-  font-weight: 900;
+  font-weight: 700;
 }
 footer .form input {
   flex: 1;
@@ -1289,10 +1301,13 @@ footer .form form {
   display: flex;
 }
 footer .form .note {
-  color: #cfcfcf;
-  font-variant: small-caps;
+  color: var(--grey50);
+  text-transform: uppercase;
   margin-top: 0.5rem;
-  font-size: 1.15vw;
+  font-size: 0.72vw;
+}
+footer .form .note a {
+  color: var(--white);
 }
 footer .sitemap {
   font-size: 1.5vw;

@@ -2,11 +2,16 @@
 :root {
 	--red: #b51429;
 	--blue: #36368f;
+	--blue: #2f00b3;
 	--yellow: #ffe900;
 
 	--black: #000;
 	--white: #fff;
 
+	--grey50: #909090;
+	--grey60: #727272;
+	--grey70: #545454;
+	--grey80: #363636;
 	--grey90: #181818;
 
 	--highlight: var(--yellow);
@@ -20,7 +25,7 @@
 	background: var(--blue);
 }
 
-.yel, .yellow {
+.yel {
 	color: var(--yellow);
 }
 
@@ -31,6 +36,12 @@
 
 .white {
 	background: var(--white);
+	color: var(--black);
+}
+
+
+.yellow {
+	background: var(--yellow);
 	color: var(--black);
 }
 

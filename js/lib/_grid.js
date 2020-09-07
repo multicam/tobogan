@@ -7,8 +7,8 @@ function renderGrid () {
 
     canvas = document.getElementById('overlay')
     ctx = canvas.getContext('2d')
-    // const width = canvas.width, height = canvas.height
-    const width = window.innerWidth, height = window.innerHeight, step = 16
+
+    const width = window.innerWidth, height = window.innerHeight, step = window.innerWidth / 100.
 
     // log('-- grid', width, height)
 
@@ -29,36 +29,12 @@ function renderGrid () {
       ctx.closePath()
     }
 
-    // ctx.strokeStyle = 'rgba(0,0,200,.5)'
-    //
-    // const
-    //   sidePad =  18,
-    //   gutter = 8,
-    //   colNum = 12,
-    //   colWidth = Math.floor((width - 2*sidePad)/12)
-    //
-    // for( let n=0; n<=colNum; ++n )  {
-    //   let x = sidePad + n*colWidth
-    //
-    //   ctx.beginPath()
-    //   ctx.moveTo(x,0)
-    //   ctx.lineTo(x,height)
-    //   ctx.stroke()
-    //   ctx.closePath()
-    //
-    //   ctx.beginPath()
-    //   ctx.moveTo(x+gutter,0)
-    //   ctx.lineTo(x+gutter,height)
-    //   ctx.stroke()
-    //   ctx.closePath()
-    //
-    // }
-
-
     update = false;
   }
+
   requestAnimationFrame(renderGrid)
 }
+
 requestAnimationFrame(renderGrid)
 
 addEventListener("resize",() => {

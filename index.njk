@@ -17,7 +17,7 @@ myClasses: [ home white ]
 
 </section>
 
-<section id="sw" class="red nx">
+<section id="sw" class="yel nx">
 
   <div class="slide slide_students">
     <div class="s1"><h2 >Student work</h2></div>
@@ -52,7 +52,7 @@ myClasses: [ home white ]
 				<h3 class="uc">{{ course.title }}</h3>
 				<p class="specs">{{ course.specs }}</p>
 				<p class="text">{{ course.tagline }}</p>
-{# <pre>{{ course | dump }}</pre>#}
+				{# <pre>{{ course | dump }}</pre>#}
 				<a href="{{ course.permalink }}" class="uc">Discover More</a>
 			</div>
 
@@ -63,7 +63,23 @@ myClasses: [ home white ]
 
 <section id="testis">
 	<h2>Some really nice things said about us by some really, really nice people</h2>
+
+	<div class="testis--slider nx">
+		<div class="testis--card">
+			{% include "images/mock--home.njk" %}
+		</div>
+		<div class="testis--card yellow">
+			<div class="quote uc">
+				<p>“YOU CONTROL YOUR LEVEL OF STUDY, WHETHER YOU’RE A BEGINNER OR A PRACTISING DESIGNER. OUR ONLINE COURSES ARE FLEXIBLE WITH SCHEDULES TO SUIT YOU, AND PATHWAYS TO MATCH YOUR STUDY AND CAREER REQUIREMENTS.</p>
+				<p>Ann Greenwood<br>freelancer</p>
+				<a href="/student-work">See My work</a>
+			</div>
+
+		</div>
+	</div>
+
 	<pre>{{ site.pages[site.index['home']] | dump }}</pre>
+
 </section>
 
 

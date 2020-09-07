@@ -35,7 +35,7 @@ function renderGrid () {
   requestAnimationFrame(renderGrid)
 }
 
-requestAnimationFrame(renderGrid)
+// requestAnimationFrame(renderGrid)
 
 addEventListener("resize",() => {
   update = true

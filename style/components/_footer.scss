@@ -94,6 +94,9 @@ footer {
 		}
 
 		a {
+			color: var(--grey50);
+			line-height:1.25;
+			margin-bottom:.25em;
 			font-weight: 300;
 
 			&:hover {

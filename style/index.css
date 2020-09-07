@@ -288,6 +288,11 @@ pre {
   color: var(--black);
 }
 
+.blue {
+  background: var(--blue);
+  color: var(--white);
+}
+
 .px0 {
   padding-left: 0;
   padding-right: 0;
@@ -720,6 +725,20 @@ figcaption strong {
     transform: translateX(var(--move-final));
   }
 }
+.title--full {
+  transform-origin: left top;
+  transform: translate3d(0px, 0px, 0px) scale(1);
+  border-right: none;
+  transition: transform 0.8s cubic-bezier(0.16, 1.08, 0.38, 0.98) 0s;
+}
+
+.title--small {
+  transform-origin: left top;
+  transform: translate3d(-3.82vw, -2.66vw, 0px) scale(0.112);
+  border-right: none;
+  transition: transform 0.8s cubic-bezier(0.16, 1.08, 0.38, 0.98) 0s;
+}
+
 :root {
   --gutter-width: 1vw;
   --outer-margin: 2vw;
@@ -1317,6 +1336,9 @@ footer .sitemap h3 {
   margin-top: 2em;
 }
 footer .sitemap a {
+  color: var(--grey50);
+  line-height: 1.25;
+  margin-bottom: 0.25em;
   font-weight: 300;
 }
 footer .sitemap a:hover {

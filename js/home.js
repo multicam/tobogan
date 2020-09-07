@@ -10,17 +10,30 @@ log('home -- ')
 gsap.registerPlugin(ScrollTrigger);
 
 ScrollTrigger.defaults({
-	toggleActions: "restart pause resume pause"
+	toggleActions: "play none reverse reset"
 });
+
+window.addEventListener( 'scroll', (e) => {
+	let position = window.scrollY
+	const cl = document.getElementById('hi').classList
+	if( position >= 50 ) {
+		cl.remove('title--full')
+		cl.add('title--small')
+	}
+	else {
+		cl.remove('title--small')
+		cl.add('title--full')
+	}
+})
 
 // gsap.to("#hi", {
 // 		ease: 'expo',
-// 		scale: .1,
+// 		scale: .01,
+// 		translateX: - window.innerWidth / 100 * 4,
 // 		transformOrigin: 'top left',
 // 		duration: 1.5,
 // 		scrollTrigger: {
-// 			markers: true,
-// 			trigger: "#hi",
+// 			markers: true
 // 		}
 // 	})
 
@@ -34,24 +47,33 @@ ScrollTrigger.defaults({
 //     ease: "expo"
 //   })
 //
-// const st = i => `.slide_students .s${i}`
-// const offsets = [ '-50%', '25%', '-100%', '-25%', '50%' ]
-//
-// const allSlides = document.querySelectorAll('.slide_students > *')
-// // allSlides.forEach(log)
-// const t1 = gsap.timeline()
-//
-// allSlides.forEach( (sl,n) => {
-// 	t1.to(st(n), {
-// 		duration: 1,
-// 		translateX: offsets[n],
-// 		scrollTrigger: {
-// 			trigger: ".slide_students",
-// 			scrub: true
-// 		}
-// 	})
-// 	log('*',n,sl)
-// })
+
+const st = i => `.slide_students .s${i}`
+const offsets = [ '50%', '-100%', '25%', '-25%', '50%' ]
+
+const allSlides = document.querySelectorAll('.slide_students > *')
+log(allSlides)
+
+const tl = gsap.timeline()
+
+tl.to( '.slide_students .s1', {
+	translateX: '-50%',
+	transformOrigin: 'left center',
+	scrollTrigger: {
+		trigger: ".slide_students",
+		scrub: true
+	}
+})
+
+tl.from( '.slide_students .s3', {
+	translateX: '-50%',
+	transformOrigin: 'left center',
+	scrollTrigger: {
+		trigger: ".slide_students",
+		scrub: true
+	}
+})
+
 
 // const infinite = gsap.timeline({repeat:-1,paused: false})
 

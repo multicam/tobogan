@@ -8,7 +8,7 @@ myClasses: [ home white ]
 
 <section >
 
-	<div id="hi" class="mt4 w100">
+	<div id="hi" class="mt4  title--full">
 		<h1 >The Graphic <br/>Design School</h1>
 	</div>
 
@@ -20,9 +20,9 @@ myClasses: [ home white ]
 <section id="sw" class="yel nx">
 
   <div class="slide slide_students">
-    <div class="s1"><h2 >Student work</h2></div>
-    <div class="s2"><h2 >Student work</h2></div>
-    <div class="s3"><h2 >Student work</h2></div>
+    <div class="s1"><h2 ><span>Student work</span><span>Student work</span></h2></div>
+    <div class="s2"><h2 ><span>Student work</span><span>Student work</span></h2></div>
+    <div class="s3"><h2 ><span>Student work</span><span>Student work</span></h2></div>
   </div>
 
   <div class="image">
@@ -31,7 +31,7 @@ myClasses: [ home white ]
   </div>
 
 	<div class="marquee">
-		<div class="marquee__inner">
+		<div class="marquee__inner blue">
 			{% for i in range(0, 25) -%}
 				<span>Enter&nbsp;</span>
 			{%- endfor %}
@@ -48,7 +48,7 @@ myClasses: [ home white ]
 
 	<div class="courses--cards">
 		{% for course in courses.content %}
-			<div class="card black">
+			<div class="card white">
 				<h3 class="uc">{{ course.title }}</h3>
 				<p class="specs">{{ course.specs }}</p>
 				<p class="text">{{ course.tagline }}</p>
@@ -62,6 +62,7 @@ myClasses: [ home white ]
 
 
 <section id="testis">
+
 	<h2>Some really nice things said about us by some really, really nice people</h2>
 
 	<div class="testis--slider nx">

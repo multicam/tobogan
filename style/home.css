@@ -93,7 +93,7 @@
 
 .card {
   flex-basis: 19vw;
-  padding: 2vw 1vw;
+  padding: 4vw 1vw;
   display: flex;
   flex-direction: column;
 }
@@ -126,6 +126,22 @@
 }
 .card pre {
   font-size: 2vw;
+}
+.card.white {
+  border: 1px solid var(--blue);
+}
+.card.white h3, .card.white .specs {
+  color: var(--blue);
+}
+.card.white .text {
+  color: var(--black);
+}
+.card.white a {
+  display: block;
+  width: 100%;
+  background: var(--yellow);
+  color: var(--black);
+  text-align: center;
 }
 
 .testis--slider {

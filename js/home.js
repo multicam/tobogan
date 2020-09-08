@@ -74,18 +74,25 @@ tl.from( '.slide_students .s3', {
 	}
 })
 
+tl.to( '#banner h2.y', {
+	translateX: '-50%',
+	transformOrigin: 'left center',
+	scrollTrigger: {
+		trigger: "#banner",
+		scrub: true
+	}
+})
 
-// const infinite = gsap.timeline({repeat:-1,paused: false})
-
-// const me = document.querySelector('.marquee span')
-// log(me)
-// infinite.to('.marquee span', {
-//     duration: 2.5,
-//     x:`-${me.clientWidth}px`,
-// 		repeat: -1
-//   }
-// )
-
+tl.fromTo( '#banner h2.b', {
+	translateX: '-50%'
+},{
+	translateX: '0',
+	transformOrigin: 'left center',
+	scrollTrigger: {
+		trigger: "#banner",
+		scrub: true
+	}
+})
 //
 // const t2 = gsap.timeline()
 //

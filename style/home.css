@@ -178,3 +178,69 @@
 .marquee span {
   white-space: nowrap;
 }
+
+#more {
+  padding: 4vw 0;
+}
+#more h2 {
+  color: var(--white);
+  text-align: left;
+  font-size: 6vw;
+}
+#more p {
+  text-transform: uppercase;
+  color: var(--yellow);
+  font-size: 2vw;
+  line-height: 1.5;
+}
+#more .links a {
+  font-size: 2vw;
+  line-height: 1.5;
+  display: block;
+}
+
+.double {
+  overflow: hidden;
+  position: relative;
+  height: 9vw;
+}
+.double h2 {
+  position: absolute;
+  white-space: nowrap;
+  line-height: 9vw;
+  margin: 0;
+  font-size: 6vw;
+}
+.double h2.b {
+  color: transparent !important;
+  -webkit-text-stroke: 1px var(--blue);
+}
+.double h2.y {
+  color: var(--yellow) !important;
+}
+
+#tutors {
+  overflow: hidden;
+  align-content: center;
+  text-align: center;
+}
+
+.twrap {
+  display: flex;
+}
+
+.tcard {
+  padding: 3vw;
+}
+
+.img--wrap {
+  width: 36vw;
+  height: 33vw;
+  overflow: hidden;
+  display: flex;
+  align-content: center;
+}
+.img--wrap img {
+  width: 100%;
+  height: auto;
+}

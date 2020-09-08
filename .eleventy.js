@@ -86,23 +86,5 @@ module.exports = eleventyConfig => {
 		]
 	});
 
-  // you can return your config object (optional).
-	eleventyConfig.addPairedShortcode("postcss", async code => {
-		// const rawFilepath = path.join(__dirname, code);
-		// await new promise( (resolve,reject) => {
-		// 	postcss([
-		// 		require("precss"),
-		// 		require("postcss-import"),
-		// 		require("postcss-custom-selectors"),
-		// 		require("autoprefixer"),
-		// 		require("cssnano")
-		// 	])
-		// 		.process(code, { from: rawFilepath })
-		// 		.catch( reject )
-		// 		.then(result => resolve( result.css ));
-		// })
-		return `<code>${code}</code>`
-	})
-
 	return eleventyConfig
 }

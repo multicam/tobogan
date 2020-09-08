@@ -692,37 +692,25 @@ figcaption strong {
 .marquee {
   position: relative;
   overflow: hidden;
-  --offset: -15vw;
-  --move-initial: calc( 0);
-  --move-final: calc( var(--offset));
+  height: inherit;
 }
 
 .marquee__inner {
-  width: fit-content;
+  position: absolute;
   display: flex;
-  position: relative;
-  transform: translateX(var(--move-initial));
-  animation: marquee 5s linear infinite;
-  animation-play-state: paused;
-}
-
-.marquee span {
-  font-size: 1.25vw;
-  line-height: 1.5vw;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.marquee .marquee__inner {
-  animation-play-state: running;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  height: 1vw;
+  animation: marquee var(--speed, 10s) linear infinite;
 }
 
 @keyframes marquee {
   0% {
-    transform: translateX(var(--move-initial));
+    transform: none;
   }
   100% {
-    transform: translateX(var(--move-final));
+    transform: translateX(-50%);
   }
 }
 .title--full {
@@ -734,7 +722,7 @@ figcaption strong {
 
 .title--small {
   transform-origin: left top;
-  transform: translate3d(-3.82vw, -2.66vw, 0px) scale(0.112);
+  transform: translate3d(0, 0, 0px) scale(0.112);
   border-right: none;
   transition: transform 0.8s cubic-bezier(0.16, 1.08, 0.38, 0.98) 0s;
 }
@@ -1264,7 +1252,7 @@ header a {
 
 footer {
   color: white;
-  background: black;
+  background: var(--blue);
   padding: 1rem;
 }
 footer .statement {
@@ -1279,7 +1267,7 @@ footer a {
   text-transform: capitalize;
 }
 footer h4 {
-  font-weight: 300;
+  font-weight: 400;
   margin: 1rem 0;
 }
 footer .form {
@@ -1347,6 +1335,11 @@ footer .sitemap a:hover {
 footer .address {
   font-style: normal;
   line-height: 2.5vw;
+}
+footer .login {
+  padding: 4vw 0;
+  font-size: 6vw;
+  font-weight: 700 !important;
 }
 
 .debug {

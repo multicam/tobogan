@@ -6,12 +6,13 @@ myClasses: [ home white ]
 
 {% set courses = site.pages[site.index['courses']] %}
 
+<div id="hi" class="title--full">
+	<h1 >The Graphic <br/>Design School</h1>
+</div>
+
 <section >
 
-	<div id="hi" class="mt4  title--full">
-		<h1 >The Graphic <br/>Design School</h1>
-	</div>
-
+	<div id="hi-spacer"></div>
 	<p class="tagline uc">Online and at your own pace.<br>The first solely online design school in the world, since 2008.<br>
 	Our students are our everything. Their work is our pride and joy!</p>
 
@@ -30,11 +31,13 @@ myClasses: [ home white ]
     </div>
   </div>
 
-	<div class="marquee">
-		<div class="marquee__inner blue">
-			{% for i in range(0, 25) -%}
-				<span>Enter&nbsp;</span>
-			{%- endfor %}
+	<div class="marquee__wrap blue h2">
+		<div class="marquee">
+			<div class="marquee__inner uc">
+				{% for i in range(0, 50) -%}
+					<span>Enter&nbsp;</span>
+				{%- endfor %}
+			</div>
 		</div>
 	</div>
 
@@ -46,14 +49,24 @@ myClasses: [ home white ]
 
 	<h2>Online Courses</h2>
 
-	<div class="courses--cards">
+	<div class="cards__container">
 		{% for course in courses.content %}
-			<div class="card white">
-				<h3 class="uc">{{ course.title }}</h3>
-				<p class="specs">{{ course.specs }}</p>
-				<p class="text">{{ course.tagline }}</p>
-				{# <pre>{{ course | dump }}</pre>#}
-				<a href="{{ course.permalink }}" class="uc">Discover More</a>
+			<div class="card blue">
+
+				<div class="card__inner">
+					<h3 class="uc">{{ course.title }}</h3>
+					<p class="specs">{{ course.specs }}</p>
+					<p class="text">{{ course.tagline }}</p>
+				</div>
+
+				<a href="{{ course.permalink }}" class="uc th2 w100">
+					<div class="marquee yellow">
+						<div class="marquee__inner" style="--speed: 4s">
+							<span>Learn more about this course&nbsp;</span>
+							<span>Learn more about this course</span>
+						</div>
+					</div>
+				</a>
 			</div>
 
 		{% endfor %}
@@ -63,7 +76,8 @@ myClasses: [ home white ]
 
 <section id="testis">
 
-	<h2>Some really nice things said about us by some really, really nice people</h2>
+{#	<h2>Some really nice things said about us by some really, really nice people</h2>#}
+	<h2>Lovely students<br> saying lovely things</h2>
 
 	<div class="testis--slider nx">
 		<div class="testis--card">
@@ -73,7 +87,7 @@ myClasses: [ home white ]
 			<div class="quote uc">
 				<p>“YOU CONTROL YOUR LEVEL OF STUDY, WHETHER YOU’RE A BEGINNER OR A PRACTISING DESIGNER. OUR ONLINE COURSES ARE FLEXIBLE WITH SCHEDULES TO SUIT YOU, AND PATHWAYS TO MATCH YOUR STUDY AND CAREER REQUIREMENTS.</p>
 				<p>Ann Greenwood<br>freelancer</p>
-				<a href="/student-work">See My work</a>
+				<a href="/student-work">See My student work</a>
 			</div>
 
 		</div>
@@ -84,8 +98,8 @@ myClasses: [ home white ]
 </section>
 
 
-<section class="blank">
-	---
+<section class="blue nx">
+	<h2>Want to get<br> to know us?</h2>
 </section>
 <canvas id="overlay" />
 

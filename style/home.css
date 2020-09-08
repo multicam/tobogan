@@ -2,6 +2,20 @@
   --highlight: var(--blue);
 }
 
+#hi {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 20vW;
+  outline: 1px solid red;
+  padding: 8vw 5vw 0;
+}
+
+#hi-spacer {
+  height: 20vw;
+}
+
 .home {
   font-weight: 800;
 }
@@ -13,8 +27,8 @@
 }
 .home h2 {
   text-align: center;
-  font-size: 3.5vw;
-  margin: 4vw 0;
+  font-size: 3.25vw;
+  margin: 4vw 0 2vw 0;
 }
 .home h1, .home h2 {
   color: var(--highlight);
@@ -22,14 +36,13 @@
 .home .tagline {
   font-size: 1.75vw;
   line-height: 1.5;
-  margin-bottom: 6vw;
+  margin-bottom: 4vw;
 }
 .home a {
-  color: #222222;
+  color: var(--white) !important;
 }
 .home a:hover {
-  color: var(--highlight);
-  background: rgba(131, 57, 66, 0.083);
+  color: var(--yellow) !important;
 }
 .home .slide {
   overflow: hidden;
@@ -78,22 +91,30 @@
 #sw {
   position: relative;
 }
-#sw .marquee {
-  background: white;
+#sw .marquee__wrap {
   position: absolute;
   top: 50%;
   width: 100%;
   transform: translateY(-50%);
 }
+#sw .marquee__wrap span {
+  color: var(--white);
+  font-size: 1.25vw;
+  line-height: 1;
+}
 
-.courses--cards {
+.th2 {
+  height: 1.5vw;
+}
+
+.cards__container {
   display: flex;
   justify-content: space-between;
 }
 
 .card {
   flex-basis: 19vw;
-  padding: 4vw 1vw;
+  padding: 4vw 0 2vw 0;
   display: flex;
   flex-direction: column;
 }
@@ -103,14 +124,14 @@
   min-height: 3em;
 }
 .card p {
-  font-weight: 300;
+  font-weight: 400;
   color: #ccc;
 }
 .card p.specs {
-  color: var(--yellow);
+  font-weight: 500;
 }
 .card p.text {
-  font-size: 2vw;
+  font-size: 1.5vw;
   line-height: 1.25;
   flex: 1;
 }
@@ -124,24 +145,9 @@
 .card a:hover {
   color: var(--white);
 }
-.card pre {
-  font-size: 2vw;
-}
-.card.white {
-  border: 1px solid var(--blue);
-}
-.card.white h3, .card.white .specs {
-  color: var(--blue);
-}
-.card.white .text {
-  color: var(--black);
-}
-.card.white a {
-  display: block;
-  width: 100%;
-  background: var(--yellow);
-  color: var(--black);
-  text-align: center;
+.card .card__inner {
+  padding: 0 1vw;
+  flex: 1;
 }
 
 .testis--slider {
@@ -163,8 +169,12 @@
 .testis--card .quote a, .testis--card .quote p {
   font-size: 2vw !important;
   line-height: 1.25;
+  color: var(--black);
 }
 
 .marquee {
   color: var(--black);
+}
+.marquee span {
+  white-space: nowrap;
 }

@@ -11,6 +11,7 @@
 		display: block;
 		font-weight: 700;
 		line-height: 1;
+		margin-left: -.5vw;
 	}
 
 	h2 {
@@ -27,14 +28,6 @@
 		font-size: 1.75vw;
 		line-height: 1.5;
 		margin-bottom: 4vw;
-	}
-
-	a {
-		color: var(--white);
-
-		&:hover {
-			color: var(--yellow);
-		}
 	}
 
 	.slide {
@@ -152,7 +145,6 @@
 		}
 	}
 
-
 	a {
 		align-self: center;
 		justify-self: flex-end;
@@ -169,7 +161,6 @@
 		padding: 0 1vw;
 		flex: 1;
 	}
-
 }
 
 .testis--slider {

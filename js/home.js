@@ -17,6 +17,7 @@ const getCssVariable = (el,varName) => getComputedStyle(el).getPropertyValue(var
 const getVw = str => str && str.replace('vw','')
 
 window.addEventListener( 'scroll', (e) => {
+
 	const el = document.getElementById('hi'),
 		scrollAnchor = Math.floor(
 			window.innerWidth / 100. * getVw(getCssVariable(el, '--padding-y')) / 2 + 1
@@ -25,10 +26,14 @@ window.addEventListener( 'scroll', (e) => {
 	if( window.scrollY > scrollAnchor ) {
 		el.classList.remove( 'title--full' )
 		el.classList.add( 'title--small' )
+
+		document.getElementById('header').style.setProperty('background', 'var(--yellow)')
 	}
 	else {
 		el.classList.remove( 'title--small' )
 		el.classList.add( 'title--full' )
+
+		document.getElementById('header').style.setProperty('background', 'transparent')
 	}
 
 })

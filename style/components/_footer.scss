@@ -24,15 +24,16 @@ footer {
 
 	h4 {
 		font-weight: 400;
-		margin: 1rem 0;
+		margin: 1vw 0;
 	}
 
 	h3 {
-		color: var(--highlight)
+		color: var(--highlight);
+		margin: 1vw 0;
 	}
 
 	::placeholder {
-		color: var(--black);
+		color: var(--grey70);
 	}
 
 	.form {
@@ -57,7 +58,7 @@ footer {
 
 			font-size: 1.5vw;
 			padding: .5vw 0;
-			color: var(--highlight);
+			color: var(--blue);
 			background: transparent;
 			font-weight: 700;
 		}

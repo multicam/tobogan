@@ -1,5 +1,12 @@
 
 header {
+
+	--top-height: 2vw;
+	--top-backgound: transparent;
+
+	background: var(--top-backgound);
+	transition: all 1.2s cubic-bezier(0.16, 1.08, 0.38, 0.98) 0s;
+
 	top: 0;
 	position: sticky;
 	display: flex;
@@ -8,8 +15,8 @@ header {
 	padding-left: .75vw;
 
 	img {
-		margin: 1rem 0;
-		height: 2rem;
+		margin: .5vw 0;
+		height: 2vw;
 	}
 
 	nav {
@@ -17,18 +24,21 @@ header {
 		justify-content: flex-end;
 		align-items: center;
 		flex: 1;
-		margin-right: .5rem;
+		margin-right: .5vw;
 	}
 
 	a {
 		padding: 0 .5rem;
-		line-height: 4rem;
+		line-height: var(--top-height);
 		text-decoration: none;
 		text-transform: uppercase;
-		font-size: .75rem;
-		font-weight: 700;
+		font-size: 1vw;
+		font-weight: 500;
 		display:flex;
 		align-content: center;
+
+		color: var(--black)
 	}
+
 }
 

@@ -1208,6 +1208,10 @@ main section blockquote strong {
 }
 
 header {
+  --top-height: 2vw;
+  --top-backgound: transparent;
+  background: var(--top-backgound);
+  transition: all 1.2s cubic-bezier(0.16, 1.08, 0.38, 0.98) 0s;
   top: 0;
   position: sticky;
   display: flex;
@@ -1215,25 +1219,26 @@ header {
   padding-left: 0.75vw;
 }
 header img {
-  margin: 1rem 0;
-  height: 2rem;
+  margin: 0.5vw 0;
+  height: 2vw;
 }
 header nav {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   flex: 1;
-  margin-right: 0.5rem;
+  margin-right: 0.5vw;
 }
 header a {
   padding: 0 0.5rem;
-  line-height: 4rem;
+  line-height: var(--top-height);
   text-decoration: none;
   text-transform: uppercase;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 1vw;
+  font-weight: 500;
   display: flex;
   align-content: center;
+  color: var(--black);
 }
 
 footer {
@@ -1256,13 +1261,14 @@ footer a {
 }
 footer h4 {
   font-weight: 400;
-  margin: 1rem 0;
+  margin: 1vw 0;
 }
 footer h3 {
   color: var(--highlight);
+  margin: 1vw 0;
 }
 footer ::placeholder {
-  color: var(--black);
+  color: var(--grey70);
 }
 footer .form {
   margin-top: 4vw;
@@ -1281,7 +1287,7 @@ footer .form input {
   border-bottom: 1px solid var(--highlight);
   font-size: 1.5vw;
   padding: 0.5vw 0;
-  color: var(--highlight);
+  color: var(--blue);
   background: transparent;
   font-weight: 700;
 }

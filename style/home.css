@@ -1,5 +1,5 @@
 :root {
-  --highlight: var(--blue);
+  --hi-height: 20vw;
 }
 
 #hi {
@@ -7,18 +7,32 @@
   top: 0;
   right: 0;
   left: 0;
-  height: 20vW;
-  outline: 1px solid red;
-  padding: 8vw 5vw 0;
+  height: var(--hi-height);
+  padding: var(--padding-y) var(--padding-x) 0;
 }
 
 #hi-spacer {
-  height: 20vw;
+  height: calc( var(--hi-height) + var(--padding-y) / 2 );
 }
 
-.home {
-  font-weight: 800;
+.title--full {
+  transform-origin: left top;
+  transform: translate3d(0px, 0px, 0px) scale(1);
+  border-right: none;
+  transition: transform 0.8s cubic-bezier(0.16, 1.08, 0.38, 0.98) 0s;
 }
+
+.title--small {
+  transform-origin: left top;
+  transform: translate3d(0, 0, 0px) scale(0.112);
+  border-right: none;
+  transition: transform 0.8s cubic-bezier(0.16, 1.08, 0.38, 0.98) 0s;
+}
+
+:root {
+  --highlight: var(--blue);
+}
+
 .home h1 {
   font-size: 9vw;
   display: block;
@@ -39,10 +53,10 @@
   margin-bottom: 4vw;
 }
 .home a {
-  color: var(--white) !important;
+  color: var(--white);
 }
 .home a:hover {
-  color: var(--yellow) !important;
+  color: var(--yellow);
 }
 .home .slide {
   overflow: hidden;
@@ -126,9 +140,11 @@
 .card p {
   font-weight: 400;
   color: #ccc;
+  margin-top: 0.5vw;
 }
 .card p.specs {
   font-weight: 500;
+  color: var(--yellow);
 }
 .card p.text {
   font-size: 1.5vw;
@@ -170,6 +186,11 @@
   font-size: 2vw !important;
   line-height: 1.25;
   color: var(--black);
+  font-weight: 500;
+}
+
+.marquee__wrap {
+  height: 2vw;
 }
 
 .marquee {
@@ -177,6 +198,10 @@
 }
 .marquee span {
   white-space: nowrap;
+}
+
+.marquee__inner {
+  line-height: 1.25;
 }
 
 #more {
@@ -213,7 +238,7 @@
 }
 .double h2.b {
   color: transparent !important;
-  -webkit-text-stroke: 1px var(--blue);
+  -webkit-text-stroke: 1.5px var(--blue);
 }
 .double h2.y {
   color: var(--yellow) !important;
@@ -221,7 +246,8 @@
 
 #tutors {
   overflow: hidden;
-  align-content: center;
+  display: flex;
+  justify-content: center;
   text-align: center;
 }
 
@@ -230,7 +256,7 @@
 }
 
 .tcard {
-  padding: 3vw;
+  padding: 5vw 3vw 0 3vw;
 }
 
 .img--wrap {
@@ -243,4 +269,11 @@
 .img--wrap img {
   width: 100%;
   height: auto;
+}
+
+.text--wrap {
+  line-height: 5vw;
+  text-transform: uppercase;
+  font-size: 1.5vw;
+  font-weight: 600;
 }

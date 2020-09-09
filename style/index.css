@@ -531,7 +531,7 @@ body {
 }
 
 ::placeholder {
-  color: #aaa;
+  color: var(--black);
   text-transform: uppercase;
 }
 
@@ -701,7 +701,7 @@ figcaption strong {
   top: 0;
   bottom: 0;
   margin: auto;
-  height: 1vw;
+  height: 1.25em;
   animation: marquee var(--speed, 10s) linear infinite;
 }
 
@@ -713,20 +713,6 @@ figcaption strong {
     transform: translateX(-50%);
   }
 }
-.title--full {
-  transform-origin: left top;
-  transform: translate3d(0px, 0px, 0px) scale(1);
-  border-right: none;
-  transition: transform 0.8s cubic-bezier(0.16, 1.08, 0.38, 0.98) 0s;
-}
-
-.title--small {
-  transform-origin: left top;
-  transform: translate3d(0, 0, 0px) scale(0.112);
-  border-right: none;
-  transition: transform 0.8s cubic-bezier(0.16, 1.08, 0.38, 0.98) 0s;
-}
-
 :root {
   --gutter-width: 1vw;
   --outer-margin: 2vw;
@@ -1251,17 +1237,19 @@ header a {
 }
 
 footer {
-  color: white;
-  background: var(--blue);
-  padding: 1rem;
+  --highlight: var(--black);
+  --background: var(--yellow);
+  color: var(--black);
+  background: var(--yellow);
 }
 footer .statement {
   font-size: 8vw !important;
   font-weight: 700 !important;
   margin-top: 6vw;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--highlight);
 }
 footer a {
-  color: lightslategrey;
   line-height: 2rem;
   text-decoration: none;
   text-transform: capitalize;
@@ -1269,6 +1257,12 @@ footer a {
 footer h4 {
   font-weight: 400;
   margin: 1rem 0;
+}
+footer h3 {
+  color: var(--highlight);
+}
+footer ::placeholder {
+  color: var(--black);
 }
 footer .form {
   margin-top: 4vw;
@@ -1284,62 +1278,78 @@ footer .form h3 {
 footer .form input {
   flex: 1;
   border: none;
-  border-bottom: 1px solid var(--yellow);
-  font-size: 1vw;
+  border-bottom: 1px solid var(--highlight);
+  font-size: 1.5vw;
   padding: 0.5vw 0;
-  color: white !important;
+  color: var(--highlight);
   background: transparent;
-  font-weight: 900;
+  font-weight: 700;
 }
 footer .form .button {
   display: flex;
   align-items: center;
   padding: 0 0.5rem;
   font-weight: 700;
-  color: white;
-  border-bottom: 1px solid var(--yellow);
+  border-bottom: 1px solid var(--highlight);
+  color: var(--black);
 }
 footer .form .button:hover {
-  color: black;
-  background: var(--yellow);
+  background: var(--highlight);
 }
 footer .form form {
   margin-top: 2vw;
   display: flex;
 }
 footer .form .note {
-  color: var(--grey50);
   text-transform: uppercase;
   margin-top: 0.5rem;
-  font-size: 0.72vw;
+  font-size: 1vw;
 }
 footer .form .note a {
+  text-transform: uppercase;
+  line-height: inherit;
+  font-weight: 400;
+  text-decoration: underline;
+  color: var(--black);
+}
+footer .form .note a :hover {
   color: var(--white);
 }
 footer .sitemap {
   font-size: 1.5vw;
-  font-weight: 300;
+  font-weight: 500;
+}
+footer .sitemap h3, footer .sitemap h4 {
+  color: var(--black) !important;
 }
 footer .sitemap h3 {
   margin-top: 2em;
 }
+footer .sitemap h4 {
+  margin-bottom: 0;
+}
 footer .sitemap a {
-  color: var(--grey50);
+  color: var(--black) !important;
   line-height: 1.25;
   margin-bottom: 0.25em;
   font-weight: 300;
 }
 footer .sitemap a:hover {
-  color: var(--yellow);
+  color: var(--highlight) !important;
 }
-footer .address {
+footer address {
   font-style: normal;
-  line-height: 2.5vw;
+  line-height: 1.75vw;
+  font-weight: 300;
 }
 footer .login {
   padding: 4vw 0;
   font-size: 6vw;
   font-weight: 700 !important;
+  color: var(--black);
+}
+footer .login:hover {
+  color: var(--blue);
 }
 
 .debug {

@@ -7,7 +7,7 @@ body {
 
 
 ::placeholder {
-	color: #aaa;
+	color: var(--black);
 	text-transform: uppercase;
 }
 

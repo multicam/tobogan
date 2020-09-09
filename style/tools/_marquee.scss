@@ -48,7 +48,7 @@
 	position: absolute;
 	display: flex;
 
-	top:0; bottom:0; margin:auto; height:1vw;
+	top:0; bottom:0; margin:auto; height:1.25em;
 	animation: marquee var(--speed, 10s) linear infinite;
 }
 

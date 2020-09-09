@@ -6,14 +6,16 @@ myClasses: [ home white ]
 
 {% set courses = site.pages[site.index['courses']] %}
 
-<div id="hi" class="title--full">
+<section id="hi" class="title--full">
 	<h1 >The Graphic <br/>Design School</h1>
-</div>
+</section>
 
 <section >
 
 	<div id="hi-spacer"></div>
-	<p class="tagline uc">Online and at your own pace.<br>The first solely online design school in the world, since 2008.<br>
+
+	<p class="tagline uc">Design courses online and at your own pace.<br>The first solely online design school in the world, since 2008.<br>
+
 	Our students are our everything. Their work is our pride and joy!</p>
 
 </section>
@@ -31,9 +33,9 @@ myClasses: [ home white ]
     </div>
   </div>
 
-	<div class="marquee__wrap blue h2">
+	<div class="marquee__wrap blue">
 		<div class="marquee">
-			<div class="marquee__inner uc">
+			<div class="marquee__inner uc " style="--speed: 20s">
 				{% for i in range(0, 50) -%}
 					<span>Enter&nbsp;</span>
 				{%- endfor %}
@@ -62,8 +64,8 @@ myClasses: [ home white ]
 				<a href="{{ course.permalink }}" class="uc th2 w100">
 					<div class="marquee yellow">
 						<div class="marquee__inner" style="--speed: 4s">
-							<span>Learn more about this course&nbsp;</span>
-							<span>Learn more about this course</span>
+							<span>Learn more about {{ course.title }}&nbsp;</span>
+							<span>Learn more about {{ course.title }} </span>
 						</div>
 					</div>
 				</a>
@@ -93,34 +95,23 @@ myClasses: [ home white ]
 		</div>
 	</div>
 
-	<pre>{{ site.pages[site.index['home']] | dump }}</pre>
-
 </section>
 
-
-<section id='more' class="blue nx">
-	<div class="px">
-		<h2>Want to get<br> to know us?</h2>
-		<p>We are always up for a chat on the dog &amp; bone, or send us a love letter. Request a callback or email us to ask us a question!</p>
-		<div class="links">
-			<a href="#">Request a callback</a>
-			<a href="#">Email us</a>
-			<a href="#">Request a brochure</a>
-			<a href="#">FAQs</a>
-			<a href="#">Student handbook</a>
-		</div>
-	</div>
-</section>
 
 <section id="banner">
 	<div class="double nx">
 		<h2 class="_1 y">
+{#			<span>Industry relevant tutors supportive tutors</span>#}
+{#			<span>Industry relevant tutors supportive tutors</span>#}
 			<span>Industry relevant tutors supportive tutors</span>
 			<span>Industry relevant tutors supportive tutors</span>
+
 		</h2>
 		<h2 class="_2 b">
-			<span>Industry relevant tutors supportive tutors</span>
-			<span>Industry relevant tutors supportive tutors</span>
+
+			<span>Tutors Tutors Tutors Tutors Tutors Tutors Tutors Tutors </span>
+			<span>Tutors Tutors Tutors Tutors Tutors Tutors Tutors Tutors </span>
+
 		</h2>
 	</div>
 </section>
@@ -132,7 +123,7 @@ myClasses: [ home white ]
 				{% include 'images/mock--tutor-1.njk' %}
 			</div>
 			<div class="text--wrap">
-				This is a tutor
+				Tutor name
 			</div>
 		</div>
 		<div class="tcard">
@@ -140,7 +131,7 @@ myClasses: [ home white ]
 				{% include 'images/mock--tutor-2.njk' %}
 			</div>
 			<div class="text--wrap">
-				This is a tutor
+				Tutor name
 			</div>
 		</div>
 		<div class="tcard">
@@ -148,11 +139,27 @@ myClasses: [ home white ]
 				{% include 'images/mock--tutor-3.njk' %}
 			</div>
 			<div class="text--wrap">
-				This is a tutor
+				Tutor name
 			</div>
 		</div>
 	</div>
 </section>
+
+
+{#<section id='more' class="blue nx">#}
+{#	<div class="px">#}
+{#		<h2>Want to get<br> to know us?</h2>#}
+{#		<p>We are always up for a chat on the dog &amp; bone, or send us a love letter. Request a callback or email us to ask us a question!</p>#}
+{#		<div class="links">#}
+{#			<a href="#">Request a callback</a>#}
+{#			<a href="#">Email us</a>#}
+{#			<a href="#">Request a brochure</a>#}
+{#			<a href="#">FAQs</a>#}
+{#			<a href="#">Student handbook</a>#}
+{#		</div>#}
+{#	</div>#}
+{#</section>#}
+
 
 <canvas id="overlay" />
 

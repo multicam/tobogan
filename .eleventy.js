@@ -65,16 +65,14 @@ module.exports = eleventyConfig => {
   eleventyConfig.addPassthroughCopy('js/components');
 	eleventyConfig.addPassthroughCopy('style/*.css');
 
-
 	eleventyConfig.addPassthroughCopy('favicon.ico')
 	eleventyConfig.addPassthroughCopy('site.webmanifest')
-
-
 
 	// -- browsersync
 
 	eleventyConfig.setBrowserSyncConfig({
 		notify: true,
+		ghostMode: false,
 		callbacks: {
 			ready: (err,bs) => {
 				err && console.log(err)

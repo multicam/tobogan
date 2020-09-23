@@ -361,6 +361,10 @@ pre {
   margin-bottom: 2vw;
 }
 
+.pb2 {
+  padding-bottom: 2vw;
+}
+
 .max-10 {
   max-width: 10ch;
 }
@@ -1321,27 +1325,42 @@ footer .form .note a {
 footer .form .note a :hover {
   color: var(--white);
 }
-footer .sitemap {
+footer .sitemap h3, footer .contact h3 {
+  margin-top: 2em;
+}
+footer .sitemap h4, footer .contact h4 {
+  margin-bottom: 0;
+}
+footer .sitemap a, footer .contact a {
+  line-height: 1.25;
+  margin-bottom: 0.25em;
+  font-weight: 400;
+}
+footer .contact {
   font-size: 1.5vw;
   font-weight: 500;
 }
-footer .sitemap h3, footer .sitemap h4 {
-  color: var(--black) !important;
+footer .contact h3, footer .contact h4, footer .contact a {
+  color: var(--black);
+}
+footer .sitemap {
+  padding-top: 2vw;
+  background: var(--white);
+  font-size: 1vw;
+  font-weight: 500;
+}
+footer .sitemap h3, footer .sitemap h4, footer .sitemap a {
+  color: var(--blue);
 }
 footer .sitemap h3 {
-  margin-top: 2em;
+  margin: 2vw 0 1vw 0;
 }
 footer .sitemap h4 {
-  margin-bottom: 0;
+  font-weight: 500;
+  margin: 0 0 1vw 0;
 }
 footer .sitemap a {
-  color: var(--black) !important;
-  line-height: 1.25;
-  margin-bottom: 0.25em;
-  font-weight: 300;
-}
-footer .sitemap a:hover {
-  color: var(--highlight) !important;
+  font-weight: 400;
 }
 footer address {
   font-style: normal;
@@ -1350,9 +1369,14 @@ footer address {
 }
 footer .login {
   padding: 4vw 0;
-  font-size: 6vw;
+  font-size: 5vw;
   font-weight: 700 !important;
   color: var(--black);
+}
+footer .login span {
+  display: inline-block;
+  border-bottom: 0.25vw solid var(--blue);
+  line-height: 1;
 }
 footer .login:hover {
   color: var(--blue);

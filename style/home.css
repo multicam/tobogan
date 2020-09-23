@@ -12,7 +12,11 @@
 }
 
 #hi-spacer {
+  transition: height 0.8s cubic-bezier(0.16, 1.08, 0.38, 0.98) 0s;
   height: calc( var(--hi-height) + var(--padding-y) / 2 );
+}
+#hi-spacer.going {
+  height: var(--padding-y);
 }
 
 .title--full {
@@ -165,11 +169,13 @@
 }
 
 .testis--card {
-  flex: 1;
+  flex: 0 0 50%;
+  overflow: hidden;
 }
 .testis--card img {
-  width: 100%;
+  max-width: 100%;
   height: auto;
+  object-fit: cover;
 }
 .testis--card .quote {
   padding: 2vw 6vw;

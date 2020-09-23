@@ -101,16 +101,11 @@ footer {
 		}
 	}
 
-	.sitemap {
-		font-size: 1.5vw;
-		font-weight: 500;
+	.sitemap, .contact {
+
 		// need to clamp here
 
-		h3, h4 {
-			color: var(--black) !important;
-		}
-
-		h3 {
+			h3 {
 			margin-top: 2em;
 		}
 
@@ -119,15 +114,45 @@ footer {
 		}
 
 		a {
-			color: var(--black)!important;
 			line-height: 1.25;
 			margin-bottom: .25em;
-			font-weight: 300;
+			font-weight: 400;
+		}
+	}
 
-			&:hover {
-				color: var(--highlight)!important;
-			}
+	.contact {
+		font-size: 1.5vw;
+		font-weight: 500;
 
+		h3, h4, a {
+			color: var(--black);
+		}
+
+	}
+
+	.sitemap {
+
+		padding-top: 2vw;
+		background: var(--white);
+
+		font-size: 1vw;
+		font-weight: 500;
+
+		h3, h4, a {
+			color: var(--blue);
+		}
+
+		h3 {
+			margin: 2vw 0 1vw 0;
+		}
+
+		h4 {
+			font-weight: 500;
+			margin: 0 0 1vw 0;
+		}
+
+		a {
+			font-weight: 400;
 		}
 	}
 
@@ -139,9 +164,15 @@ footer {
 
 	.login {
 		padding: 4vw 0;
-		font-size: 6vw;
+		font-size: 5vw;
 		font-weight: 700!important;
 		color: var(--black);
+
+		span{
+			display: inline-block;
+			border-bottom: .25vw solid var(--blue);
+			line-height: 1 ;
+		}
 
 		&:hover {
 			color: var(--blue)

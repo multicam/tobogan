@@ -18,20 +18,28 @@ const getVw = str => str && str.replace('vw','')
 
 window.addEventListener( 'scroll', (e) => {
 
-	const el = document.getElementById('hi'),
+	const
+		el = document.getElementById('hi'),
+		spacer = document.getElementById('hi-spacer'),
 		scrollAnchor = Math.floor(
 			window.innerWidth / 100. * getVw(getCssVariable(el, '--padding-y')) / 2 + 1
 		)
 
 	if( window.scrollY > scrollAnchor ) {
-		el.classList.remove( 'title--full' )
+
 		el.classList.add( 'title--small' )
+		el.classList.remove( 'title--full' )
+
+		spacer.classList.add('going')
 
 		document.getElementById('header').style.setProperty('background', 'var(--yellow)')
 	}
 	else {
+
 		el.classList.remove( 'title--small' )
 		el.classList.add( 'title--full' )
+
+		spacer.classList.remove('going')
 
 		document.getElementById('header').style.setProperty('background', 'transparent')
 	}
@@ -39,9 +47,6 @@ window.addEventListener( 'scroll', (e) => {
 })
 
 // -- student work slider
-
-const allSlides = document.querySelectorAll('.slide_students > *')
-log(allSlides)
 
 const tl = gsap.timeline()
 

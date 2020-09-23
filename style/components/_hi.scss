@@ -8,7 +8,12 @@
 }
 
 #hi-spacer {
+	transition: height .8s cubic-bezier(0.16, 1.08, 0.38, 0.98) 0s;
 	height: calc( var(--hi-height) + var(--padding-y) / 2 );
+
+	&.going {
+		height: var(--padding-y);
+	}
 }
 
 .title--full {

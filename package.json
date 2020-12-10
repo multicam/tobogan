@@ -20,7 +20,7 @@
     "content:build": "nodemon -e yaml,json,md,js --watch /media/ssd1/tgds/tgds-content/_demo --watch _scripts/ _scripts/build.js",
     "content:server": "nodemon _scripts/server.js",
     "update": "npm-check -u && rm package-lock.json ; yarn",
-		"taze": "npx taze"
+    "taze": "npx taze"
   },
   "nodemonConfig": {
     "verbose": true,
@@ -64,5 +64,5 @@
     "response-time": "^2.3.2",
     "sass": "^1.26.10",
     "svg-parser": "^2.0.4"
-	}
+  }
 }

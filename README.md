@@ -3,7 +3,7 @@
 
 ## scss folder structure
 
-`
+```
 /scss/
 ├── 1-settings
 │   └── _global.scss
@@ -46,4 +46,4 @@
 │   └── _states.scss
 ├── _shame.scss
 └── main.scss
-`
+```

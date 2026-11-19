@@ -25,7 +25,9 @@ For example: "`m365`, FILES-4" or "MATTER-3".
 
 **R-4. Code shared between tracks lives in one track's code directory;** the other track's README points to it.
 
-**R-5. Secrets never enter git.** Commit an `.env.example` with empty values; real values go in `.env.local`.
+**R-5. Secrets never enter git.** Commit an `.env.example` with empty values; real values go in `.env.local`. Enforced by `factory/checks` (LADDER-2).
+
+**R-6. Green means the checks pass.** Before a commit is pushed, `node factory/checks/check-repo.mjs .` and the checks of every code directory touched must pass (LADDER-1). CI runs them again on every push.
 
 ## Document format
 
@@ -81,5 +83,6 @@ A doctrine can carry more than one level, for example "Verified, Tested".
 | MATTER | `matters` | `matters/roles-and-matter-folders.md` |
 | POLICY | `matters` | `matters/policy.md` |
 | HUMANS | `factory` | `factory/humans-md.md` |
+| LADDER | `factory` | `factory/harness-loops-graphs.md` |
 
 A new document registers its prefix here. Numbers are never reused: a withdrawn doctrine keeps its number and is marked **Withdrawn**, with the reason.

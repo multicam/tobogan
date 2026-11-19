@@ -1,0 +1,42 @@
+# Green, as defined by LADDER-1. Runs on every push and pull request.
+name: checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  repository:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Checker tests
+        working-directory: factory/checks
+        run: node --test
+      - name: Doctrines, lookup tables, secrets
+        run: node factory/checks/check-repo.mjs .
+
+  m365-spike:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: m365/spike
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: m365/spike/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+        env:
+          AUTH_SECRET: build-only-placeholder

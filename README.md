@@ -1,49 +1,25 @@
 # tobogan
 
+Research workspace for the **cub** project: integrating a Next.js app with SharePoint and other Microsoft services.
 
-## scss folder structure
+## Layout
 
-```
-/scss/
-├── 1-settings
-│   └── _global.scss
-├── 2-design-tokens
-│   ├── _colors.scss
-│   ├── _fonts.scss
-│   ├── _media-queries.scss
-│   ├── _spacing.scss
-│   └── _typography.scss
-├── 3-tools
-│   ├── _aspect-ratio.scss
-│   ├── _blend-modes.scss
-│   ├── _center.scss
-│   ├── _clearfix.scss
-│   └── _gradients.scss
-├── 4-generic
-│   ├── _box-sizing.scss
-│   ├── _font-face.scss
-│   ├── _normalize.scss
-│   └── _print.scss
-├── 5-elements
-│   ├── _forms.scss
-│   ├── _headings.scss
-│   ├── _images.scss
-│   ├── _links.scss
-│   ├── _lists.scss
-│   └── ...
-├── 6-skeleton
-│   ├── _grid.scss
-│   ├── _layouts.scss
-│   └── _objects.scss
-├── 7-components
-│   ├── _accordion.scss
-│   ├── _card.scss
-│   ├── _hero.scss
-│   ├── _pan-galactic-gargle-blaster.scss
-│   └── ...
-├── 8-utilities
-│   ├── _modifiers.scss
-│   └── _states.scss
-├── _shame.scss
-└── main.scss
-```
+| Path | Purpose |
+| --- | --- |
+| `research/auth-entra-id/` | Sign-in and tokens: Entra ID app registrations, MSAL, delegated vs application permissions |
+| `research/microsoft-graph/` | Graph API usage: SDK vs REST, throttling, change notifications |
+| `research/sharepoint/` | Sites, lists, document libraries, search, SharePoint REST vs Graph |
+| `research/other-microsoft-services/` | Teams, OneDrive, Outlook, Power Automate and anything else |
+| `spikes/` | Small runnable experiments, one folder per spike, each with its own `package.json` |
+| `references/` | Links, vendor docs excerpts, diagrams |
+| `archive/` | Frozen snapshots of earlier work |
+
+## Conventions
+
+- One Markdown note per question, named `YYYY-MM-DD-short-title.md`, ending with a conclusion or open questions.
+- Each spike folder has a short `README.md` saying what it tests and what was found.
+- Secrets stay out of git: put them in `.env.local` and commit only an `.env.example` with empty values.
+
+## Archive
+
+`archive/tobogan-2020-eleventy-site.zip` holds the previous content of this repo: the TGDS 2020 static site (Eleventy, Nunjucks, Sass, Parcel). It contains source only, with no `node_modules` or build output. The full history is also still in git before the reorganisation commit.

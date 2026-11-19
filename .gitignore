@@ -1,9 +1,17 @@
 node_modules/
+.next/
+out/
 dist/
 build/
-www/
-_site/
-.idea/
 .cache/
-package-lock.json
-yarn.lock
+.idea/
+.vscode/
+.DS_Store
+*.log
+
+# secrets: never commit tenant IDs' client secrets, certificates or tokens
+.env
+.env.*
+!.env.example
+*.pem
+*.pfx

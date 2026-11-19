@@ -66,7 +66,7 @@ Recommended: app-only for creation and team changes, delegated for everything el
 
 ## Draft policy
 
-In `matters/README.md`. Points the firm must decide:
+The draft is in `matters/policy.md`. Points the firm must decide:
 
 - **Do admins see every matter's documents?** If yes, a firm-admins group must be granted on every matter at creation. If confidentiality rules say no, admins manage matters without opening them, which the app-only approach allows.
 - **Can team leaders see matters they do not lead?**

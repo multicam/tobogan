@@ -1,8 +1,8 @@
 # Spike: Next.js 16 + Microsoft Graph (SharePoint and mail)
 
-**Tests:** whether the integration guide in `m365/references/` can be made robust, and what the hardened version looks like.
+**Tests:** whether the integration guide at `m365/guide.md` can be made robust, and what the hardened version looks like.
 
-**Found:** yes, with the changes recorded in `m365/research/`. The Graph layer is independent of the auth library and of Next.js, so it can be copied into an existing app.
+**Found:** yes, with the changes recorded in the documents listed in `m365/README.md`. The Graph layer is independent of the auth library and of Next.js, so it can be copied into an existing app.
 
 ## Layout
 
@@ -46,4 +46,4 @@ Entra app registration: redirect URI `http://localhost:3000/api/auth/callback/mi
 
 ## Known gaps
 
-Sharing UI, inline email images, outgoing attachments, shared mailboxes, polling of template copies. Each is described in the matching note in `m365/research/`.
+Sharing UI, inline email images, outgoing attachments, shared mailboxes, polling of template copies. Each is described in the matching document in `m365/`.

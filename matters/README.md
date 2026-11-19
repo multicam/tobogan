@@ -1,35 +1,20 @@
-# matters: roles and matter folders
+# matters
 
-How the firm's structure maps onto Microsoft 365.
+How the firm's structure maps onto Microsoft 365: admin, team leader and associate roles, and a matter as a SharePoint folder visible only to its team.
 
-- **Roles:** admin, team leader, associate.
-- **Matter:** a folder in a SharePoint document library, visible only to its team.
+## Documents
 
-## Where things are
-
-| What | Where |
-| --- | --- |
-| Role policy (who may do what in the app) | `m365/spike/lib/m365/roles.ts` |
-| Matter folders (create restricted, list, team changes) | `m365/spike/lib/m365/matters.ts` |
-| Tests | `m365/spike/test/matters-roles.test.ts` |
-| Research note | `research/2026-11-19-roles-and-matter-folders.md` |
-
-The code lives in the `m365` spike because it builds on that track's Graph, drive and sharing modules.
-
-## Draft policy
-
-To be confirmed by the firm. "Lead" means the team leader responsible for that matter.
-
-| Action | Admin | Team leader | Associate |
+| Document | Type | Answers | Date |
 | --- | --- | --- | --- |
-| Create a matter | Yes | Yes | No |
-| Open a matter they are on | Yes | Yes | Yes |
-| Add or edit documents | Yes | Yes | Yes |
-| File an email into a matter | Yes | Yes | Yes |
-| Change the matter's team | Yes | Lead only | No |
-| Close a matter | Yes | Lead only | No |
-| Share outside the firm | Yes | Lead only | No |
+| `policy.md` | Planning | Draft table of what each role may do, and the four decisions the firm owes | 2026-11-19 |
+| `roles-and-matter-folders.md` | Research | How roles map to Entra app roles, how a folder is restricted to a team, SharePoint limits, who performs matter creation, what to test on a tenant first | 2026-11-19 |
 
-A user with no role can do nothing.
+## Code
 
-This policy controls what the app offers. Access to documents is enforced by the permissions on each matter's SharePoint folder, because users can open SharePoint directly.
+This track has no code directory of its own. Its code builds on the `m365` modules and lives in that track's spike:
+
+| Path | What |
+| --- | --- |
+| `m365/spike/lib/m365/roles.ts` | Roles from sign-in claims and the policy check |
+| `m365/spike/lib/m365/matters.ts` | Create a restricted matter folder, list matters, change the team |
+| `m365/spike/test/matters-roles.test.ts` | Tests for both |

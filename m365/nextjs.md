@@ -19,7 +19,7 @@ Checked against Next.js 16.4.6, the version the spike builds with.
 - **Proxy body limit:** `experimental.proxyClientMaxBodySize` defaults to 10 MB, and larger bodies are **truncated without failing the request**. If the app has a proxy, exclude the upload route from its matcher or raise the limit.
 - **`searchParams` is a Promise;** synchronous access was removed in 16. The guide's page already awaits it.
 - **`fetch` is not cached by default.** With `cacheComponents`, a `use cache` scope cannot read cookies, so per-user Graph data must not be placed in one unless the user id is an argument.
-- **Setting cookies is not supported while rendering a server component.** This is why token refresh state lives in a server-side store (see the auth note).
+- **Setting cookies is not supported while rendering a server component.** This is why token refresh state lives in a server-side store (see `auth.md`).
 - Next's own guidance: the proxy should do optimistic checks only and "should not be your only line of defense".
 
 ## The upload route

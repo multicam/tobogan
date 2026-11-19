@@ -115,7 +115,7 @@ Put me on that last lane only; do not ask me to review intermediate work.</lanes
 
 ## Open
 
-- What the owner wants this prompt for: their own first team, the firm's, or a feature of cub. The answer decides the use case and tool stack (being asked).
+- None. The owner wants a critique only, with no team to design now (2026-11-19). The revised prompt is kept for later use.
 
 ## Sources
 

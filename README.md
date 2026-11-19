@@ -11,7 +11,7 @@ Each track is a top-level directory. Use the short name to refer to it.
 | `m365` | `m365/` | Plumbing for Microsoft 365: sign-in and tokens, the Graph client, SharePoint files and sharing, Exchange mail, Next.js specifics | Seven documents; spike closes every recorded gap (112 tests). Not yet run against a tenant |
 | `matters` | `matters/` | The firm's model: admin, team leader and associate roles; a matter as a SharePoint folder limited to its team | Two documents; policy decided 2026-11-19 and built (112 tests). Needs the two Entra groups, a site sharing setting (POLICY-10) and tenant tests |
 | `factory` | `factory/` | How agents work with the owner and the repository: HUMANS.md, the harness/loops/graphs ladder, repository checks and CI | Three research documents and a repository checker; HUMANS.md read from its source repositories, the articles from pasted text |
-| `prompt` | `prompt/` | Analysis of the "AI team architect" prompt shared on X | One research document with a revised prompt; owner's purpose for it being asked |
+| `prompt` | `prompt/` | Analysis of the "AI team architect" prompt shared on X | Critique done, with a revised prompt kept for later; closed unless reopened |
 | `archive` | `archive/` | Frozen earlier work, not a live track | Closed |
 
 ## How this repository works

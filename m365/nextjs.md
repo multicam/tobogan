@@ -1,53 +1,64 @@
-# Next.js 16 specifics
+# NEXT: Next.js 16 app layer
+
+**Track:** m365 · **Type:** research · **Date:** 2026-11-19
 
 **Question:** which Next.js behaviours affect this integration, and how should the app layer be shaped?
 
-Checked against Next.js 16.4.6, the version the spike builds with.
+Checked against Next.js 16.4.6.
 
-## Decisions
+## Doctrines
 
-1. **Server Actions for small mutations only** (invite, link, revoke, save attachment). Each one authenticates and validates its own arguments, because every action is a public POST endpoint.
-2. **Uploads use a route handler** that streams `request.body`.
-3. **All Graph code is server-only.** The modules that touch tokens import `server-only`.
-4. **Authorization is checked where data is read**, not in the proxy.
-5. **Security headers** limit what the app may frame.
+**NEXT-1. Every Server Action authenticates and validates its own arguments.**
+- Why: each Server Action is a public POST endpoint, and its argument types are not enforced at runtime.
+- Basis: Verified, Tested
+- Code: `spike/app/workspace/actions.ts` (each action calls `getDriveContext()`, which throws without a session; the library functions validate every argument)
 
-## Verified facts
+**NEXT-2. Uploads go through a streaming route handler that rejects cross-site requests.**
+`PUT /api/upload?folderId=...&name=...` takes the raw file as its body. It requires an exact `Content-Length` (411 without), rejects files over 2 GB (413), and requires an `x-requested-with: fetch` header.
+- Why: Server Actions accept 1 MB by default (`experimental.serverActions.bodySizeLimit`) and buffer the body. A cross-site HTML form cannot set the custom header and a cross-site `fetch` is preflighted, which blocks request forgery; Next.js gives Server Actions an origin check but not route handlers.
+- Evidence: Next.js `serverActions.mdx`. Streaming a request body into Graph is standard Web API usage, not a documented Next.js pattern.
+- Basis: Verified, Tested (smoke-tested signed out: 400 without the header, 401 without a session)
+- Code: `spike/app/api/upload/route.ts`
 
-- **Server Action body limit:** 1 MB by default, configured with `experimental.serverActions.bodySizeLimit`. The guide's upload action fails above that and buffers the whole file.
-- **`middleware.ts` is now `proxy.ts`** (export `proxy`, Node.js runtime only). Codemod: `npx @next/codemod@canary middleware-to-proxy .`
-- **Proxy body limit:** `experimental.proxyClientMaxBodySize` defaults to 10 MB, and larger bodies are **truncated without failing the request**. If the app has a proxy, exclude the upload route from its matcher or raise the limit.
-- **`searchParams` is a Promise;** synchronous access was removed in 16. The guide's page already awaits it.
-- **`fetch` is not cached by default.** With `cacheComponents`, a `use cache` scope cannot read cookies, so per-user Graph data must not be placed in one unless the user id is an argument.
-- **Setting cookies is not supported while rendering a server component.** This is why token refresh state lives in a server-side store (see `auth.md`).
-- Next's own guidance: the proxy should do optimistic checks only and "should not be your only line of defense".
+**NEXT-3. Code that touches tokens or Graph is server-only.**
+- Why: an accidental client import would ship token handling to the browser.
+- Basis: Verified
+- Code: `import "server-only"` in `config.ts` and `server.ts`
 
-## The upload route
+**NEXT-4. Check authorization where data is read, not in the proxy.**
+- Why: Next.js says the proxy should do optimistic checks only and "should not be your only line of defense".
+- Evidence: Next.js data security guide.
+- Basis: Verified
 
-`app/api/upload/route.ts` accepts `PUT /api/upload?folderId=...&name=...` with the raw file as the body.
+**NEXT-5. Keep upload routes out of the proxy.**
+- Why: `middleware.ts` is now `proxy.ts`, and its `experimental.proxyClientMaxBodySize` (10 MB by default) truncates larger bodies without failing the request.
+- Evidence: Next.js `proxy.mdx`, `proxyClientMaxBodySize.mdx`. Codemod: `npx @next/codemod@canary middleware-to-proxy .`
+- Basis: Verified
+- Code: the spike has no proxy. When one is added, exclude `/api/upload` from its matcher.
 
-- Requires an exact `Content-Length` (411 without it) and rejects files over 2 GB (413).
-- Requires an `x-requested-with: fetch` header. A cross-site HTML form cannot set it and a cross-site `fetch` would be preflighted, which blocks cross-site request forgery; Server Actions get an equivalent origin check from Next.js, route handlers do not.
-- Maps errors to status codes: 401 when sign-in is needed, 400 for invalid names or ids, the Graph status for other client errors, 502 for upstream failures.
+**NEXT-6. Never cache per-user data.**
+- Why: `fetch` is not cached by default, but under `cacheComponents` a `use cache` scope cannot read cookies; per-user Graph data inside one would be served to other users unless the user id is an argument.
+- Evidence: Next.js `fetch.mdx`.
+- Basis: Verified
+- Code: GRAPH-6 (`cache: "no-store"` on every Graph call)
 
-Streaming a request body into a Graph upload session is standard Web API usage, not a pattern from the Next.js documentation. On serverless hosts the request duration and body size limits apply; if they are too low, have the server create the upload session and let the browser PUT fragments straight to the `uploadUrl` (it needs no bearer token).
+**NEXT-7. The app frames only itself, SharePoint and Office.**
+`Content-Security-Policy: frame-src 'self' https://*.sharepoint.com https://*.officeapps.live.com; frame-ancestors 'self'`, plus `X-Content-Type-Options: nosniff` and `Referrer-Policy: strict-origin-when-cross-origin`. Both iframes use `referrerPolicy="no-referrer"`.
+- Why: limits where a compromised page could load frames from, and stops the app being framed elsewhere.
+- Basis: Tested (smoke-tested headers)
+- Code: `spike/next.config.ts`. A full CSP (script and style sources) is left to the host app.
 
-## Headers
+## Open
 
-`next.config.ts` sets:
-
-- `Content-Security-Policy: frame-src 'self' https://*.sharepoint.com https://*.officeapps.live.com; frame-ancestors 'self'`
-- `X-Content-Type-Options: nosniff`
-- `Referrer-Policy: strict-origin-when-cross-origin`
-
-Both iframes use `referrerPolicy="no-referrer"`. A full CSP (script and style sources) is left to the host app.
-
-## Checked in the spike
-
-- `tsc --noEmit` passes with `strict` and `noUncheckedIndexedAccess`.
-- `next build` succeeds.
-- Signed out: `/workspace` shows the sign-in button, `/api/auth/session` returns `null`, `/api/upload` returns 401 (400 without the header).
+- On serverless hosts, request duration and body limits apply to NEXT-2. If they are too low, have the server create the upload session and the browser PUT fragments straight to the `uploadUrl`, which needs no bearer token.
 - The signed-in flow has not been exercised; it needs a tenant.
+
+## Reference
+
+- `searchParams` is a Promise; synchronous access was removed in 16.
+- Setting cookies is not supported while rendering a server component (the reason for AUTH-2).
+- Next.js 16 needs Node 20.9 or later and TypeScript 5.1 or later.
+- Checked in the spike: strict `tsc --noEmit`, `next build`, and signed out: `/workspace` shows sign-in, `/api/auth/session` returns `null`.
 
 ## Sources
 

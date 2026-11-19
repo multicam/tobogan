@@ -1,51 +1,68 @@
-# Graph client: retries, paging and errors
+# GRAPH: The Graph client
+
+**Track:** m365 · **Type:** research · **Date:** 2026-11-19
 
 **Question:** what should sit between the app and Microsoft Graph so that throttling, paging and failures are handled once?
 
-## Decision
+## Doctrines
 
-A thin client over `fetch` (`m365/spike/lib/m365/graph-client.ts`, about 200 lines) that takes a `getAccessToken()` function. It has no SDK dependency and is covered by unit tests.
+**GRAPH-1. All Graph traffic goes through one client.**
+A thin client over `fetch`, about 200 lines, that takes a `getAccessToken()` function.
+- Why: retry, paging and error handling done once instead of at every call site. No SDK: `@microsoft/microsoft-graph-client` 3.1.0 now needs Node 22 and a fetch polyfill import, and it was not verified whether `Client.init` includes retry. Its successor `@microsoft/msgraph-sdk` is still pre-release (`1.0.0-preview.92`).
+- Basis: Tested
+- Code: `spike/lib/m365/graph-client.ts`. If the existing app already uses the v3 SDK, keep it and add GRAPH-2 to GRAPH-6 around it.
 
-Why not an SDK:
+**GRAPH-2. Retry 429 for every verb, honouring `Retry-After`. Retry 502, 503, 504 and network errors only for GET, HEAD, PUT and DELETE.**
+Waits are capped at 30 seconds, with at most four retries.
+- Why: a 429 was not processed, so repeating it is always safe. A failed POST may have been processed, and repeating `sendMail` or `invite` would send twice.
+- Evidence: Graph and SharePoint signal throttling with 429 (SharePoint also 503), both with `Retry-After`. Throttled requests still count against the limit, so retrying early makes throttling worse (`throttling.md`, SharePoint throttling guidance).
+- Basis: Verified, Tested
 
-- `@microsoft/microsoft-graph-client` 3.1.0 works and has no deprecation notice, but its README now requires Node 22 and a fetch polyfill import, and whether `Client.init` (as the guide uses it) includes the retry middleware was not verified.
-- `@microsoft/msgraph-sdk` (the Kiota-based successor) is still pre-release (`1.0.0-preview.92`).
+**GRAPH-3. Page everything; never treat one response as the whole set.**
+`getPage` returns items plus the `@odata.nextLink` cursor; `getAll` follows it up to a cap.
+- Why: folder listings stop at 200 items and the inbox at 10 by default; the guide silently drops the rest.
+- Basis: Verified, Tested
 
-If the existing repo already uses the v3 SDK, keeping it is fine provided the behaviours below are added around it.
+**GRAPH-4. The bearer token is sent only to `https://graph.microsoft.com`.**
+Absolute URLs are accepted only as paging cursors, and only for that host over HTTPS.
+- Why: a cursor that travels through the browser can be tampered with to redirect the token to another host.
+- Basis: Tested
 
-## Behaviours the client guarantees
+**GRAPH-5. Errors keep Graph's status, error code and `request-id`.**
+- Why: callers branch on status and code (403, 404, 409); support tickets with Microsoft need the request id.
+- Basis: Tested
+- Code: `GraphError`
 
-| Behaviour | Detail |
-| --- | --- |
-| Throttling | On 429, waits for `Retry-After` (seconds or HTTP date), capped at 30 s, up to 4 retries. Safe for every verb because a 429 was not processed. |
-| Server errors | 502, 503, 504 and network errors are retried only for GET, HEAD, PUT, DELETE, so a POST such as `sendMail` or `invite` is never sent twice. |
-| Paging | `getPage` returns items plus the `@odata.nextLink` cursor; `getAll` follows it up to a cap. |
-| Cursor safety | Absolute URLs are accepted only for `https://graph.microsoft.com`. A cursor that went through the browser cannot redirect the bearer token to another host. |
-| Errors | `GraphError` with `status`, Graph `code`, message and `request-id` for support tickets. |
-| Identification | Sends a `User-Agent` in the `NONISV|Company|App/Version` form SharePoint asks for. |
-| No caching | Every request uses `cache: "no-store"`; responses are per user. |
+**GRAPH-6. Identify the app and never cache per-user responses.**
+Send a `User-Agent` of the form `NONISV|Company|App/Version`; every request uses `cache: "no-store"`.
+- Why: SharePoint asks apps to identify themselves; a cached response could be served to another user.
+- Basis: Verified, Tested
 
-## Verified facts
+**GRAPH-7. Stay under four concurrent Outlook requests per mailbox.**
+- Why: Outlook allows 4 concurrent requests and 10,000 requests per 10 minutes per app and mailbox.
+- Evidence: `includes/throttling-outlook.md`
+- Basis: Verified
+- Code: Gap: the spike's page makes at most three Outlook calls at once, but there is no general limiter for screens that fan out further.
 
-- Graph and SharePoint signal throttling with 429 (SharePoint also 503), both with `Retry-After`. Throttled requests still count against the limit, so retrying early makes it worse.
+**GRAPH-8. Track changes with delta queries, not by refetching.**
+- Files: `GET /drives/{id}/root/delta`; `410 Gone` means resync. SharePoint subscriptions work only on the drive root with `changeType: "updated"`, last under 30 days and carry no item detail, so each notification is followed by a delta call.
+- Mail: per-folder `messages/delta`; subscriptions last under 7 days and need the immutable-id header when created.
+- Webhooks must echo `validationToken` as `text/plain` within 10 seconds and answer notifications within 3 seconds.
+- Basis: Verified
+- Code: Gap: not built.
+
+## Open
+
+- **Unverified:** that site and drive ids never change. The spike caches them per process; treat a 404 on a cached id as a signal to clear the cache, or configure the ids directly.
+- **Unverified:** SharePoint `RateLimit-*` headers. The documentation contradicts itself, so the client does not rely on them.
+- JSON batching (up to 20 requests) is not used yet; consider it for screens with many small reads.
+
+## Reference
+
 - SharePoint resource-unit cost: 1 for a single-item read, 2 for list, create or upload, 5 for any permission operation.
-- Outlook limits per app and mailbox: 10,000 requests per 10 minutes, 4 concurrent requests, 150 MB of upload per 5 minutes.
-- JSON batching takes at most 20 requests (4 at a time to Outlook). The batch returns 200 while individual entries can be 429.
-- Site and drive lookups: `GET /sites/{hostname}:/{path}` then `/sites/{id}/drive` (default library) or `/sites/{id}/drives` (all libraries).
-
-## Still to add when needed
-
-- **Concurrency limit per user.** One page render in the spike makes at most three concurrent Outlook calls. A screen that fans out further should queue to stay under Outlook's four concurrent requests.
-- **Batching** for screens that need many small reads.
-- **Change tracking** instead of refetching:
-  - Files: `GET /drives/{id}/root/delta`; `410 Gone` means resync. Subscriptions on SharePoint are only supported on the drive root with `changeType: "updated"`, last under 30 days, and carry no item detail, so each notification is followed by a delta call.
-  - Mail: per-folder `messages/delta`; subscriptions last under 7 days and need the immutable-id header at creation.
-  - Webhook endpoints must echo `validationToken` as `text/plain` within 10 seconds and answer notifications within 3 seconds.
-
-## Unverified
-
-- No official statement was found that site and drive ids never change. The spike caches them per process; treat a 404 on a cached id as a signal to clear the cache, or configure the ids directly.
-- SharePoint `RateLimit-*` headers: the documentation is contradictory, so the client does not rely on them.
+- Outlook: 150 MB of upload per 5 minutes per app and mailbox.
+- JSON batches: at most 20 requests, at most 4 at a time to Outlook. The batch returns 200 while individual entries can be 429.
+- Site and drive lookup: `GET /sites/{hostname}:/{path}`, then `/sites/{id}/drive` (default library) or `/sites/{id}/drives` (all libraries).
 
 ## Sources
 

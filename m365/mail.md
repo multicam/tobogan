@@ -1,88 +1,75 @@
-# Exchange mail: read, render, attachments, send
+# MAIL: Exchange mail
+
+**Track:** m365 · **Type:** research · **Date:** 2026-11-19
 
 **Question:** how do we show a user's mail, render message bodies safely, and move attachments into SharePoint?
 
-Implemented in `m365/spike/lib/m365/mail.ts` and `lib/m365/email-html.ts`.
+## Doctrines
 
-## Decisions
+**MAIL-1. Every mail call asks for immutable ids.**
+Send `Prefer: IdType="ImmutableId"` on each request.
+- Why: default message ids change when a message is moved, which breaks ids held in URLs and Server Actions.
+- Evidence: the header applies only to the request that carries it; the id stays stable within the mailbox and changes on a move to an archive mailbox (`outlook-immutable-id.md`).
+- Basis: Verified, Tested
 
-1. **Use immutable ids on every mail call.** Default message ids change when a message is moved, which breaks ids held in URLs and Server Actions. The spike sends `Prefer: IdType="ImmutableId"` on each request.
-2. **Render bodies in a sandboxed iframe, never in the app's DOM.** See below.
-3. **Fetch attachment bytes with `/$value`, after checking the type and size.**
-4. **Sanitise attachment names and never overwrite when saving to SharePoint.**
-5. **Treat a sent message as queued, not delivered.**
-6. **Page the inbox** and clamp the page size.
+**MAIL-2. Email HTML never enters the app's DOM.**
+The body goes into `<iframe sandbox srcDoc>` without `allow-scripts` or `allow-same-origin`, which gives it a unique origin with scripts and forms disabled. Links may open in a new tab; nothing else is allowed.
+- Why: email HTML is written by outsiders. Server-side sanitising with `isomorphic-dompurify` brings jsdom, whose README documents `ERR_REQUIRE_ESM` failures on Next.js on Vercel and a memory leak in long-running processes. If HTML must ever enter the DOM, sanitise in the browser with plain `dompurify`.
+- Evidence: DOMPurify and isomorphic-dompurify READMEs. Exchange strips unsafe HTML such as JavaScript by default (`outlook-create-send-messages.md`); that is a service-side filter, not something to rely on, and `Prefer: outlook.allow-unsafe-html` must never be sent.
+- Basis: Verified, Tested
+- Code: `buildEmailDocument`, `EMAIL_IFRAME_SANDBOX` in `spike/lib/m365/email-html.ts`
 
-## Rendering message bodies
+**MAIL-3. Remote content in email is blocked by default.**
+A Content Security Policy inside the viewer document blocks every network load; remote images can be enabled per message.
+- Why: remote images and CSS report to the sender that the message was opened. DOMPurify does not prevent this: it allows `<style>` and remote resources.
+- Basis: Tested
+- Code: `allowRemoteImages` option
 
-The guide installs `isomorphic-dompurify` but never uses it, and has no message view.
+**MAIL-4. Copy only file attachments, as raw bytes, after checking type and size.**
+- Why: `itemAttachment` (an attached message, event or contact) and `referenceAttachment` (a cloud link) have no file bytes, and `/$value` on a reference attachment returns 405. Base64 `contentBytes` inflates the payload by a third.
+- Evidence: `attachment-get.md`
+- Basis: Verified, Tested
+- Code: `saveAttachmentToDrive` (capped at 150 MB, held in memory)
 
-The spike does not sanitise on the server. It puts the body into `<iframe sandbox srcDoc>` without `allow-scripts` or `allow-same-origin`, which gives the content a unique origin with scripts and forms disabled. A Content Security Policy inside that document blocks every network load, so remote images and CSS cannot report that the message was opened. Remote images can be turned on per message (`allowRemoteImages`).
+**MAIL-5. Sanitise sender-supplied names, and never overwrite when filing into SharePoint.**
+- Why: an attachment's `name` is free text from the sender and need not be a valid file name; two attachments with the same name must both survive.
+- Basis: Tested
+- Code: `toSafeFileName`; conflict behaviour `rename`
 
-Why not `isomorphic-dompurify` on the server:
+**MAIL-6. A sent message is queued, not delivered.**
+- Why: `POST /me/sendMail` returns 202, which only means accepted.
+- Evidence: `user-sendmail.md`
+- Basis: Verified, Tested
 
-- It depends on jsdom. Its README documents `ERR_REQUIRE_ESM` failures on Next.js on Vercel from version 3, with a workaround of pinning jsdom to 25.0.1, and a memory leak in long-running processes unless `clearWindow()` is called.
-- DOMPurify removes script-based attacks only. It allows `<style>` and remote resources by default, so it does not stop tracking images on its own.
+**MAIL-7. Read with `Mail.Read`; request `Mail.ReadWrite` only to change messages.**
+- Why: the guide requests `Mail.ReadWrite` for reading. Write access is needed only to mark as read, draft or move.
+- Basis: Verified
+- Code: the spike requests `Mail.ReadWrite` because it includes `markRead`.
 
-If email HTML ever has to be placed in the app's own DOM, sanitise in the browser with plain `dompurify` and still block remote loads.
+**MAIL-8. Page the inbox and cap the page size.**
+- Why: the default page is 10 messages; `$top` accepts 1 to 1000.
+- Basis: Verified, Tested
+- Code: `listInbox` caps at 100.
 
-Exchange already strips unsafe HTML such as JavaScript from `body` by default (`Prefer: outlook.allow-unsafe-html` turns that off; never send it). That is a service-side filter, not a guarantee to rely on.
+## Open
 
-## Verified facts
+- **Not built:**
+  - Inline images: `cid:` images show as broken. To fix, serve attachment bytes from an authenticated route, rewrite `cid:` references to it and allow that route in the viewer's `img-src`.
+  - Outgoing attachments, reply and forward.
+  - Shared mailboxes: `/users/{id}/...` with the `.Shared` scopes and Send As or Send on Behalf rights.
+  - Filing an attached email (`itemAttachment`), which `/$value` would return as MIME.
+  - Streaming large attachments.
+- **Unverified:** Exchange sending limits (30 messages per minute, 10,000 recipients per day, 500 recipients per message by default) come from search summaries.
+- **Unverified:** that `Mail.ReadBasic` excludes `bodyPreview` and attachments.
+- **Unverified:** `$select` on the attachments list is undocumented on the page read; confirm on a tenant.
 
-**Listing**
+## Reference
 
-- Default page size is 10; `$top` accepts 1 to 1000. Follow the whole `@odata.nextLink`.
-- When `$filter` and `$orderby` are combined, the `$orderby` properties must also appear first in `$filter`, in the same order, or the call fails with `InefficientFilter`.
+- Combining `$filter` and `$orderby`: the `$orderby` properties must appear first in `$filter`, in the same order, or the call fails with `InefficientFilter`.
 - `$search` returns at most 1,000 results.
-- `hasAttachments` is `false` for messages that contain only inline images.
-
-**Ids**
-
-- The immutable-id header applies only to the request that carries it. The id stays stable within the mailbox and changes if the item moves to an archive mailbox.
-
-**Attachments**
-
-- `fileAttachment` has bytes. `itemAttachment` (an attached message, event or contact) and `referenceAttachment` (a cloud link) do not; `/$value` on a reference attachment returns 405.
-- `GET .../attachments/{id}/$value` returns raw bytes, avoiding the base64 `contentBytes` field that inflates the payload by a third.
-- Attachment `name` is free text from the sender and need not be a valid file name.
-- Inline images are referenced from the body as `cid:` and matched by the attachment's `contentId`.
-
-**Sending**
-
-- `POST /me/sendMail` returns 202, which means accepted for delivery. `saveToSentItems` defaults to true.
-- Attachments under 3 MB can be included in the JSON. From 3 to 150 MB: create a draft, `POST .../attachments/createUploadSession`, PUT ranges under 4 MB without the `Authorization` header, then `POST .../send`.
-- Reply and forward have their own endpoints (`reply`, `replyAll`, `forward`, and the `createReply` draft variants).
-
-**Permissions and limits**
-
-- Reading needs `Mail.Read`. `Mail.ReadWrite` is needed only to change messages (mark as read, drafts, moves). The guide requests `Mail.ReadWrite` for reading.
-- Per app and mailbox: 10,000 requests per 10 minutes and 4 concurrent requests.
-
-## What the spike adds beyond the guide
-
-| Guide | Spike |
-| --- | --- |
-| Raw HTML body returned, no viewer | Sandboxed viewer document with network loads blocked |
-| Ids break when mail is moved | Immutable ids |
-| Attachment read as base64 JSON, any type | Type and size checked, raw bytes |
-| Sender-chosen name used as the SharePoint path | `toSafeFileName`, conflict behaviour `rename` |
-| First page only | Cursor paging, page size capped at 100 |
-| Comma-joined or malformed recipients pass through | Each address validated, recipient count capped |
-
-## Not yet in the spike
-
-- **Inline images.** `cid:` images show as broken. To support them, serve attachment bytes from an authenticated route and rewrite `cid:` references to it (the viewer's CSP then needs that route in `img-src`).
-- **Outgoing attachments**, reply and forward.
-- **Shared mailboxes.** Calls use `/me`. A shared mailbox uses `/users/{id}/...` with the `.Shared` scopes and Send As or Send on Behalf rights.
-- **Attached items.** Saving an attached email (`itemAttachment`) is refused; `/$value` would return it as MIME if wanted.
-- **Large attachments.** Bytes are held in memory, capped at 150 MB. Streaming would need a client change.
-
-## Unverified
-
-- Exchange sending limits (30 messages per minute, 10,000 recipients per day, 500 recipients per message by default) come from search summaries of the service description.
-- That `Mail.ReadBasic` excludes `bodyPreview` and attachments (search summary).
-- `$select` on the attachments list is used by the spike and is common practice, but the page read does not document it; confirm on a tenant.
+- `hasAttachments` is `false` for messages with only inline images. Inline images are referenced as `cid:` and matched by the attachment's `contentId`.
+- Attachments under 3 MB can be sent in the JSON; from 3 to 150 MB, create a draft, `POST .../attachments/createUploadSession`, PUT ranges under 4 MB without the `Authorization` header, then `POST .../send`.
+- Reply and forward: `reply`, `replyAll`, `forward`, and the `createReply` draft variants.
 
 ## Sources
 

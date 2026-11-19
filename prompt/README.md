@@ -7,6 +7,9 @@ https://x.com/datachaz/status/2122988229964222670/photo/1
 
 ## Documents
 
+| Document | Type | Prefix | Answers | Date |
+| --- | --- | --- | --- | --- |
+
 None yet.
 
 ## Code

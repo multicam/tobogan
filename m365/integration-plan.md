@@ -1,36 +1,57 @@
-# Integration plan: verification, confidence and fit
+# PLAN: Integration plan
 
-Research for integrating SharePoint, Office for the web and Exchange mail into an existing Next.js app (the cub project) through Microsoft Graph with delegated sign-in.
+**Track:** m365 · **Type:** planning · **Date:** 2026-11-19
 
-Starting point: `m365/guide.md`. Each research document in this track checks one part of that guide against current documentation, records what to change, and lists what is still unverified. The decisions are implemented and tested in `m365/spike/`.
+**Question:** how do we get from this research to a robust integration in the existing cub app?
 
-## How the facts were checked
+## Doctrines
 
-`learn.microsoft.com`, `authjs.dev` and `nextjs.org` are blocked from the research environment. Facts were checked against the Markdown sources those sites are built from (`microsoftgraph/microsoft-graph-docs-contrib`, `MicrosoftDocs/entra-docs`, `SharePoint/sp-dev-docs`, `nextauthjs/next-auth`, `vercel/next.js`) and the npm registry, on 2026-11-19. Each note marks items that rest on weaker sources as **Unverified**.
+**PLAN-1. Nothing counts as working until it has run on a test tenant; tenant tests come first.**
+Run these, in order, on a test tenant with an Entra app registration:
+1. Sign-in, token refresh after expiry, sign-out (AUTH-1 to AUTH-3).
+2. What restricting a matter folder leaves behind, and whether it works at all on folders (MATTER-3, MATTER-6).
+3. App-only `invite` with `Sites.Selected` (MATTER-7).
+4. Preview framing from the app's origin (FILES-6).
+5. Upload of a file over 100 MB through the streaming route (FILES-3, NEXT-2).
+6. Sharing per link scope under the firm's tenant policy (SHARE-2, SHARE-7).
+7. Mail: inline images, attachment `$select`, filing an attachment into a matter (MAIL-4).
+- Why: everything so far is checked against documentation and a simulated Graph only. Items 2 and 3 decide the matter provisioning design.
+- Basis: Decision
 
-Nothing has been run against a real Microsoft 365 tenant. The spike is verified by unit tests against a fake Graph, a typecheck, a production build and a signed-out smoke test only.
+**PLAN-2. Port the Graph layer, not the spike app.**
+Copy `spike/lib/m365/` (without `server.ts` and `config.ts`) into the existing app with its tests, and connect it through `createGraphClient({ getAccessToken })` to the app's own auth.
+- Why: the spike's pages are a test harness; the library is the tested part and is independent of the auth library (AUTH-6).
+- Basis: Decision
+
+**PLAN-3. Answer the fit questions against the existing repo before porting.**
+1. Auth: which library signs users in, and is the access token copied onto the session (AUTH-1)?
+2. Session storage: is there a database or Redis for the token store (AUTH-7)?
+3. Graph access: is `@microsoft/microsoft-graph-client` in use? Keep it and wrap it, or move call sites to the thin client (GRAPH-1).
+4. Next.js version: on 14 or 15, `proxy.ts` is `middleware.ts` and `searchParams` may be synchronous.
+5. Which features already exist, compared against the doctrines in `files.md`, `sharing.md`, `mail.md`.
+6. Hosting: do request duration and body limits allow the streaming upload route (NEXT-2)?
+7. Tenant policy: external sharing, anonymous links, user consent.
+- Why: the existing repo has not been read from this workspace.
+- Basis: Decision
+
+**PLAN-4. Facts come from primary sources, and weaker sources are marked.**
+`learn.microsoft.com`, `authjs.dev` and `nextjs.org` are blocked from the research environment, so facts were checked against the Markdown sources those sites are built from (`microsoftgraph/microsoft-graph-docs-contrib`, `MicrosoftDocs/entra-docs`, `SharePoint/sp-dev-docs`, `nextauthjs/next-auth`, `vercel/next.js`) and the npm registry, on 2026-11-19. Anything resting on search summaries is marked Unverified.
+- Basis: Decision
 
 ## Confidence
 
 | Area | Confidence | What would raise it |
 | --- | --- | --- |
-| Graph client behaviour (retry, paging, token safety) | High | Nothing needed before integration |
-| Token storage and refresh design | High for the logic; store is in-memory | Pick and wire a shared store (Redis or database) |
-| Upload (small and resumable) | High for protocol; untested on a tenant | One real upload of a file over 100 MB |
-| Preview embed | Medium | Confirm the preview URL frames from the app's origin on the target tenant |
-| Sharing | Medium | Tenant sharing policy decides what works; test invite and link per scope |
-| Mail read and attachment save | Medium-high | Test inline images and a shared mailbox if needed |
-| Blank Office document creation | Low | Test on a tenant; template copy is the safe path |
-| Auth.js as the auth library | Medium | See the open decision in `auth.md` |
+| Graph client (retry, paging, token safety) | High | Nothing needed before porting |
+| Token storage and refresh | High for the logic; the store is in-memory | Wire a shared store (AUTH-7) |
+| Upload | High for the protocol | PLAN-1 item 5 |
+| Preview | Medium | PLAN-1 item 4 |
+| Sharing | Medium | PLAN-1 item 6 |
+| Mail read and attachment filing | Medium-high | PLAN-1 item 7 |
+| Matter restriction | Low until tested | PLAN-1 items 2 and 3 |
+| Blank document creation | Template copy only (FILES-7) | Poll the copy monitor |
+| Auth library choice | Open | AUTH Open |
 
-## Fitting this into the existing repo
+## Open
 
-The existing repo has not been read (no access from this session), so these are the questions to answer against it before porting anything:
-
-1. **Auth:** which library signs users in today (Auth.js, MSAL, Better Auth, something else)? `lib/m365/` only needs a `getAccessToken()` function, so it can sit behind any of them. If Auth.js with JWT sessions is already there, check whether the access token is copied onto the session.
-2. **Session storage:** is there a database or Redis already? That decides the `TokenStore` implementation.
-3. **Graph access:** is `@microsoft/microsoft-graph-client` already in use? Either keep it and add retry, paging and cursor checks around it, or move call sites to the thin client.
-4. **Next.js version:** 16 renamed `middleware.ts` to `proxy.ts` and made `searchParams` a Promise. On 14 or 15 the spike's page and config need small changes.
-5. **Which features already exist:** map them to `files.md`, `sharing.md` and `mail.md` and compare against the "Guide problems" list in each.
-6. **Hosting:** serverless limits (request duration and body size) decide whether the streaming upload route works as is or uploads must go browser-to-Graph directly.
-7. **Tenant policy:** external sharing, anonymous links and user consent settings on the target tenant.
+- Access to the existing repo, and a test tenant with an app registration, are both needed to move past PLAN-1 and PLAN-3.

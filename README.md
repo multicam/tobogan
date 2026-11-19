@@ -13,20 +13,9 @@ Each track is a top-level directory. Use the short name to refer to it.
 | `prompt` | `prompt/` | Analysis and discussion of a prompt shared on X | Blocked: source image not readable from here |
 | `archive` | `archive/` | Frozen earlier work, not a live track | Closed |
 
-## Layout inside a track
+## How this repository works
 
-| Path | Purpose |
-| --- | --- |
-| `README.md` | The lookup table for the track: every planning and research document with its type, the question it answers and its date, followed by the code directories |
-| `*.md` | Planning, research and reference documents, flat in the track directory |
-| subdirectories | Code only. Each has its own `package.json` and a README saying what it tests and what was found |
-
-## Conventions
-
-- Secrets stay out of git: put them in `.env.local` and commit only an `.env.example` with empty values.
-- A new track gets a short lowercase name, a directory of that name, and a row in the table above.
-- A new document gets a row in its track's `README.md` in the same commit.
-- Code shared between tracks lives in one track's subdirectory; the other track's README points to it.
+The rules are in `DOCTRINES.md`: one question at a time through the question UI, documents written as numbered doctrines, and each track's `README.md` as its lookup table with code in subdirectories. Doctrine prefixes such as AUTH or MATTER let you cite a single rule, for example "MATTER-3".
 
 ## Archive
 

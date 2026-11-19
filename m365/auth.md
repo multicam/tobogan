@@ -1,47 +1,38 @@
-# Sign-in, tokens and permissions
+# AUTH: Sign-in, tokens and permissions
+
+**Track:** m365 · **Type:** research · **Date:** 2026-11-19
 
 **Question:** how should a Next.js app sign users in with Entra ID and hold Graph tokens so that calls keep working and tokens never reach the browser?
 
-## Decisions
+## Doctrines
 
-1. **Keep Graph tokens out of the cookie and the session.** On sign-in, move the access and refresh tokens to a server-side `TokenStore` keyed by the user; the cookie carries only that key. Implemented in `m365/spike/auth.ts` and `lib/m365/tokens.ts`.
-2. **Refresh in one place, server-side.** `getAccessToken(userId)` refreshes five minutes before expiry, shares one in-flight refresh per user, and saves the result to the store.
-3. **Distinguish "sign in again" from "try again".** `invalid_grant` and `interaction_required` delete the stored tokens and raise `ReauthRequiredError`; any other failure leaves them in place.
-4. **Single tenant, explicit issuer.**
-5. **Ask for the narrowest scopes that cover the features.**
+**AUTH-1. Graph tokens never leave the server.**
+Access and refresh tokens live in a server-side store keyed by the user. The session cookie and the session object carry only that key.
+- Why: the reference guide copies the access token onto the session, which `/api/auth/session` and `useSession()` then hand to the browser.
+- Evidence: Auth.js exposes only name, email and image by default "to not accidentally expose sensitive user information"; its official refresh pattern copies only `session.error` to the session (`extending-the-session.mdx`, `refresh-token-rotation.mdx`).
+- Basis: Verified, Tested
+- Code: `spike/auth.ts` (moves tokens to the store at sign-in), `spike/lib/m365/tokens.ts`
 
-## Why the guide's approach is not enough
+**AUTH-2. Refresh tokens in one server-side place, before expiry, once per user at a time.**
+`getAccessToken(userId)` refreshes five minutes before expiry, shares one in-flight refresh per user and saves the result.
+- Why: Next.js cannot set cookies while rendering a server component, so a refresh kept in the JWT cookie is thrown away and repeated on every request. Entra tokens also push the cookie past 4096 bytes, so it is split into chunks sent with every request.
+- Evidence: Next.js `cookies` reference; Auth.js cookie chunking (`ALLOWED_COOKIE_SIZE = 4096`). Entra issues a new refresh token on each use and does not revoke the old one, so a duplicate refresh is harmless as long as the newest token is stored (`refresh-tokens.md`).
+- Basis: Verified, Tested
+- Code: `createTokenManager` in `spike/lib/m365/tokens.ts`
 
-- **It exposes the token.** `session.accessToken = token.accessToken` is returned by `/api/auth/session` and `useSession()`. The official Auth.js refresh pattern copies only `session.error`.
-- **Refreshed tokens are not saved from server components.** Next.js does not allow setting cookies while rendering a server component, so a refresh done inside `auth()` there is thrown away and repeated on the next request. The Auth.js workaround is `export { auth as proxy } from "@/auth"` in `proxy.ts`. A server-side store removes the problem instead of working around it.
-- **Cookie size.** Entra access and refresh tokens push the encrypted cookie past 4096 bytes. Auth.js splits it into chunks, all sent on every request.
-- **Refresh failure is never handled.** `session.error` is set but nothing reads it.
-- **An unset tenant variable silently produces** `https://login.microsoftonline.com/undefined/v2.0`. With no issuer at all the provider defaults to `common`, which accepts any Microsoft account.
+**AUTH-3. Treat "sign in again" and "try again" as different failures.**
+`invalid_grant` and `interaction_required` delete the stored tokens and raise `ReauthRequiredError`, which the page turns into a sign-in prompt. Any other refresh failure keeps the tokens so a later call can retry.
+- Why: the guide sets `session.error` and never reads it, so users see failing calls instead of a sign-in prompt. Deleting tokens on a transient outage would sign everyone out.
+- Basis: Tested
+- Code: `spike/lib/m365/tokens.ts`, `spike/app/workspace/page.tsx`
 
-## Verified facts
+**AUTH-4. Sign in against one tenant, with an explicit issuer, and fail loudly when it is not configured.**
+- Why: with no issuer the provider defaults to `common`, which accepts any Microsoft account. An unset tenant variable silently produces `https://login.microsoftonline.com/undefined/v2.0`.
+- Evidence: Auth.js Microsoft Entra ID provider page. The documented variable is `AUTH_MICROSOFT_ENTRA_ID_ISSUER`, holding the full issuer URL.
+- Basis: Verified
+- Code: Gap: `spike/auth.ts` builds the issuer from `AUTH_MICROSOFT_ENTRA_ID_TENANT_ID` without checking that it is set.
 
-- `next-auth` dist-tags: `latest` 4.24.15, `beta` 5.0.0-beta.32 (both published 2026-07-20). There is no stable v5. The beta supports Next 14, 15 and 16.
-- Provider import `next-auth/providers/microsoft-entra-id` and callback path `/api/auth/callback/microsoft-entra-id` are correct. The documented env var for the tenant is `AUTH_MICROSOFT_ENTRA_ID_ISSUER` (full issuer URL).
-- Entra refresh tokens last 90 days by default. A new one is issued on each use and the old one is **not** revoked, so two concurrent refreshes are harmless as long as the newest token is stored.
-- Refresh tokens for confidential clients survive a user password change, but are revoked by an admin reset or explicit revocation.
-- Admin consent, delegated: not required by default for `Sites.ReadWrite.All`, `Files.ReadWrite.All`, `Mail.Read`, `Mail.ReadWrite`, `Mail.Send`, `Sites.Selected`. Required for `Files.SelectedOperations.Selected` and `Lists.SelectedOperations.Selected`. A tenant's user-consent policy can still require admin consent for all of them.
-- A client secret works for a delegated web app. Microsoft's guidance ranks it last, after managed identity, federated credentials and certificates.
-
-## Limiting the app to one site
-
-`Sites.ReadWrite.All` lets the app act on every site the user can reach. To restrict it to the target site:
-
-1. Request delegated `Sites.Selected` instead.
-2. An admin grants the app a role on the site (needs `Sites.FullControl.All`, and a SharePoint Administrator who is a member of the site):
-   ```http
-   POST https://graph.microsoft.com/v1.0/sites/{siteId}/permissions
-   { "roles": ["write"], "grantedToIdentities": [{ "application": { "id": "<client-id>", "displayName": "Cub" } }] }
-   ```
-3. Effective access is then the intersection of the app's role and the user's own permissions.
-
-Recommended for production. It needs a one-off admin step per site.
-
-## Scopes by feature
+**AUTH-5. Request the narrowest scopes that cover the features, and restrict the app to one site in production.**
 
 | Feature | Scope |
 | --- | --- |
@@ -52,16 +43,42 @@ Recommended for production. It needs a one-off admin step per site.
 | Send | `Mail.Send` |
 | Shared mailboxes | `Mail.Read.Shared`, `Mail.Send.Shared` |
 
-## Open decisions
+To restrict the app to one site: request delegated `Sites.Selected`; have an admin grant the app a role on the site; effective access is then the intersection of the app's role and the user's own permissions.
 
-- **Auth library.** The Auth.js README now says Auth.js is part of Better Auth and recommends Better Auth for new projects; Auth.js continues to receive security and urgent fixes. If the existing repo already uses Auth.js, staying is reasonable. For a new auth layer, compare Better Auth and MSAL Node (`@azure/msal-node` 7.2.3), which refreshes tokens itself and supports certificates but needs a distributed cache plugin. `lib/m365/` does not depend on the choice.
-- **Token store.** `MemoryTokenStore` loses tokens on restart and is not shared between instances. Production needs Redis or a database table, encrypted at rest, with entries removed on sign-out and after the refresh token's 90 days.
-- **Secret or certificate.** A secret is the simplest to start; plan rotation, or move to a certificate.
+```http
+POST https://graph.microsoft.com/v1.0/sites/{siteId}/permissions
+{ "roles": ["write"], "grantedToIdentities": [{ "application": { "id": "<client-id>", "displayName": "Cub" } }] }
+```
 
-## Unverified
+- Why: `Sites.ReadWrite.All` lets the app act on every site the user can reach.
+- Evidence: `permissions-selected-overview.md` ("all Selected scopes now support delegated and application modes"); the grant needs `Sites.FullControl.All` and a SharePoint Administrator who is a member of the site (`site-post-permissions.md`).
+- Basis: Verified
+- Code: Gap: the spike still requests `Sites.ReadWrite.All` (`spike/lib/m365/config.ts`).
 
-- Whether the `next-auth/jwt` module augmentation applies cleanly in beta.32 (the spike avoids needing it).
-- The spike's sign-in flow has not been run against a real tenant.
+**AUTH-6. The Graph layer does not depend on the auth library.**
+Everything in `spike/lib/m365/` except `server.ts` and `config.ts` needs only a `getAccessToken()` function.
+- Why: the existing app's auth library is unknown, and Auth.js's future is uncertain (see Open).
+- Basis: Tested
+- Code: `createGraphClient({ getAccessToken })` in `spike/lib/m365/graph-client.ts`
+
+**AUTH-7. In production the token store is shared between instances and encrypted at rest.**
+Entries are removed at sign-out and after the refresh token's 90-day lifetime.
+- Why: `MemoryTokenStore` loses every token on restart and is not shared between instances.
+- Basis: Decision (store technology owed by whoever owns the existing app's infrastructure)
+- Code: Gap: only `MemoryTokenStore` exists.
+
+## Open
+
+- **Auth library.** The Auth.js README says it is now part of Better Auth and recommends Better Auth for new projects; Auth.js keeps receiving security and urgent fixes. If the existing app uses Auth.js, staying is reasonable. For a new auth layer, compare Better Auth and MSAL Node (`@azure/msal-node` 7.2.3), which refreshes tokens itself and supports certificates but needs a distributed cache plugin.
+- **Secret or certificate.** A client secret works for a delegated web app. Microsoft ranks it last, after managed identity, federated credentials and certificates. Start with a secret and plan rotation, or go straight to a certificate.
+- **Unverified:** whether `next-auth/jwt` module augmentation applies cleanly in beta.32 (the spike avoids needing it). Sign-in has not been run against a tenant.
+
+## Reference
+
+- `next-auth` dist-tags: `latest` 4.24.15, `beta` 5.0.0-beta.32 (2026-07-20). No stable v5. The beta supports Next 14, 15 and 16.
+- Provider import `next-auth/providers/microsoft-entra-id`; callback path `/api/auth/callback/microsoft-entra-id`.
+- Entra refresh tokens last 90 days by default. Confidential-client tokens survive a user password change but are revoked by an admin reset or explicit revocation.
+- Admin consent (delegated) is not required by default for `Sites.ReadWrite.All`, `Files.ReadWrite.All`, `Mail.Read`, `Mail.ReadWrite`, `Mail.Send` or `Sites.Selected`, and is required for `Files.SelectedOperations.Selected` and `Lists.SelectedOperations.Selected`. A tenant's consent policy can require it for all of them.
 
 ## Sources
 

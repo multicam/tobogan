@@ -1,71 +1,68 @@
-# SharePoint files: browse, upload, preview, edit
+# FILES: SharePoint files
+
+**Track:** m365 · **Type:** research · **Date:** 2026-11-19
 
 **Question:** how do we list, upload, preview and edit SharePoint documents reliably from Next.js?
 
-Implemented in `m365/spike/lib/m365/drive.ts` and `app/api/upload/route.ts`.
+## Doctrines
 
-## Decisions
+**FILES-1. Page folder listings and sort them in code.**
+`listChildren` returns a cursor. Each page is sorted folders first, then by natural name order; load every page first when exact order across pages matters.
+- Why: Graph returns 200 children per page by default. `$orderby` on SharePoint drives is unreliable beyond `name`, with community reports of errors.
+- Evidence: `driveitem-list-children.md`; Microsoft tech community thread on `$orderby` for SharePoint drive items.
+- Basis: Verified, Tested
 
-1. **Page folder listings.** Graph returns 200 children per page by default; the guide drops the rest. `listChildren` returns a cursor.
-2. **Sort in code.** `$orderby` on SharePoint drives is unreliable beyond `name`, with community reports of errors, so the spike sorts each page (folders first, then natural name order). For exact ordering across pages, load all pages first.
-3. **Never overwrite by default.** A plain `PUT .../content` defaults to `replace`. The spike always sends `@microsoft.graph.conflictBehavior` (`fail` for user uploads to a named file, `rename` for the streaming route and saved attachments).
-4. **Two upload paths.** Up to 4 MiB: one PUT. Above: an upload session, streamed 5 MiB at a time.
-5. **Uploads do not go through a Server Action.** The browser PUTs the raw file to a route handler, which pipes it to the upload session without buffering the file.
-6. **Validate names and ids before building URLs.** `assertValidFileName` applies SharePoint's rules; ids from the browser must be a single path segment.
-7. **Preview in an iframe, edit in a new tab.**
-8. **Create documents from a template, not from an empty file.**
+**FILES-2. Never overwrite unless the caller asks for it.**
+Every write sends `@microsoft.graph.conflictBehavior`: `fail` for a named upload, `rename` for the streaming route and saved attachments.
+- Why: a plain `PUT .../content` defaults to `replace`, so the guide silently overwrites files.
+- Evidence: values are `fail`, `replace`, `rename`; on PUT the value goes in the query string, in `createUploadSession` in the body (`resources/driveitem.md`, `driveitem-createuploadsession.md`).
+- Basis: Verified, Tested
 
-## Verified facts
+**FILES-3. Upload files up to 4 MiB in one PUT and everything larger through a resumable upload session.**
+Fragments are 16 × 320 KiB (5 MiB). A failed fragment is retried; a fragment the server already has (416) is skipped after checking `nextExpectedRanges`; any failure cancels the session.
+- Why: a session is resumable and never holds the whole file in memory. The 4 MiB threshold is ours; simple PUT itself accepts up to 250 MB.
+- Evidence: fragments must be multiples of 320 KiB (327,680 bytes), each request under 60 MiB, 5 to 10 MiB recommended. PUTs to `uploadUrl` must not carry the `Authorization` header (`driveitem-createuploadsession.md`, `driveitem-put-content.md`).
+- Basis: Verified, Tested
+- Code: `uploadSmall`, `uploadLarge`, `upload` in `spike/lib/m365/drive.ts`
 
-**Upload**
+**FILES-4. File bytes never pass through a Server Action.**
+The browser PUTs the raw file to a route handler, which streams it into an upload session. See NEXT-2.
+- Why: Server Actions accept 1 MB by default and buffer the whole body.
+- Basis: Verified, Tested
+- Code: `spike/app/api/upload/route.ts`
 
-- Simple PUT supports files up to 250 MB. The spike uses 4 MiB as its own threshold, because a session is resumable and avoids holding a large body in memory.
-- `conflictBehavior` values are `fail`, `replace`, `rename`. On PUT it goes in the query string; in `createUploadSession` it goes in the body as `{"item": {"@microsoft.graph.conflictBehavior": "rename"}}`.
-- Upload session fragments must be a multiple of 320 KiB (327,680 bytes), each request under 60 MiB, 5 to 10 MiB recommended. The spike uses 16 x 320 KiB.
-- PUTs to the `uploadUrl` must **not** carry the `Authorization` header. `GET uploadUrl` returns `nextExpectedRanges` for resuming; `DELETE uploadUrl` cancels.
-- The session needs the exact total size, so the browser must send `Content-Length`.
+**FILES-5. Validate file names and ids before they become part of a URL.**
+Names follow SharePoint's rules; ids from the browser must be a single path segment.
+- Why: a crafted id such as `abc/../../users` would change which Graph resource is called.
+- Evidence: SharePoint rejects `" * : < > ? / \ |`, leading or trailing spaces, a trailing period, names starting `~$`, `_vti_` anywhere and reserved device names; decoded paths are limited to 400 characters (Microsoft support "Restrictions and limitations", search summary).
+- Basis: Tested (name rules Unverified against a fetched page)
+- Code: `spike/lib/m365/names.ts`
 
-**Names**
+**FILES-6. Preview in an iframe; edit in a new tab.**
+Preview with `POST .../preview` and frame its `getUrl`; edit by opening the item's `webUrl` in a new tab.
+- Why: the preview is read-only and short-lived, and acts with the caller's permissions, so it must never be cached, logged or shared. SharePoint blocks most cross-origin framing of its own pages, so an embedded editor is not a supported path. `createLink` type `embed` works only on OneDrive personal.
+- Evidence: `driveitem-preview.md` (either `getUrl` or `postUrl` may be missing); `driveitem-createlink.md`; Microsoft troubleshooting article on cross-domain iframe requests blocked in SharePoint Online (search summary).
+- Basis: Verified (framing Unverified)
+- Code: `getPreviewUrl` raises an error when `getUrl` is missing.
 
-- Not allowed: `" * : < > ? / \ |`, leading or trailing spaces, a trailing period, names starting `~$`, `_vti_` anywhere, reserved device names. The decoded path is limited to 400 characters.
+**FILES-7. Create documents from templates, never from empty files.**
+Keep real blank `.docx`, `.xlsx` and `.pptx` files in a templates folder and copy one, or upload template bytes shipped with the app.
+- Why: the guide's zero-byte upload has no documentation behind it and community reports are mixed.
+- Basis: Decision (in the absence of evidence for the shortcut)
+- Code: `createFromTemplate`. Gap: the copy is asynchronous (202 with a monitor URL) and the spike does not poll it.
 
-**Preview**
+**FILES-8. Resolve the site and library once, not on every operation.**
+`resolveDrive` caches ids per process and accepts a named library.
+- Why: the guide makes two extra Graph calls per operation and only reaches the site's default library.
+- Basis: Tested (id stability Unverified, see GRAPH Open)
 
-- `POST /drives/{id}/items/{id}/preview` returns `getUrl`, `postUrl` and `postParameters`; either URL may be missing. The spike raises an error when `getUrl` is absent.
-- The URL is short-lived and acts with the caller's permissions: never cache, log or share it.
-- It is a read-only preview. It is not an editor.
-- `createLink` with `type: "embed"` works only on OneDrive personal, so it is not an option for SharePoint.
+## Open
 
-**Editing**
-
-- `webUrl` opens the item in the browser; for Office files that is Office for the web, where co-authoring and saving are handled by SharePoint. Graph's documentation says only that it opens the resource in a browser.
-- SharePoint blocks most cross-origin framing of its own pages, so an embedded editor is not a supported path. Open `webUrl` in a new tab.
-
-## What the spike adds beyond the guide
-
-| Guide | Spike |
-| --- | --- |
-| Whole file buffered through a Server Action (1 MB default limit) | Streaming route handler, memory use independent of file size |
-| Silent overwrite | Explicit conflict behaviour on every write |
-| First 200 items only | Cursor paging |
-| Two Graph lookups per operation for site and drive | Cached per process, optional named library |
-| File name passed straight into the URL | Validated; path traversal through ids rejected |
-| No retry of a failed fragment | Per-fragment retry, handles "already received" (416), cancels the session on failure |
-
-## Blank Office documents
-
-The guide uploads a zero-byte `.docx` and states that this "initializes an editable Office Online file". No documentation supports that, and reports are mixed. Use one of:
-
-- Keep real blank templates (`.docx`, `.xlsx`, `.pptx`) in a templates folder and copy one: `POST /drives/{id}/items/{templateId}/copy` (asynchronous, returns 202 with a monitor URL). Implemented as `createFromTemplate`; the spike does not yet poll the monitor URL.
-- Ship the template bytes with the app and upload them.
-
-## Unverified, to test on a tenant
-
-- That the preview `getUrl` frames from the app's origin on the target tenant. `next.config.ts` allows `*.sharepoint.com` and `*.officeapps.live.com` in `frame-src`; the list may need another host.
-- That `$select=folder` always returns `childCount`.
-- Maximum file size (250 GB is widely quoted; not confirmed from a fetched page).
-- A zero-byte Office file, if that shortcut is still wanted.
-- The streaming route under the real host's request duration and body limits.
+Test on a tenant:
+- that the preview `getUrl` frames from the app's origin (`next.config.ts` allows `*.sharepoint.com` and `*.officeapps.live.com`; another host may be needed);
+- that `$select=folder` always returns `childCount`;
+- the streaming route under the real host's request duration and body limits, with a file over 100 MB;
+- the maximum file size (250 GB is widely quoted, not confirmed from a fetched page).
 
 ## Sources
 

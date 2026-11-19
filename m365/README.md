@@ -19,11 +19,11 @@ Plumbing for Microsoft 365 in a Next.js app: sign-in and tokens, the Graph clien
 
 | Directory | What | Checks |
 | --- | --- | --- |
-| `spike/` | Next.js 16 app with the hardened Graph layer in `spike/lib/m365/`. Also holds the `matters` track's code. | `npm test` (64 tests), `npm run typecheck`, `npm run build` |
+| `spike/` | Next.js 16 app with the hardened Graph layer in `spike/lib/m365/`. Also holds the `matters` track's code. | `npm test` (76 tests), `npm run typecheck`, `npm run build` |
 
 | Module in `spike/lib/m365/` | Doctrines |
 | --- | --- |
-| `tokens.ts`, `server.ts`, `config.ts`, and `spike/auth.ts` | AUTH |
+| `tokens.ts`, `tenant.ts`, `server.ts`, `config.ts`, and `spike/auth.ts` | AUTH |
 | `graph-client.ts` | GRAPH |
 | `drive.ts`, `names.ts` | FILES |
 | `sharing.ts` | SHARE |

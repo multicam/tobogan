@@ -16,6 +16,7 @@
 | `lib/m365/email-html.ts` | safe viewer document for email bodies | nothing |
 | `lib/m365/roles.ts` | firm roles and the policy for what each may do | nothing |
 | `lib/m365/matters.ts` | matter folders restricted to their team | drive, sharing |
+| `lib/m365/tenant.ts` | single-tenant issuer check | nothing |
 | `lib/m365/names.ts` | validation of file names, ids, emails | nothing |
 | `lib/m365/server.ts`, `config.ts`, `auth.ts` | Next.js and Auth.js wiring | Next.js, next-auth |
 | `app/` | minimal page, Server Actions, streaming upload route | all of the above |
@@ -26,7 +27,7 @@ To reuse the Graph layer elsewhere, copy `lib/m365/` without `server.ts` and `co
 
 ```bash
 npm install
-npm test          # 64 unit tests against a fake Graph
+npm test          # 76 unit tests against a fake Graph
 npm run typecheck
 cp .env.example .env.local   # fill in, then:
 npm run dev       # http://localhost:3000/workspace

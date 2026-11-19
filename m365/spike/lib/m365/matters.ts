@@ -1,6 +1,6 @@
 import { createFolder, deleteItem, listChildren, type DriveItemSummary } from "./drive";
 import { GraphError, type GraphClient, type GraphPage } from "./graph-client";
-import { InvalidInputError } from "./names";
+import { assertEmail, InvalidInputError } from "./names";
 import { invite, listPermissions, revokePermission, type PermissionSummary, type ShareRole } from "./sharing";
 
 /** A matter is a folder whose access is limited to its team. */
@@ -61,11 +61,20 @@ export async function listMatters(
 export async function createMatter(
   graph: GraphClient,
   driveId: string,
-  input: { number: string; title: string; team: MatterMember[]; mattersFolderId?: string },
+  input: {
+    number: string;
+    title: string;
+    /** The person creating the matter. Always granted write in the first grant (MATTER-6). */
+    creatorEmail: string;
+    team: MatterMember[];
+    mattersFolderId?: string;
+  },
 ): Promise<Matter> {
   const name = matterFolderName(input.number, input.title);
-  if (input.team.length === 0) throw new InvalidInputError("A matter needs at least one team member.");
-  const byRole = groupByRole(input.team);
+  const creator = assertEmail(input.creatorEmail);
+  // The write group is granted first and cuts inheritance, so the creator
+  // keeps access and the rollback delete can still run if a later grant fails.
+  const byRole = groupByRole([{ email: creator, role: "write" }, ...input.team]);
 
   const folder = await createFolder(graph, driveId, input.mattersFolderId ?? "root", name, "fail");
   try {

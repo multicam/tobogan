@@ -29,8 +29,8 @@ Access and refresh tokens live in a server-side store keyed by the user. The ses
 **AUTH-4. Sign in against one tenant, with an explicit issuer, and fail loudly when it is not configured.**
 - Why: with no issuer the provider defaults to `common`, which accepts any Microsoft account. An unset tenant variable silently produces `https://login.microsoftonline.com/undefined/v2.0`.
 - Evidence: Auth.js Microsoft Entra ID provider page. The documented variable is `AUTH_MICROSOFT_ENTRA_ID_ISSUER`, holding the full issuer URL.
-- Basis: Verified
-- Code: Gap: `spike/auth.ts` builds the issuer from `AUTH_MICROSOFT_ENTRA_ID_TENANT_ID` without checking that it is set.
+- Basis: Verified, Tested (smoke-tested: with the tenant unset, requests fail with "Missing environment variable AUTH_MICROSOFT_ENTRA_ID_TENANT_ID"; with it set, the app serves sign-in)
+- Code: `tenantIssuer` in `spike/lib/m365/tenant.ts` refuses a missing value, `common`, `organizations`, `consumers` and anything that is not a GUID or domain. `spike/auth.ts` passes Auth.js a lazy configuration, so the check runs per request and `next build` still works without secrets.
 
 **AUTH-5. Request the narrowest scopes that cover the features, and restrict the app to one site in production.**
 

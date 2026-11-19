@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createMatter, listMatters, matterFolderName } from "../lib/m365/matters";
 import { assertCan, can, roleFromClaims, type Action } from "../lib/m365/roles";
+import { tenantIssuer } from "../lib/m365/tenant";
 import { graphWith, json } from "./helpers";
 
 const folder = (over: object = {}) => ({ id: "m1", name: "2026-0042 - Acme v Bolt", webUrl: "https://sp/m1", lastModifiedDateTime: "x", folder: { childCount: 0 }, ...over });
@@ -47,6 +48,7 @@ describe("matters", () => {
     const matter = await createMatter(graph, "d", {
       number: "2026-0042",
       title: "Acme v Bolt",
+      creatorEmail: "Lead@firm.example",
       team: [
         { email: "Lead@firm.example", role: "write" },
         { email: "assoc@firm.example", role: "write" },
@@ -64,18 +66,52 @@ describe("matters", () => {
 
   it("deletes the folder if it cannot be restricted", async () => {
     const { graph, calls } = graphWith([json(folder(), 201), json({ error: { code: "accessDenied", message: "no" } }, 403), new Response(null, { status: 204 })]);
-    await expect(createMatter(graph, "d", { number: "2026-0042", title: "T", team: [{ email: "a@firm.example", role: "write" }] })).rejects.toMatchObject({ status: 403 });
+    await expect(createMatter(graph, "d", { number: "2026-0042", title: "T", creatorEmail: "a@firm.example", team: [{ email: "a@firm.example", role: "write" }] })).rejects.toMatchObject({ status: 403 });
     expect(calls.map((c) => c.method)).toEqual(["POST", "POST", "DELETE"]);
   });
 
   it("also rolls back when only some members were granted", async () => {
     const { graph, calls } = graphWith([json(folder(), 201), json({ value: [{ id: "p1" }, { error: { code: "x", message: "unknown user" } }] }, 207), new Response(null, { status: 204 })]);
-    await expect(createMatter(graph, "d", { number: "2026-0042", title: "T", team: [{ email: "a@firm.example", role: "write" }, { email: "b@firm.example", role: "write" }] })).rejects.toMatchObject({ code: "teamGrantFailed" });
+    await expect(createMatter(graph, "d", { number: "2026-0042", title: "T", creatorEmail: "a@firm.example", team: [{ email: "a@firm.example", role: "write" }, { email: "b@firm.example", role: "write" }] })).rejects.toMatchObject({ code: "teamGrantFailed" });
     expect(calls.at(-1)!.method).toBe("DELETE");
   });
 
   it("raises a loud error when rollback itself fails", async () => {
     const { graph } = graphWith([json(folder(), 201), json({}, 403), json({}, 403)]);
-    await expect(createMatter(graph, "d", { number: "2026-0042", title: "T", team: [{ email: "a@firm.example", role: "write" }] })).rejects.toMatchObject({ code: "matterLeftOpen" });
+    await expect(createMatter(graph, "d", { number: "2026-0042", title: "T", creatorEmail: "a@firm.example", team: [{ email: "a@firm.example", role: "write" }] })).rejects.toMatchObject({ code: "matterLeftOpen" });
+  });
+});
+
+describe("creator access (MATTER-6)", () => {
+  it("adds the creator with write access to the first grant when missing from the team", async () => {
+    const { graph, calls } = graphWith([json(folder(), 201), json({ value: [{ id: "p1" }] }), json({ value: [{ id: "p2" }] })]);
+    await createMatter(graph, "d", { number: "2026-0042", title: "T", creatorEmail: "Creator@firm.example", team: [{ email: "clerk@firm.example", role: "read" }] });
+    const bodies = calls.slice(1).map((c) => JSON.parse(String(c.body)));
+    expect(bodies[0]).toMatchObject({ roles: ["write"], retainInheritedPermissions: false, recipients: [{ email: "creator@firm.example" }] });
+    expect(bodies[1]).toMatchObject({ roles: ["read"], recipients: [{ email: "clerk@firm.example" }] });
+  });
+
+  it("upgrades a creator listed as read to write", async () => {
+    const { graph, calls } = graphWith([json(folder(), 201), json({ value: [{ id: "p1" }] })]);
+    await createMatter(graph, "d", { number: "2026-0042", title: "T", creatorEmail: "a@firm.example", team: [{ email: "A@firm.example", role: "read" }] });
+    expect(calls).toHaveLength(2);
+    expect(JSON.parse(String(calls[1]!.body))).toMatchObject({ roles: ["write"], recipients: [{ email: "a@firm.example" }] });
+  });
+
+  it("refuses an invalid creator before creating anything", async () => {
+    const { graph, calls } = graphWith([]);
+    await expect(createMatter(graph, "d", { number: "2026-0042", title: "T", creatorEmail: "", team: [] })).rejects.toThrow("Invalid email");
+    expect(calls).toHaveLength(0);
+  });
+});
+
+describe("tenant issuer (AUTH-4)", () => {
+  it("builds a single-tenant issuer", () => {
+    expect(tenantIssuer("0f6c5a8e-1b2c-4d3e-8f90-123456789abc")).toBe("https://login.microsoftonline.com/0f6c5a8e-1b2c-4d3e-8f90-123456789abc/v2.0");
+    expect(tenantIssuer("contoso.onmicrosoft.com")).toBe("https://login.microsoftonline.com/contoso.onmicrosoft.com/v2.0");
+  });
+
+  it.each([undefined, "", "common", "organizations", "Consumers", "undefined", "a/b", "x?y"])("refuses %j", (value) => {
+    expect(() => tenantIssuer(value)).toThrow();
   });
 });

@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { saveAttachmentToDrive } from "@/lib/m365/mail";
 import { createMatter, type MatterMember } from "@/lib/m365/matters";
 import { assertCan } from "@/lib/m365/roles";
-import { getDriveContext, getRole } from "@/lib/m365/server";
+import { auth } from "@/auth";
+import { getDriveContext } from "@/lib/m365/server";
 import { createLink, invite, revokePermission, type LinkScope, type ShareRole } from "@/lib/m365/sharing";
 
 // Every action is a public POST endpoint. Each one authenticates through
@@ -39,10 +40,13 @@ export async function saveAttachmentAction(messageId: string, attachmentId: stri
 }
 
 export async function createMatterAction(number: string, title: string, team: MatterMember[]) {
-  assertCan(await getRole(), "matter.create");
+  const session = await auth();
+  assertCan(session?.user?.role, "matter.create");
+  const creatorEmail = session?.user?.email;
+  if (!creatorEmail) throw new Error("Your account has no email address, so you cannot be added to the matter.");
   if (!Array.isArray(team) || team.some((m) => m?.role !== "read" && m?.role !== "write")) throw new Error("Invalid team.");
   const { graph, driveId } = await getDriveContext();
-  const matter = await createMatter(graph, driveId, { number, title, team });
+  const matter = await createMatter(graph, driveId, { number, title, creatorEmail, team });
   revalidatePath("/workspace");
   return matter;
 }

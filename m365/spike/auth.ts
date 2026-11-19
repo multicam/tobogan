@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
-import { GRAPH_SCOPE } from "@/lib/m365/config";
+import { config, GRAPH_SCOPE, tenantIssuer } from "@/lib/m365/config";
 import { isRole, roleFromClaims, type Role } from "@/lib/m365/roles";
 import { getTokenManager } from "@/lib/m365/server";
 
@@ -10,14 +10,16 @@ declare module "next-auth" {
   }
 }
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+// Lazy config: evaluated per request, so a missing setting fails the request
+// loudly (AUTH-4) without breaking `next build`, which has no secrets.
+export const { handlers, auth, signIn, signOut } = NextAuth(() => ({
   session: { strategy: "jwt" },
   providers: [
     MicrosoftEntraID({
-      clientId: process.env.AUTH_MICROSOFT_ENTRA_ID_ID,
-      clientSecret: process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET,
+      clientId: config.clientId,
+      clientSecret: config.clientSecret,
       // Single tenant. Without an issuer the provider accepts any Microsoft account.
-      issuer: `https://login.microsoftonline.com/${process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID}/v2.0`,
+      issuer: tenantIssuer(process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID),
       authorization: { params: { scope: GRAPH_SCOPE } },
     }),
   ],
@@ -53,4 +55,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (typeof uid === "string") await getTokenManager().forget(uid);
     },
   },
-});
+}));

@@ -45,10 +45,10 @@ Use one library per year (recommended) or per practice area. Use one site per ma
 - Basis: Verified (limits), Decision (layout)
 - Code: the spike takes the library and `mattersFolderId` as configuration.
 
-**MATTER-6. The creator is always in the first grant.**
+**MATTER-6. The creator is always in the first grant, with write access.**
 - Why: the documentation does not say whether the caller keeps access after `retainInheritedPermissions: false`. If the creator lost access, the rollback delete in MATTER-3 would fail.
-- Basis: Decision
-- Code: Gap: `createMatter` relies on the caller to include the creator in `team`.
+- Basis: Decision, Tested
+- Code: `createMatter` requires `creatorEmail` and adds the creator to the write group, which is granted first, upgrading them if listed as read. `createMatterAction` takes it from the signed-in session. Unverified: that the session email always matches what `invite` accepts (it may be a UPN rather than the mail address).
 
 **MATTER-7. Matter creation and team changes run as the app; everything else runs as the user.**
 The app holds `Sites.Selected` with a `fullcontrol` role on the matters site and performs these actions after checking the role policy. Users then need no permission-management rights in SharePoint.

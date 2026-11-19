@@ -69,7 +69,14 @@ export async function invite(
   graph: GraphClient,
   driveId: string,
   itemId: string,
-  input: { emails: string[]; role?: ShareRole; message?: string; sendInvitation?: boolean },
+  input: {
+    emails: string[];
+    role?: ShareRole;
+    message?: string;
+    sendInvitation?: boolean;
+    /** false stops the item inheriting access from its parent (unique permissions). */
+    retainInheritedPermissions?: boolean;
+  },
 ): Promise<InviteResult> {
   if (input.emails.length === 0 || input.emails.length > 50) throw new InvalidInputError("Provide 1 to 50 recipients.");
   const role = input.role ?? "read";
@@ -86,6 +93,7 @@ export async function invite(
         requireSignIn: true,
         sendInvitation: input.sendInvitation ?? true,
         roles: [role],
+        retainInheritedPermissions: input.retainInheritedPermissions,
       },
     },
   );

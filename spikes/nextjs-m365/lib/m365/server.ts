@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { config, GRAPH_SCOPE } from "./config";
 import { resolveDrive } from "./drive";
 import { createGraphClient, type GraphClient } from "./graph-client";
+import type { Role } from "./roles";
 import { createTokenManager, MemoryTokenStore, ReauthRequiredError, type TokenManager, type TokenStore } from "./tokens";
 
 // Survive dev hot reloads. Replace MemoryTokenStore with a shared, encrypted
@@ -39,4 +40,9 @@ export async function getDriveContext() {
   const graph = await getGraph();
   const { driveId, siteId } = await resolveDrive(graph, config.sharePoint);
   return { graph, driveId, siteId };
+}
+
+/** The signed-in user's firm role, or undefined (which every policy check denies). */
+export async function getRole(): Promise<Role | undefined> {
+  return (await auth())?.user?.role;
 }

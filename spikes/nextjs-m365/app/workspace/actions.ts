@@ -2,7 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { saveAttachmentToDrive } from "@/lib/m365/mail";
-import { getDriveContext } from "@/lib/m365/server";
+import { createMatter, type MatterMember } from "@/lib/m365/matters";
+import { assertCan } from "@/lib/m365/roles";
+import { getDriveContext, getRole } from "@/lib/m365/server";
 import { createLink, invite, revokePermission, type LinkScope, type ShareRole } from "@/lib/m365/sharing";
 
 // Every action is a public POST endpoint. Each one authenticates through
@@ -34,4 +36,13 @@ export async function saveAttachmentAction(messageId: string, attachmentId: stri
   const item = await saveAttachmentToDrive(graph, { messageId, attachmentId, driveId, folderId });
   revalidatePath("/workspace");
   return { id: item.id, name: item.name };
+}
+
+export async function createMatterAction(number: string, title: string, team: MatterMember[]) {
+  assertCan(await getRole(), "matter.create");
+  if (!Array.isArray(team) || team.some((m) => m?.role !== "read" && m?.role !== "write")) throw new Error("Invalid team.");
+  const { graph, driveId } = await getDriveContext();
+  const matter = await createMatter(graph, driveId, { number, title, team });
+  revalidatePath("/workspace");
+  return matter;
 }

@@ -1,16 +1,12 @@
 # prompt
 
-Analysis and discussion of an LLM prompt shared on X:
-https://x.com/datachaz/status/2122988229964222670/photo/1
-
-**Status:** blocked. The prompt is an image on x.com, which this environment cannot reach, so it has not been read. Paste the text or upload the image to unblock.
+Analysis and discussion of the "AI team architect" prompt shared on X: https://x.com/datachaz/status/2122988229964222670/photo/1 (text pasted by the owner).
 
 ## Documents
 
 | Document | Type | Prefix | Answers | Date |
 | --- | --- | --- | --- | --- |
-
-None yet.
+| `team-architect.md` | Research | PROMPT | What the prompt does, where it falls short of the factory doctrines, and a revised version | 2026-11-19 |
 
 ## Code
 

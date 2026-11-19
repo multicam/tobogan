@@ -16,6 +16,7 @@ export default defineConfig({
   },
   test: {
     include: ["test/**/*.test.ts"],
+    setupFiles: ["test/setup-no-network.ts"],
     coverage: {
       provider: "v8",
       // Server code only: TSX pages and components are UI, verified by `next build`.

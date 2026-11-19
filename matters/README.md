@@ -12,7 +12,7 @@ How the firm's structure maps onto Microsoft 365.
 | Role policy (who may do what in the app) | `m365/spike/lib/m365/roles.ts` |
 | Matter folders (create restricted, list, team changes) | `m365/spike/lib/m365/matters.ts` |
 | Tests | `m365/spike/test/matters-roles.test.ts` |
-| Research note | `research/` (in progress) |
+| Research note | `research/2026-11-19-roles-and-matter-folders.md` |
 
 The code lives in the `m365` spike because it builds on that track's Graph, drive and sharing modules.
 

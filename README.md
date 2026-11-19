@@ -9,7 +9,7 @@ Each track is a top-level directory. Use the short name to refer to it.
 | Track | Directory | Scope | Status |
 | --- | --- | --- | --- |
 | `m365` | `m365/` | Plumbing for Microsoft 365: sign-in and tokens, the Graph client, SharePoint files and sharing, Exchange mail, Next.js specifics | Six notes and a tested spike; not yet run against a tenant |
-| `matters` | `matters/` | The firm's model: admin, team leader and associate roles; a matter as a SharePoint folder limited to its team | Policy and code drafted; research note in progress |
+| `matters` | `matters/` | The firm's model: admin, team leader and associate roles; a matter as a SharePoint folder limited to its team | Note, draft policy and tested code; firm decisions and tenant tests outstanding |
 | `prompt` | `prompt/` | Analysis and discussion of a prompt shared on X | Blocked: source image not readable from here |
 | `archive` | `archive/` | Frozen earlier work, not a live track | Closed |
 

@@ -15,3 +15,5 @@ build/
 !.env.example
 *.pem
 *.pfx
+next-env.d.ts
+*.tsbuildinfo

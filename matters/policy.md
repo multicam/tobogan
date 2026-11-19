@@ -21,11 +21,18 @@
 
 **POLICY-4. Only admins and the matter's lead change its team, close it, or share it outside the firm.**
 - Basis: Decision
-- Code: `can()` takes `isMatterLead`. Gap: how the lead is recorded is undecided (question 4 below).
+- Code: `can()` takes `isMatterLead`, which `authorizeItemAction` reads from the matter's `MatterLead` column (MATTER-8). Only an admin may name someone else as lead; a team leader leads the matters they create.
 
 **POLICY-5. The policy is checked on the server for every action, and never replaces folder permissions.**
 - Why: see MATTER-1.
+- Basis: Decision, Tested
+- Code: `assertCan` and `authorizeItemAction` in every Server Action.
+
+**POLICY-6. Until the firm answers question 3, any sharing beyond a matter's team follows the "share outside the firm" rule.**
+Inviting someone or creating a link on a matter or anything in it is for admins and the matter's lead. Items outside any matter can be shared by admins only.
+- Why: sharing a single document with someone outside the team breaches the matter's wall as much as adding them to the team. This is the conservative reading of the draft.
 - Basis: Decision
+- Code: the sharing actions check `share.external`; removing access checks `matter.manageTeam`.
 
 | Action | Admin | Team leader | Associate |
 | --- | --- | --- | --- |
@@ -43,4 +50,4 @@ Decisions owed by the firm:
 1. Do admins see every matter's documents, or only manage matters without opening them? If they see them, a firm-admins group is granted on every matter at creation. MATTER-7 allows the other choice.
 2. Can team leaders see matters they do not lead?
 3. Can associates share inside the firm? The draft says no: adding someone is a team change, made by the lead.
-4. How is a matter's lead recorded? Recommended: a column on the matter folder.
+4. ~~How is a matter's lead recorded?~~ Settled as a column on the matter folder (MATTER-8), unless the firm prefers otherwise.

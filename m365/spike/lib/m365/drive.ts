@@ -1,4 +1,4 @@
-import { GraphError, seg, type GraphClient, type GraphPage } from "./graph-client";
+import { GraphError, seg, type GraphClient, type GraphPage, type RawResult } from "./graph-client";
 import { assertId, assertValidFileName } from "./names";
 
 export interface DriveRef {
@@ -294,20 +294,58 @@ export async function upload(
   return uploadLarge(graph, driveId, parentId, name, once(), bytes.byteLength, options);
 }
 
-/** Create a document by copying a template that lives in the same drive. */
+/**
+ * Create a document by copying a template that lives in the same drive
+ * (FILES-7). Returns the monitor URL for waitForCopy.
+ */
 export async function createFromTemplate(
   graph: GraphClient,
   driveId: string,
   templateItemId: string,
   parentId: string,
   name: string,
-): Promise<void> {
-  // 202 Accepted: the copy runs asynchronously on the service side.
-  await graph.request("POST", `${itemPath(driveId, templateItemId)}/copy`, {
+): Promise<string> {
+  // 202 Accepted: the copy runs asynchronously; Location is the monitor URL.
+  const result = await graph.request<RawResult>("POST", `${itemPath(driveId, templateItemId)}/copy`, {
     query: { "@microsoft.graph.conflictBehavior": "fail" },
-    json: { parentReference: { driveId, id: parentId === "root" ? undefined : assertId(parentId), path: parentId === "root" ? "/drive/root:" : undefined }, name: assertValidFileName(name) },
-    responseType: "none",
+    json: {
+      parentReference: { driveId, id: parentId === "root" ? undefined : assertId(parentId), path: parentId === "root" ? "/drive/root:" : undefined },
+      name: assertValidFileName(name),
+    },
+    responseType: "raw",
   });
+  const monitor = result.headers.get("location");
+  if (!monitor) throw new GraphError(502, "noMonitor", "Copy accepted but no monitor URL was returned.");
+  return monitor;
+}
+
+/** Hosts a copy monitor URL may point at. It needs no token, and none is sent. */
+const MONITOR_HOST = /(^|\.)(sharepoint\.com|sharepoint\.us|sharepoint\.de|sharepoint\.cn|onedrive\.com|graph\.microsoft\.com)$/i;
+
+/** Poll a copy monitor until the new item exists. Returns the new item's id. */
+export async function waitForCopy(
+  monitorUrl: string,
+  options: { fetch?: typeof fetch; sleep?: (ms: number) => Promise<void>; maxPolls?: number; intervalMs?: number } = {},
+): Promise<string> {
+  const url = new URL(monitorUrl);
+  if (url.protocol !== "https:" || !MONITOR_HOST.test(url.hostname)) throw new GraphError(400, "invalidMonitor", "Unexpected copy monitor URL.");
+  const doFetch = options.fetch ?? fetch;
+  const sleep = options.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
+  const maxPolls = options.maxPolls ?? 60;
+  for (let i = 0; i < maxPolls; i++) {
+    const response = await doFetch(url, { cache: "no-store", redirect: "follow" });
+    const status = (await response.json().catch(() => ({}))) as {
+      status?: string;
+      resourceId?: string;
+      id?: string;
+      error?: { message?: string };
+    };
+    if (status.status === "failed") throw new GraphError(409, "copyFailed", status.error?.message ?? "The copy failed.");
+    const id = status.resourceId ?? (status.status === undefined ? status.id : undefined);
+    if (id && (status.status === "completed" || status.status === undefined)) return id;
+    await sleep(options.intervalMs ?? 1_000);
+  }
+  throw new GraphError(504, "copyTimeout", "The copy did not finish in time; it may still complete.");
 }
 
 export async function deleteItem(graph: GraphClient, driveId: string, itemId: string): Promise<void> {

@@ -52,8 +52,8 @@ POST https://graph.microsoft.com/v1.0/sites/{siteId}/permissions
 
 - Why: `Sites.ReadWrite.All` lets the app act on every site the user can reach.
 - Evidence: `permissions-selected-overview.md` ("all Selected scopes now support delegated and application modes"); the grant needs `Sites.FullControl.All` and a SharePoint Administrator who is a member of the site (`site-post-permissions.md`).
-- Basis: Verified
-- Code: Gap: the spike still requests `Sites.ReadWrite.All` (`spike/lib/m365/config.ts`).
+- Basis: Verified, Tested (smoke-tested: the sign-in redirect asks for `Sites.Selected`)
+- Code: `graphScope` in `spike/lib/m365/scopes.ts` requests `Sites.Selected` by default; `SHAREPOINT_SITE_ACCESS=all` switches to `Sites.ReadWrite.All` for a development tenant without a grant. `grantAppSiteAccess` in `spike/lib/m365/sites.ts` performs the admin grant.
 
 **AUTH-6. The Graph layer does not depend on the auth library.**
 Everything in `spike/lib/m365/` except `server.ts` and `config.ts` needs only a `getAccessToken()` function.
@@ -63,9 +63,10 @@ Everything in `spike/lib/m365/` except `server.ts` and `config.ts` needs only a 
 
 **AUTH-7. In production the token store is shared between instances and encrypted at rest.**
 Entries are removed at sign-out and after the refresh token's 90-day lifetime.
-- Why: `MemoryTokenStore` loses every token on restart and is not shared between instances.
-- Basis: Decision (store technology owed by whoever owns the existing app's infrastructure)
-- Code: Gap: only `MemoryTokenStore` exists.
+Each entry is sealed with AES-256-GCM, with the user key bound as associated data so an entry copied to another user's key fails to decrypt.
+- Why: `MemoryTokenStore` loses every token on restart and is not shared between instances. Refresh tokens are 90-day credentials to the firm's documents and mail.
+- Basis: Decision (Redis chosen as the default; the existing app's infrastructure may change it), Tested
+- Code: `EncryptedTokenStore` and `redisBackend` in `spike/lib/m365/tokens.ts`; `spike/lib/m365/server.ts` uses Redis when `REDIS_URL` and `TOKEN_ENCRYPTION_KEY` are set, and refuses to start in production without them unless `TOKEN_STORE=memory`. The store takes any `KeyValueBackend`, so a database table fits the same interface.
 
 ## Open
 
@@ -77,6 +78,7 @@ Entries are removed at sign-out and after the refresh token's 90-day lifetime.
 
 - `next-auth` dist-tags: `latest` 4.24.15, `beta` 5.0.0-beta.32 (2026-07-20). No stable v5. The beta supports Next 14, 15 and 16.
 - Provider import `next-auth/providers/microsoft-entra-id`; callback path `/api/auth/callback/microsoft-entra-id`.
+- With a tenant id that does not exist, Microsoft's discovery endpoint returns `invalid_tenant` and the Auth.js provider fails with an unhelpful `TypeError ... reading 'replace'` (seen in the smoke test). Check the tenant id first when sign-in fails that way.
 - Entra refresh tokens last 90 days by default. Confidential-client tokens survive a user password change but are revoked by an admin reset or explicit revocation.
 - Admin consent (delegated) is not required by default for `Sites.ReadWrite.All`, `Files.ReadWrite.All`, `Mail.Read`, `Mail.ReadWrite`, `Mail.Send` or `Sites.Selected`, and is required for `Files.SelectedOperations.Selected` and `Lists.SelectedOperations.Selected`. A tenant's consent policy can require it for all of them.
 

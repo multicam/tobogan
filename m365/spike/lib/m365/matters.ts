@@ -1,7 +1,7 @@
 import { createFolder, deleteItem, listChildren, type DriveItemSummary } from "./drive";
-import { GraphError, type GraphClient, type GraphPage } from "./graph-client";
-import { assertEmail, InvalidInputError } from "./names";
-import { invite, listPermissions, revokePermission, type PermissionSummary, type ShareRole } from "./sharing";
+import { GraphError, seg, type GraphClient, type GraphPage } from "./graph-client";
+import { assertEmail, assertGuid, assertId, InvalidInputError } from "./names";
+import { invite, listPermissions, revokePermission, setPermissionRole, type PermissionSummary, type ShareRole } from "./sharing";
 
 /** A matter is a folder whose access is limited to its team. */
 export interface Matter {
@@ -15,6 +15,18 @@ export interface MatterMember {
   email: string;
   role: ShareRole;
 }
+
+export type MatterStatus = "Open" | "Closed";
+
+/** Columns kept on each matter folder (POLICY-4). */
+export interface MatterFields {
+  number: string;
+  lead: string;
+  status: MatterStatus;
+}
+
+/** Column names in the document library. */
+export const MATTER_COLUMNS = { number: "MatterNumber", lead: "MatterLead", status: "MatterStatus" } as const;
 
 const MATTER_NUMBER = /^[A-Z0-9][A-Z0-9-]{1,30}$/;
 const SEPARATOR = " - ";
@@ -36,6 +48,89 @@ function toMatter(item: DriveItemSummary): Matter {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Library columns
+
+const listCache = new Map<string, { siteId: string; listId: string }>();
+
+/** The SharePoint list behind a drive. Cached per process. */
+export async function getListRef(graph: GraphClient, driveId: string) {
+  const cached = listCache.get(driveId);
+  if (cached) return cached;
+  const list = await graph.request<{ id: string; parentReference?: { siteId?: string } }>("GET", `/drives/${seg(driveId)}/list`, {
+    query: { $select: "id,parentReference" },
+  });
+  if (!list.parentReference?.siteId) throw new GraphError(502, "noSite", "Drive list returned no site id.");
+  const ref = { siteId: list.parentReference.siteId, listId: list.id };
+  listCache.set(driveId, ref);
+  return ref;
+}
+
+export function clearListCache() {
+  listCache.clear();
+}
+
+/**
+ * Create the matter columns if they are missing. Indexed, so matters can be
+ * filtered by them in large libraries. Run once per library, as an admin or the app.
+ */
+export async function ensureMatterColumns(graph: GraphClient, driveId: string): Promise<string[]> {
+  const { siteId, listId } = await getListRef(graph, driveId);
+  const base = `/sites/${seg(siteId)}/lists/${seg(listId)}/columns`;
+  const existing = new Set((await graph.getAll<{ name: string }>(base, { query: { $select: "name" } })).map((c) => c.name));
+  const wanted = [
+    { name: MATTER_COLUMNS.number, text: {}, indexed: true },
+    { name: MATTER_COLUMNS.lead, text: {}, indexed: true },
+    { name: MATTER_COLUMNS.status, choice: { choices: ["Open", "Closed"] }, indexed: true, defaultValue: { value: "Open" } },
+  ];
+  const created: string[] = [];
+  for (const column of wanted) {
+    if (existing.has(column.name)) continue;
+    await graph.request("POST", base, { json: column });
+    created.push(column.name);
+  }
+  return created;
+}
+
+async function listItemPath(graph: GraphClient, driveId: string, itemId: string): Promise<string> {
+  const { siteId, listId } = await getListRef(graph, driveId);
+  const listItem = await graph.request<{ id: string }>("GET", `/drives/${seg(driveId)}/items/${seg(assertId(itemId))}/listItem`, {
+    query: { $select: "id" },
+  });
+  return `/sites/${seg(siteId)}/lists/${seg(listId)}/items/${seg(listItem.id)}`;
+}
+
+export async function setMatterFields(graph: GraphClient, driveId: string, matterId: string, fields: Partial<MatterFields>) {
+  const body: Record<string, string> = {};
+  if (fields.number !== undefined) body[MATTER_COLUMNS.number] = fields.number;
+  if (fields.lead !== undefined) body[MATTER_COLUMNS.lead] = assertEmail(fields.lead).toLowerCase();
+  if (fields.status !== undefined) body[MATTER_COLUMNS.status] = fields.status;
+  await graph.request("PATCH", `${await listItemPath(graph, driveId, matterId)}/fields`, { json: body });
+}
+
+export async function getMatterFields(graph: GraphClient, driveId: string, matterId: string): Promise<Partial<MatterFields>> {
+  const fields = await graph.request<Record<string, unknown>>("GET", `${await listItemPath(graph, driveId, matterId)}/fields`, {
+    query: { $select: Object.values(MATTER_COLUMNS).join(",") },
+  });
+  const read = (key: string) => (typeof fields?.[key] === "string" ? (fields[key] as string) : undefined);
+  const status = read(MATTER_COLUMNS.status);
+  return {
+    number: read(MATTER_COLUMNS.number),
+    lead: read(MATTER_COLUMNS.lead)?.toLowerCase(),
+    status: status === "Open" || status === "Closed" ? status : undefined,
+  };
+}
+
+/** True when `email` is the recorded lead of the matter. */
+export async function isMatterLead(graph: GraphClient, driveId: string, matterId: string, email: string | undefined): Promise<boolean> {
+  if (!email) return false;
+  const { lead } = await getMatterFields(graph, driveId, matterId);
+  return lead !== undefined && lead === email.toLowerCase();
+}
+
+// ---------------------------------------------------------------------------
+// Matters
+
 /**
  * Matters the signed-in user can open. With delegated access SharePoint only
  * returns folders the user has permission on, so no extra filtering is needed
@@ -52,11 +147,12 @@ export async function listMatters(
 }
 
 /**
- * Create a matter folder restricted to its team.
+ * Create a matter folder restricted to its team, then record its number,
+ * lead and status.
  *
  * A new folder inherits the library's permissions, so until the team grant
- * succeeds it is visible to everyone who can see the library. If restricting
- * it fails, the empty folder is deleted so no matter is ever left open.
+ * succeeds it is visible to everyone who can see the library. If any step
+ * fails, the folder is deleted so no matter is left open or without a lead.
  */
 export async function createMatter(
   graph: GraphClient,
@@ -66,15 +162,21 @@ export async function createMatter(
     title: string;
     /** The person creating the matter. Always granted write in the first grant (MATTER-6). */
     creatorEmail: string;
+    /** Defaults to the creator. Always granted write. */
+    leadEmail?: string;
     team: MatterMember[];
+    /** Entra group granted write on every matter, e.g. firm admins (POLICY open question 1). */
+    adminGroupId?: string;
     mattersFolderId?: string;
   },
 ): Promise<Matter> {
   const name = matterFolderName(input.number, input.title);
-  const creator = assertEmail(input.creatorEmail);
+  const creator = assertEmail(input.creatorEmail).toLowerCase();
+  const lead = assertEmail(input.leadEmail ?? creator).toLowerCase();
+  const adminGroup = input.adminGroupId ? assertGuid(input.adminGroupId, "admin group id") : undefined;
   // The write group is granted first and cuts inheritance, so the creator
-  // keeps access and the rollback delete can still run if a later grant fails.
-  const byRole = groupByRole([{ email: creator, role: "write" }, ...input.team]);
+  // keeps access and the rollback delete can still run if a later step fails.
+  const byRole = groupByRole([{ email: creator, role: "write" }, { email: lead, role: "write" }, ...input.team]);
 
   const folder = await createFolder(graph, driveId, input.mattersFolderId ?? "root", name, "fail");
   try {
@@ -82,6 +184,7 @@ export async function createMatter(
     for (const [role, emails] of byRole) {
       const result = await invite(graph, driveId, folder.id, {
         emails,
+        groupIds: role === "write" && adminGroup ? [adminGroup] : undefined,
         role,
         sendInvitation: false,
         // Only the first call cuts inheritance; later calls add to the unique set.
@@ -92,9 +195,10 @@ export async function createMatter(
       }
       first = false;
     }
+    await setMatterFields(graph, driveId, folder.id, { number: input.number, lead, status: "Open" });
   } catch (error) {
     await deleteItem(graph, driveId, folder.id).catch(() => {
-      throw new GraphError(500, "matterLeftOpen", `Matter folder ${folder.id} was created but could not be restricted or removed. Fix it in SharePoint now.`);
+      throw new GraphError(500, "matterLeftOpen", `Matter folder ${folder.id} was created but could not be finished or removed. Fix it in SharePoint now.`);
     });
     throw error;
   }
@@ -115,6 +219,68 @@ export async function addMatterMembers(graph: GraphClient, driveId: string, matt
 
 export async function removeMatterMember(graph: GraphClient, driveId: string, matterId: string, permissionId: string) {
   await revokePermission(graph, driveId, matterId, permissionId);
+}
+
+/**
+ * Close a matter: everyone keeps read access, nobody keeps write, sharing
+ * links are removed, the status column becomes Closed and, if given, a
+ * retention label is applied to the folder and everything in it.
+ */
+export async function closeMatter(
+  graph: GraphClient,
+  driveId: string,
+  matterId: string,
+  options: { retentionLabel?: string } = {},
+): Promise<{ downgraded: number; linksRemoved: number }> {
+  let downgraded = 0;
+  let linksRemoved = 0;
+  for (const permission of await listPermissions(graph, driveId, matterId)) {
+    if (permission.inherited || permission.roles.includes("owner")) continue;
+    if (permission.link) {
+      await revokePermission(graph, driveId, matterId, permission.id);
+      linksRemoved++;
+    } else if (permission.roles.includes("write")) {
+      await setPermissionRole(graph, driveId, matterId, permission.id, "read");
+      downgraded++;
+    }
+  }
+  await setMatterFields(graph, driveId, matterId, { status: "Closed" });
+  if (options.retentionLabel) {
+    await graph.request("PATCH", `/drives/${seg(driveId)}/items/${seg(assertId(matterId))}/retentionLabel`, {
+      json: { name: options.retentionLabel },
+    });
+  }
+  return { downgraded, linksRemoved };
+}
+
+/**
+ * The matter (top-level folder under the matters folder) an item belongs to,
+ * or undefined for items outside any matter.
+ */
+export async function matterOfItem(graph: GraphClient, driveId: string, itemId: string, mattersFolderId = "root"): Promise<string | undefined> {
+  let current = assertId(itemId);
+  for (let depth = 0; depth < 64; depth++) {
+    const item = await graph.request<{ id: string; parentReference?: { id?: string } }>(
+      "GET",
+      `/drives/${seg(driveId)}/items/${seg(current)}`,
+      { query: { $select: "id,parentReference" } },
+    );
+    const parent = item.parentReference?.id;
+    if (!parent) return undefined; // the drive root itself
+    if (mattersFolderId === "root" ? await isRoot(graph, driveId, parent) : parent === mattersFolderId) return item.id;
+    current = parent;
+  }
+  throw new GraphError(508, "tooDeep", "Folder nesting is deeper than 64 levels.");
+}
+
+const rootIds = new Map<string, string>();
+async function isRoot(graph: GraphClient, driveId: string, id: string): Promise<boolean> {
+  let rootId = rootIds.get(driveId);
+  if (!rootId) {
+    rootId = (await graph.request<{ id: string }>("GET", `/drives/${seg(driveId)}/root`, { query: { $select: "id" } })).id;
+    rootIds.set(driveId, rootId);
+  }
+  return id === rootId;
 }
 
 /** One entry per person (the higher role wins), write grants first. */

@@ -55,8 +55,22 @@ The app holds `Sites.Selected` with a `fullcontrol` role on the matters site and
 - Why: restricting a folder requires the right to manage its permissions. The alternative is giving team leaders that right on the whole library.
 - Evidence: `Sites.Selected` with `fullcontrol` or `owner` can manage list item and file permissions (`permissions-selected-overview.md`). Graph app-only accepts a client secret; the certificate requirement applies to SharePoint REST and CSOM, not Graph (`auth-v2-service.md`, `security-apponly-azuread.md`).
 - Consequence: the app credential becomes high-value, and the role policy becomes a real security control for these two actions.
-- Basis: Decision (recommended), Unverified (see Open)
-- Code: Gap: only delegated creation exists. `createMatter` accepts any Graph client, so it works with either.
+- Basis: Decision (recommended), Tested; behaviour on a tenant Unverified (see Open)
+- Code: `createAppTokenProvider` in `m365/spike/lib/m365/tokens.ts` (client credentials, cached, one request at a time); `getAppGraph` in `server.ts`; `provisioningGraph` and `authorizeItemAction` in `authorize.ts`. `MATTER_PROVISIONING=app` is the default, `delegated` keeps the old behaviour. The policy check always runs with the user's identity before the app's client is used, and the item's matter is found with the user's own token, so a user cannot act on an item they cannot see.
+
+**MATTER-8. Each matter records its number, lead and status in indexed library columns.**
+Columns `MatterNumber`, `MatterLead` and `MatterStatus` (Open or Closed) are created once per library and written when the matter is created; if writing them fails, the matter is deleted. The lead is always read from the column, never from the request.
+- Why: POLICY-4 needs to know who leads a matter, and the record must survive outside the app. Indexed columns allow filtering in libraries beyond the 5,000-item view threshold.
+- Evidence: list item fields are updated with `PATCH /sites/{site}/lists/{list}/items/{item}/fields`; filtering works on one indexed column at a time (`listitem-update.md`, `listitem-list.md`).
+- Basis: Verified, Tested
+- Code: `ensureMatterColumns`, `setMatterFields`, `getMatterFields`, `isMatterLead` in `m365/spike/lib/m365/matters.ts`. Unverified: reaching the list item through `GET /drives/{id}/items/{id}/listItem` (common, not on the pages read).
+
+**MATTER-9. Closing a matter leaves its team with read access only.**
+Write grants become read, sharing links are removed, inherited and owner entries are left alone, the status becomes Closed and, if configured, a retention label is applied to the folder and everything in it.
+- Why: a closed file must stay readable for the firm's records but must not change.
+- Evidence: `PATCH .../permissions/{id}` changes roles but not for sharing links, which are therefore removed (`permission-update.md`); folder retention labels apply to all contents (`driveitem-setretentionlabel.md`).
+- Basis: Decision, Tested
+- Code: `closeMatter`; the close button in the sharing panel for admins and the lead. Label name from `MATTER_CLOSED_RETENTION_LABEL`.
 
 ## Open
 
@@ -69,7 +83,7 @@ Test on a tenant first (PLAN-1 items 2 and 3):
 
 Decisions owed by the firm: see `policy.md`.
 
-Not built: app-only provisioning client; matter columns (number, client, status, lead) and listing by them; adding the creator and an admins group automatically; closing a matter (read-only permissions plus a retention label); filing email into a matter from the UI.
+Not built: listing and filtering matters by column, a client column, choosing the library by year (MATTER-5), filing email into a matter from the UI. Built since the first draft: app-only provisioning, the lead and status columns, the optional admins group (`MATTER_ADMIN_GROUP_ID`), closing a matter.
 
 ## Reference
 

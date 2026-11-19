@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
-import { config, GRAPH_SCOPE, tenantIssuer } from "@/lib/m365/config";
+import { config, delegatedScope, tenantIssuer } from "@/lib/m365/config";
 import { isRole, roleFromClaims, type Role } from "@/lib/m365/roles";
 import { getTokenManager } from "@/lib/m365/server";
 
@@ -20,7 +20,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => ({
       clientSecret: config.clientSecret,
       // Single tenant. Without an issuer the provider accepts any Microsoft account.
       issuer: tenantIssuer(process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID),
-      authorization: { params: { scope: GRAPH_SCOPE } },
+      authorization: { params: { scope: delegatedScope() } },
     }),
   ],
   callbacks: {

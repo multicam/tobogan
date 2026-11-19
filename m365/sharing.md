@@ -41,15 +41,15 @@
 
 **SHARE-7. Show tenant policy refusals to the user as Graph states them.**
 - Why: external sharing, default link scope, link expiry and guest invitation are tenant and site settings; the same request succeeds on one tenant and returns 403 on another. A generic error hides the cause.
-- Basis: Decision
-- Code: Gap: no sharing UI yet.
+- Basis: Decision, Tested (type-checked and built; the UI has not run against a tenant)
+- Code: the sharing panel in `spike/app/workspace/page.tsx` loads permissions only when opened (SHARE-6) and shows Graph's message and code on any failure (`describe` in `spike/app/workspace/actions.ts`). Who may use it is decided by POLICY-6.
 
 ## Open
 
 - **Unverified:** exact scopes per sharing call (the permission tables were not fetched); confirm when moving to `Sites.Selected` (AUTH-5).
 - **Unverified:** rules on combining `requireSignIn` and `sendInvitation`. The spike always sends `requireSignIn: true`.
 - **Unverified:** the error code returned when tenant policy refuses a link scope.
-- **Not built:** sharing UI, role changes (`PATCH`), link expiry, `users`-scoped links, emailing a link as a separate step.
+- **Not built:** link expiry, emailing a link as a separate step. Built since the first draft: the sharing UI, role changes (`setPermissionRole`), group recipients by object id, `users`-scoped links (the UI's default).
 - Record the target tenant's sharing settings.
 
 ## Reference

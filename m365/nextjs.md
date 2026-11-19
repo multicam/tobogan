@@ -11,7 +11,7 @@ Checked against Next.js 16.4.6.
 **NEXT-1. Every Server Action authenticates and validates its own arguments.**
 - Why: each Server Action is a public POST endpoint, and its argument types are not enforced at runtime.
 - Basis: Verified, Tested
-- Code: `spike/app/workspace/actions.ts` (each action calls `getDriveContext()`, which throws without a session; the library functions validate every argument)
+- Code: `spike/app/workspace/actions.ts`. Each action reads a `FormData`, authenticates through `getDriveContext()` (which throws without a session), checks the role policy with `authorizeItemAction` or `assertCan`, and the library functions validate every value. Results come back as a redirect with a message, so the page works without client JavaScript.
 
 **NEXT-2. Uploads go through a streaming route handler that rejects cross-site requests.**
 `PUT /api/upload?folderId=...&name=...` takes the raw file as its body. It requires an exact `Content-Length` (411 without), rejects files over 2 GB (413), and requires an `x-requested-with: fetch` header.
@@ -34,7 +34,7 @@ Checked against Next.js 16.4.6.
 - Why: `middleware.ts` is now `proxy.ts`, and its `experimental.proxyClientMaxBodySize` (10 MB by default) truncates larger bodies without failing the request.
 - Evidence: Next.js `proxy.mdx`, `proxyClientMaxBodySize.mdx`. Codemod: `npx @next/codemod@canary middleware-to-proxy .`
 - Basis: Verified
-- Code: the spike has no proxy. When one is added, exclude `/api/upload` from its matcher.
+- Code: the spike has no proxy. When one is added, exclude `/api/upload` and `/api/graph/notifications` from its matcher.
 
 **NEXT-6. Never cache per-user data.**
 - Why: `fetch` is not cached by default, but under `cacheComponents` a `use cache` scope cannot read cookies; per-user Graph data inside one would be served to other users unless the user id is an argument.

@@ -15,6 +15,10 @@ Run these, in order, on a test tenant with an Entra app registration:
 5. Upload of a file over 100 MB through the streaming route (FILES-3, NEXT-2).
 6. Sharing per link scope under the firm's tenant policy (SHARE-2, SHARE-7).
 7. Mail: inline images, attachment `$select`, filing an attachment into a matter (MAIL-4).
+8. App-only: the site grant, then matter creation, columns, team changes and closing as the app (AUTH-5, MATTER-7 to MATTER-9).
+9. Token store against a real Redis, including restart and a second instance (AUTH-7).
+10. Change notifications: create a drive and an inbox subscription, receive a notification, run the delta (GRAPH-8).
+11. Template copy and its monitor URL (FILES-7).
 - Why: everything so far is checked against documentation and a simulated Graph only. Items 2 and 3 decide the matter provisioning design.
 - Basis: Decision
 
@@ -43,13 +47,15 @@ Copy `spike/lib/m365/` (without `server.ts` and `config.ts`) into the existing a
 | Area | Confidence | What would raise it |
 | --- | --- | --- |
 | Graph client (retry, paging, token safety) | High | Nothing needed before porting |
-| Token storage and refresh | High for the logic; the store is in-memory | Wire a shared store (AUTH-7) |
+| Token storage and refresh | High for the logic; Redis adapter untested against a server | PLAN-1 item 9 |
 | Upload | High for the protocol | PLAN-1 item 5 |
 | Preview | Medium | PLAN-1 item 4 |
 | Sharing | Medium | PLAN-1 item 6 |
 | Mail read and attachment filing | Medium-high | PLAN-1 item 7 |
-| Matter restriction | Low until tested | PLAN-1 items 2 and 3 |
-| Blank document creation | Template copy only (FILES-7) | Poll the copy monitor |
+| Matter restriction | Low until tested | PLAN-1 items 2, 3 and 8 |
+| App-only provisioning, lead column, closing | Medium: built and unit-tested on documented calls | PLAN-1 item 8 |
+| Change tracking | Medium: delta and webhook built; no queue or renewal timer | PLAN-1 item 10 |
+| Blank document creation | Medium: template copy with monitor polling | PLAN-1 item 11 |
 | Auth library choice | Open | AUTH Open |
 
 ## Open

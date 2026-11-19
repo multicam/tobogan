@@ -48,8 +48,8 @@ Preview with `POST .../preview` and frame its `getUrl`; edit by opening the item
 **FILES-7. Create documents from templates, never from empty files.**
 Keep real blank `.docx`, `.xlsx` and `.pptx` files in a templates folder and copy one, or upload template bytes shipped with the app.
 - Why: the guide's zero-byte upload has no documentation behind it and community reports are mixed.
-- Basis: Decision (in the absence of evidence for the shortcut)
-- Code: `createFromTemplate`. Gap: the copy is asynchronous (202 with a monitor URL) and the spike does not poll it.
+- Basis: Decision (in the absence of evidence for the shortcut), Tested
+- Code: `createFromTemplate` returns the monitor URL from the 202; `waitForCopy` polls it without a token, only on Microsoft hosts, and returns the new item's id. Unverified: the monitor's response shape (`status`, `resourceId`) is taken from Graph's long-running operations pattern and must be checked on a tenant.
 
 **FILES-8. Resolve the site and library once, not on every operation.**
 `resolveDrive` caches ids per process and accepts a named library.

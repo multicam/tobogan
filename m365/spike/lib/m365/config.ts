@@ -1,6 +1,7 @@
 import "server-only";
 
 export { tenantIssuer } from "./tenant";
+import { graphScope } from "./scopes";
 
 function required(name: string): string {
   const value = process.env[name];
@@ -28,10 +29,23 @@ export const config = {
   },
 };
 
+/** Delegated scopes for this deployment (AUTH-5). */
+export function delegatedScope(): string {
+  return graphScope(process.env.SHAREPOINT_SITE_ACCESS || undefined);
+}
+
 /**
- * Least privilege for the features in this spike. Mail.ReadWrite is only
- * needed for mark-as-read; drop to Mail.Read if that is not used.
- * Swap Sites.ReadWrite.All for Sites.Selected once an admin has granted the
- * app a role on the one target site.
+ * Who performs matter creation and team changes (MATTER-7). "app" (default)
+ * uses the app's own credential; "delegated" uses the signed-in user's token,
+ * which then needs permission-management rights on the library.
  */
-export const GRAPH_SCOPE = ["openid", "profile", "email", "offline_access", "Sites.ReadWrite.All", "Mail.ReadWrite", "Mail.Send"].join(" ");
+export function matterProvisioning(): "app" | "delegated" {
+  const value = process.env.MATTER_PROVISIONING || "app";
+  if (value !== "app" && value !== "delegated") throw new Error('MATTER_PROVISIONING must be "app" or "delegated".');
+  return value;
+}
+
+/** Optional Entra group id granted write on every new matter (POLICY open question 1). */
+export function matterAdminGroupId(): string | undefined {
+  return process.env.MATTER_ADMIN_GROUP_ID || undefined;
+}

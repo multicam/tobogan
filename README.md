@@ -8,8 +8,8 @@ Each track is a top-level directory. Use the short name to refer to it.
 
 | Track | Directory | Scope | Status |
 | --- | --- | --- | --- |
-| `m365` | `m365/` | Plumbing for Microsoft 365: sign-in and tokens, the Graph client, SharePoint files and sharing, Exchange mail, Next.js specifics | Six research documents and a tested spike; not yet run against a tenant |
-| `matters` | `matters/` | The firm's model: admin, team leader and associate roles; a matter as a SharePoint folder limited to its team | Note, draft policy and tested code; firm decisions and tenant tests outstanding |
+| `m365` | `m365/` | Plumbing for Microsoft 365: sign-in and tokens, the Graph client, SharePoint files and sharing, Exchange mail, Next.js specifics | Seven documents; spike closes every recorded gap (106 tests). Not yet run against a tenant |
+| `matters` | `matters/` | The firm's model: admin, team leader and associate roles; a matter as a SharePoint folder limited to its team | Two documents; roles, restricted matters, lead column, closing and app-only provisioning built and tested. Three firm decisions and tenant tests outstanding |
 | `prompt` | `prompt/` | Analysis and discussion of a prompt shared on X | Blocked: source image not readable from here |
 | `archive` | `archive/` | Frozen earlier work, not a live track | Closed |
 

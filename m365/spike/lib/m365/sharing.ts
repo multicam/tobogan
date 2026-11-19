@@ -1,5 +1,5 @@
 import { GraphError, seg, type GraphClient } from "./graph-client";
-import { assertEmail, assertId, InvalidInputError } from "./names";
+import { assertEmail, assertGuid, assertId, InvalidInputError } from "./names";
 
 export type ShareRole = "read" | "write";
 export type LinkScope = "organization" | "users" | "anonymous";
@@ -71,6 +71,8 @@ export async function invite(
   itemId: string,
   input: {
     emails: string[];
+    /** Entra group object ids (security or Microsoft 365 groups). */
+    groupIds?: string[];
     role?: ShareRole;
     message?: string;
     sendInvitation?: boolean;
@@ -78,7 +80,9 @@ export async function invite(
     retainInheritedPermissions?: boolean;
   },
 ): Promise<InviteResult> {
-  if (input.emails.length === 0 || input.emails.length > 50) throw new InvalidInputError("Provide 1 to 50 recipients.");
+  const groups = input.groupIds ?? [];
+  const count = input.emails.length + groups.length;
+  if (count === 0 || count > 50) throw new InvalidInputError("Provide 1 to 50 recipients.");
   const role = input.role ?? "read";
   if (role !== "read" && role !== "write") throw new InvalidInputError("Role must be read or write.");
   if (input.message && input.message.length > 2000) throw new InvalidInputError("Message is longer than 2000 characters.");
@@ -88,7 +92,10 @@ export async function invite(
     `/drives/${seg(driveId)}/items/${seg(assertId(itemId))}/invite`,
     {
       json: {
-        recipients: input.emails.map((email) => ({ email: assertEmail(email) })),
+        recipients: [
+          ...input.emails.map((email) => ({ email: assertEmail(email) })),
+          ...groups.map((objectId) => ({ objectId: assertGuid(objectId) })),
+        ],
         message: input.message,
         requireSignIn: true,
         sendInvitation: input.sendInvitation ?? true,
@@ -133,4 +140,13 @@ export async function revokePermission(graph: GraphClient, driveId: string, item
     throw new GraphError(409, "inheritedPermission", "This access is inherited from a parent folder and must be removed there.");
   }
   await graph.request("DELETE", path, { responseType: "none" });
+}
+
+/** Change a person's role on an item. Not supported for sharing links. */
+export async function setPermissionRole(graph: GraphClient, driveId: string, itemId: string, permissionId: string, role: ShareRole) {
+  if (role !== "read" && role !== "write") throw new InvalidInputError("Role must be read or write.");
+  await graph.request("PATCH", `${permissionsPath(driveId, itemId)}/${seg(assertId(permissionId, "permission id"))}`, {
+    json: { roles: [role] },
+    responseType: "none",
+  });
 }

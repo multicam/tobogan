@@ -43,6 +43,53 @@ export interface GraphClientOptions {
   /** Sent as User-Agent; SharePoint asks apps to identify themselves. */
   userAgent?: string;
   sleep?: (ms: number) => Promise<void>;
+  /**
+   * Caps concurrent requests to one mailbox (GRAPH-7). Applied only to mail
+   * paths; share one limiter per user across all of that user's clients.
+   */
+  mailLimiter?: Limiter;
+}
+
+export interface Limiter {
+  run<T>(task: () => Promise<T>): Promise<T>;
+}
+
+/** Simple FIFO semaphore. */
+export function createLimiter(max: number): Limiter & { readonly active: number; readonly queued: number } {
+  if (!Number.isInteger(max) || max < 1) throw new RangeError("Limiter needs a positive integer.");
+  let active = 0;
+  const waiting: (() => void)[] = [];
+  return {
+    get active() {
+      return active;
+    },
+    get queued() {
+      return waiting.length;
+    },
+    async run<T>(task: () => Promise<T>): Promise<T> {
+      if (active >= max) await new Promise<void>((resolve) => waiting.push(resolve));
+      active++;
+      try {
+        return await task();
+      } finally {
+        active--;
+        waiting.shift()?.();
+      }
+    },
+  };
+}
+
+const MAIL_PATH = /^\/v1\.0\/(me|users\/[^/]+)\/(messages|mailFolders|sendMail)(\/|\(|$)/i;
+
+/** True for requests that count against a mailbox's Outlook limits. */
+export function isMailRequest(url: URL): boolean {
+  return MAIL_PATH.test(url.pathname);
+}
+
+export interface RawResult<T = unknown> {
+  status: number;
+  headers: Headers;
+  body: T | undefined;
 }
 
 export interface GraphRequestOptions {
@@ -53,7 +100,8 @@ export interface GraphRequestOptions {
   /** Raw body (bytes). Takes precedence over `json`. */
   body?: Uint8Array | ArrayBuffer;
   contentType?: string;
-  responseType?: "json" | "bytes" | "none";
+  /** "raw" returns status, headers and parsed body, e.g. to read a 202's Location. */
+  responseType?: "json" | "bytes" | "none" | "raw";
   signal?: AbortSignal;
 }
 
@@ -120,7 +168,8 @@ export function createGraphClient(options: GraphClientOptions): GraphClient {
 
       let response: Response;
       try {
-        response = await doFetch(url, { method: verb, headers, body, signal: opts.signal, cache: "no-store" });
+        const send = () => doFetch(url, { method: verb, headers, body, signal: opts.signal, cache: "no-store" });
+        response = options.mailLimiter && isMailRequest(url) ? await options.mailLimiter.run(send) : await send();
       } catch (error) {
         if (opts.signal?.aborted) throw error;
         // Network failure: the request may or may not have been processed.
@@ -132,6 +181,10 @@ export function createGraphClient(options: GraphClientOptions): GraphClient {
       }
 
       if (response.ok) {
+        if (opts.responseType === "raw") {
+          const text = await response.text();
+          return { status: response.status, headers: response.headers, body: text ? JSON.parse(text) : undefined } as T;
+        }
         if (opts.responseType === "none" || response.status === 204 || response.status === 202) {
           await response.body?.cancel();
           return undefined as T;

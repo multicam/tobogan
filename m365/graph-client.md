@@ -41,15 +41,15 @@ Send a `User-Agent` of the form `NONISV|Company|App/Version`; every request uses
 **GRAPH-7. Stay under four concurrent Outlook requests per mailbox.**
 - Why: Outlook allows 4 concurrent requests and 10,000 requests per 10 minutes per app and mailbox.
 - Evidence: `includes/throttling-outlook.md`
-- Basis: Verified
-- Code: Gap: the spike's page makes at most three Outlook calls at once, but there is no general limiter for screens that fan out further.
+- Basis: Verified, Tested
+- Code: `createLimiter` and the `mailLimiter` option in `spike/lib/m365/graph-client.ts` queue mail requests (`/me` or `/users/{id}` messages, mail folders, sendMail) beyond four. `spike/lib/m365/server.ts` shares one limiter per user across all of that user's clients. The limit is per process: several app instances can still exceed it together, and then GRAPH-2 handles the 429s.
 
 **GRAPH-8. Track changes with delta queries, not by refetching.**
 - Files: `GET /drives/{id}/root/delta`; `410 Gone` means resync. SharePoint subscriptions work only on the drive root with `changeType: "updated"`, last under 30 days and carry no item detail, so each notification is followed by a delta call.
 - Mail: per-folder `messages/delta`; subscriptions last under 7 days and need the immutable-id header when created.
 - Webhooks must echo `validationToken` as `text/plain` within 10 seconds and answer notifications within 3 seconds.
-- Basis: Verified
-- Code: Gap: not built.
+- Basis: Verified, Tested
+- Code: `driveDelta`, `mailDelta`, `subscribe`, `renewSubscription`, `unsubscribe` and `handleNotificationRequest` in `spike/lib/m365/changes.ts`. A 410 restarts the delta without the token and reports `resynced`. The webhook answers the validation handshake, compares `clientState` in constant time, drops mismatches and replies 202 without waiting for the handler. Route: `spike/app/api/graph/notifications/route.ts` (smoke-tested). Not built: a job queue that runs the delta when notified, and a timer that renews subscriptions before they expire.
 
 ## Open
 

@@ -2,7 +2,7 @@
 
 **Question:** how do we share files and folders from the app without granting more access than the user intended?
 
-Implemented in `spikes/nextjs-m365/lib/m365/sharing.ts` and `app/workspace/actions.ts`.
+Implemented in `m365/spike/lib/m365/sharing.ts` and `app/workspace/actions.ts`.
 
 ## Decisions
 

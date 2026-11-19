@@ -1,17 +1,17 @@
-# Research index
+# m365: Microsoft 365 integration track
 
 Research for integrating SharePoint, Office for the web and Exchange mail into an existing Next.js app (the cub project) through Microsoft Graph with delegated sign-in.
 
-Starting point: `references/nextjs-sharepoint-m365-integration-guide.md`. Each note below checks one part of that guide against current documentation, records what to change, and lists what is still unverified. The decisions are implemented and tested in `spikes/nextjs-m365/`.
+Starting point: `m365/references/nextjs-sharepoint-m365-integration-guide.md`. Each note under `research/` checks one part of that guide against current documentation, records what to change, and lists what is still unverified. The decisions are implemented and tested in `m365/spike/`.
 
 | # | Section | Note | Spike code |
 | --- | --- | --- | --- |
-| 1 | Sign-in, tokens, permissions | `auth-entra-id/2026-11-19-auth-and-token-handling.md` | `auth.ts`, `lib/m365/tokens.ts`, `lib/m365/server.ts` |
-| 2 | Graph client: retries, paging, errors | `microsoft-graph/2026-11-19-graph-client.md` | `lib/m365/graph-client.ts` |
-| 3 | SharePoint files: browse, upload, preview | `sharepoint/2026-11-19-files-upload-preview.md` | `lib/m365/drive.ts` |
-| 4 | SharePoint sharing and permissions | `sharepoint/2026-11-19-sharing-and-permissions.md` | `lib/m365/sharing.ts` |
-| 5 | Exchange mail | `other-microsoft-services/2026-11-19-exchange-mail.md` | `lib/m365/mail.ts`, `lib/m365/email-html.ts` |
-| 6 | Next.js 16 specifics | `nextjs/2026-11-19-nextjs-16-integration.md` | `app/`, `next.config.ts` |
+| 1 | Sign-in, tokens, permissions | `research/auth-entra-id/2026-11-19-auth-and-token-handling.md` | `auth.ts`, `lib/m365/tokens.ts`, `lib/m365/server.ts` |
+| 2 | Graph client: retries, paging, errors | `research/microsoft-graph/2026-11-19-graph-client.md` | `lib/m365/graph-client.ts` |
+| 3 | SharePoint files: browse, upload, preview | `research/sharepoint/2026-11-19-files-upload-preview.md` | `lib/m365/drive.ts` |
+| 4 | SharePoint sharing and permissions | `research/sharepoint/2026-11-19-sharing-and-permissions.md` | `lib/m365/sharing.ts` |
+| 5 | Exchange mail | `research/other-microsoft-services/2026-11-19-exchange-mail.md` | `lib/m365/mail.ts`, `lib/m365/email-html.ts` |
+| 6 | Next.js 16 specifics | `research/nextjs/2026-11-19-nextjs-16-integration.md` | `app/`, `next.config.ts` |
 
 ## How the facts were checked
 

@@ -1,8 +1,8 @@
 # Spike: Next.js 16 + Microsoft Graph (SharePoint and mail)
 
-**Tests:** whether the integration guide in `references/` can be made robust, and what the hardened version looks like.
+**Tests:** whether the integration guide in `m365/references/` can be made robust, and what the hardened version looks like.
 
-**Found:** yes, with the changes recorded in `research/`. The Graph layer is independent of the auth library and of Next.js, so it can be copied into an existing app.
+**Found:** yes, with the changes recorded in `m365/research/`. The Graph layer is independent of the auth library and of Next.js, so it can be copied into an existing app.
 
 ## Layout
 
@@ -14,6 +14,8 @@
 | `lib/m365/sharing.ts` | permissions, invite, links, revoke | graph client |
 | `lib/m365/mail.ts` | inbox, message, attachments to SharePoint, send | graph client, drive |
 | `lib/m365/email-html.ts` | safe viewer document for email bodies | nothing |
+| `lib/m365/roles.ts` | firm roles and the policy for what each may do | nothing |
+| `lib/m365/matters.ts` | matter folders restricted to their team | drive, sharing |
 | `lib/m365/names.ts` | validation of file names, ids, emails | nothing |
 | `lib/m365/server.ts`, `config.ts`, `auth.ts` | Next.js and Auth.js wiring | Next.js, next-auth |
 | `app/` | minimal page, Server Actions, streaming upload route | all of the above |
@@ -24,7 +26,7 @@ To reuse the Graph layer elsewhere, copy `lib/m365/` without `server.ts` and `co
 
 ```bash
 npm install
-npm test          # 55 unit tests against a fake Graph
+npm test          # 64 unit tests against a fake Graph
 npm run typecheck
 cp .env.example .env.local   # fill in, then:
 npm run dev       # http://localhost:3000/workspace
@@ -44,4 +46,4 @@ Entra app registration: redirect URI `http://localhost:3000/api/auth/callback/mi
 
 ## Known gaps
 
-Sharing UI, inline email images, outgoing attachments, shared mailboxes, polling of template copies. Each is described in the matching research note.
+Sharing UI, inline email images, outgoing attachments, shared mailboxes, polling of template copies. Each is described in the matching note in `m365/research/`.

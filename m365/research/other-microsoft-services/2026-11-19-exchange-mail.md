@@ -2,7 +2,7 @@
 
 **Question:** how do we show a user's mail, render message bodies safely, and move attachments into SharePoint?
 
-Implemented in `spikes/nextjs-m365/lib/m365/mail.ts` and `lib/m365/email-html.ts`.
+Implemented in `m365/spike/lib/m365/mail.ts` and `lib/m365/email-html.ts`.
 
 ## Decisions
 

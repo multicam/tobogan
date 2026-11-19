@@ -4,7 +4,7 @@
 
 ## Decisions
 
-1. **Keep Graph tokens out of the cookie and the session.** On sign-in, move the access and refresh tokens to a server-side `TokenStore` keyed by the user; the cookie carries only that key. Implemented in `spikes/nextjs-m365/auth.ts` and `lib/m365/tokens.ts`.
+1. **Keep Graph tokens out of the cookie and the session.** On sign-in, move the access and refresh tokens to a server-side `TokenStore` keyed by the user; the cookie carries only that key. Implemented in `m365/spike/auth.ts` and `lib/m365/tokens.ts`.
 2. **Refresh in one place, server-side.** `getAccessToken(userId)` refreshes five minutes before expiry, shares one in-flight refresh per user, and saves the result to the store.
 3. **Distinguish "sign in again" from "try again".** `invalid_grant` and `interaction_required` delete the stored tokens and raise `ReauthRequiredError`; any other failure leaves them in place.
 4. **Single tenant, explicit issuer.**

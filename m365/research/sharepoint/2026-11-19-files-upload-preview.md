@@ -2,7 +2,7 @@
 
 **Question:** how do we list, upload, preview and edit SharePoint documents reliably from Next.js?
 
-Implemented in `spikes/nextjs-m365/lib/m365/drive.ts` and `app/api/upload/route.ts`.
+Implemented in `m365/spike/lib/m365/drive.ts` and `app/api/upload/route.ts`.
 
 ## Decisions
 

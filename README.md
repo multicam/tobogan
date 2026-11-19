@@ -1,27 +1,32 @@
 # tobogan
 
-Research workspace for the **cub** project: integrating a Next.js app with SharePoint and other Microsoft services.
+Research workspace for the **cub** project: a Next.js app for a legal firm, integrated with SharePoint and other Microsoft 365 services.
 
-## Layout
+## Tracks
+
+Each track is a top-level directory. Use the short name to refer to it.
+
+| Track | Directory | Scope | Status |
+| --- | --- | --- | --- |
+| `m365` | `m365/` | Plumbing for Microsoft 365: sign-in and tokens, the Graph client, SharePoint files and sharing, Exchange mail, Next.js specifics | Six notes and a tested spike; not yet run against a tenant |
+| `matters` | `matters/` | The firm's model: admin, team leader and associate roles; a matter as a SharePoint folder limited to its team | Policy and code drafted; research note in progress |
+| `archive` | `archive/` | Frozen earlier work, not a live track | Closed |
+
+## Layout inside a track
 
 | Path | Purpose |
 | --- | --- |
-| `research/auth-entra-id/` | Sign-in and tokens: Entra ID app registrations, MSAL, delegated vs application permissions |
-| `research/microsoft-graph/` | Graph API usage: SDK vs REST, throttling, change notifications |
-| `research/sharepoint/` | Sites, lists, document libraries, search, SharePoint REST vs Graph |
-| `research/other-microsoft-services/` | Exchange mail, Teams, OneDrive, Power Automate and anything else |
-| `research/nextjs/` | Next.js behaviours that shape the integration |
-| `spikes/` | Small runnable experiments, one folder per spike, each with its own `package.json` |
-| `references/` | Links, vendor docs excerpts, diagrams |
-| `archive/` | Frozen snapshots of earlier work |
+| `README.md` | Index for the track: notes, confidence, open decisions |
+| `research/` | One Markdown note per question, named `YYYY-MM-DD-short-title.md`, ending with a conclusion or open questions |
+| `spike/` | Runnable experiment with its own `package.json` and a README saying what it tests and what was found |
+| `references/` | Source material, links, vendor documentation excerpts |
 
-Start at `research/README.md` for the index of notes, confidence levels and the checklist for fitting this into the existing app.
+A track only has the folders it needs. Code shared between tracks lives in one spike; other tracks point to it.
 
 ## Conventions
 
-- One Markdown note per question, named `YYYY-MM-DD-short-title.md`, ending with a conclusion or open questions.
-- Each spike folder has a short `README.md` saying what it tests and what was found.
 - Secrets stay out of git: put them in `.env.local` and commit only an `.env.example` with empty values.
+- A new track gets a short lowercase name, a directory of that name, and a row in the table above.
 
 ## Archive
 

@@ -4,7 +4,7 @@
 
 ## Decision
 
-A thin client over `fetch` (`spikes/nextjs-m365/lib/m365/graph-client.ts`, about 200 lines) that takes a `getAccessToken()` function. It has no SDK dependency and is covered by unit tests.
+A thin client over `fetch` (`m365/spike/lib/m365/graph-client.ts`, about 200 lines) that takes a `getAccessToken()` function. It has no SDK dependency and is covered by unit tests.
 
 Why not an SDK:
 

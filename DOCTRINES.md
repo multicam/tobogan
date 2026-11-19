@@ -80,5 +80,6 @@ A doctrine can carry more than one level, for example "Verified, Tested".
 | NEXT | `m365` | `m365/nextjs.md` |
 | MATTER | `matters` | `matters/roles-and-matter-folders.md` |
 | POLICY | `matters` | `matters/policy.md` |
+| HUMANS | `factory` | `factory/humans-md.md` |
 
 A new document registers its prefix here. Numbers are never reused: a withdrawn doctrine keeps its number and is marked **Withdrawn**, with the reason.

@@ -30,7 +30,8 @@ To reuse the Graph layer elsewhere, copy `lib/m365/` without `server.ts` and `co
 
 ```bash
 npm install
-npm test          # 112 unit tests against a fake Graph
+npm test          # 522 unit tests against a fake Graph
+npm run test:coverage   # same, with v8 coverage thresholds
 npm run typecheck
 cp .env.example .env.local   # fill in, then:
 npm run dev       # http://localhost:3000/workspace
@@ -38,9 +39,22 @@ npm run dev       # http://localhost:3000/workspace
 
 Entra app registration: redirect URI `http://localhost:3000/api/auth/callback/microsoft-entra-id`, delegated permissions as listed in `lib/m365/config.ts`.
 
+## Tests
+
+The tests need no credentials and make no network calls. They replace only the boundaries: `fetch` (Graph and the Entra token endpoint), the `redis` client, and `next-auth`, whose fake keeps the real config from `auth.ts` and runs its callbacks. `server-only` resolves to its empty module. Shared fakes are in `test/helpers.ts` and `test/next-harness.ts`.
+
+`npm run test:coverage` fails below these thresholds:
+
+| Files | Lines, functions, statements | Branches |
+| --- | --- | --- |
+| `lib/m365/**` | 100% | 95% |
+| `auth.ts`, `app/**/*.ts` | 90% | 90% |
+
+TSX pages and components are not measured.
+
 ## Verified
 
-- Unit tests, strict typecheck and `next build` pass.
+- Unit tests, coverage thresholds, strict typecheck and `next build` pass.
 - Signed out, the built app shows the sign-in button and the upload route returns 401.
 
 ## Not verified

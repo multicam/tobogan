@@ -165,15 +165,18 @@ export async function createMatter(
     /** Defaults to the creator. Always granted write. */
     leadEmail?: string;
     team: MatterMember[];
-    /** Entra group granted write on every matter, e.g. firm admins (POLICY open question 1). */
-    adminGroupId?: string;
+    /**
+     * Entra groups granted write on every matter: firm admins (POLICY-7) and
+     * team leaders (POLICY-8). Granted in the first, inheritance-cutting grant.
+     */
+    firmWideGroupIds?: string[];
     mattersFolderId?: string;
   },
 ): Promise<Matter> {
   const name = matterFolderName(input.number, input.title);
   const creator = assertEmail(input.creatorEmail).toLowerCase();
   const lead = assertEmail(input.leadEmail ?? creator).toLowerCase();
-  const adminGroup = input.adminGroupId ? assertGuid(input.adminGroupId, "admin group id") : undefined;
+  const firmWide = (input.firmWideGroupIds ?? []).map((id) => assertGuid(id, "group id"));
   // The write group is granted first and cuts inheritance, so the creator
   // keeps access and the rollback delete can still run if a later step fails.
   const byRole = groupByRole([{ email: creator, role: "write" }, { email: lead, role: "write" }, ...input.team]);
@@ -184,7 +187,7 @@ export async function createMatter(
     for (const [role, emails] of byRole) {
       const result = await invite(graph, driveId, folder.id, {
         emails,
-        groupIds: role === "write" && adminGroup ? [adminGroup] : undefined,
+        groupIds: role === "write" && firmWide.length > 0 ? firmWide : undefined,
         role,
         sendInvitation: false,
         // Only the first call cuts inheritance; later calls add to the unique set.

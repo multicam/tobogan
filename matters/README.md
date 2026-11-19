@@ -6,7 +6,7 @@ How the firm's structure maps onto Microsoft 365: admin, team leader and associa
 
 | Document | Type | Prefix | Answers | Date |
 | --- | --- | --- | --- | --- |
-| `policy.md` | Planning | POLICY | What each role may do, and the four decisions the firm owes | 2026-11-19 |
+| `policy.md` | Planning | POLICY | What each role may do, as decided by the owner: admins and team leaders see every matter, everyone shares inside the firm, only admins and leads share outside | 2026-11-19 |
 | `roles-and-matter-folders.md` | Research | MATTER | How roles map to Entra app roles, how a folder is restricted to a team, SharePoint limits, who performs matter creation, what to test first | 2026-11-19 |
 
 ## Code
@@ -16,5 +16,7 @@ This track has no code directory of its own. Its code builds on the `m365` modul
 | Path | What |
 | --- | --- |
 | `m365/spike/lib/m365/roles.ts` | Roles from sign-in claims and the policy check |
-| `m365/spike/lib/m365/matters.ts` | Create a restricted matter folder, list matters, change the team |
+| `m365/spike/lib/m365/matters.ts` | Create a restricted matter folder, list matters, change the team, close it |
+| `m365/spike/lib/m365/libraries.ts` | One library per year (MATTER-10) |
+| `m365/spike/lib/m365/authorize.ts` | Policy check per item before the app acts |
 | `m365/spike/test/matters-roles.test.ts` | Tests for both |

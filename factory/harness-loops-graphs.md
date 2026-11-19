@@ -50,14 +50,14 @@
 - Documents: `node factory/checks/check-repo.mjs .` fails on a dangling doctrine reference, a duplicate or unregistered doctrine, a doctrine without a Basis line, a document missing from its track's lookup table, or a tracked secret file.
 - Why: without a check that can fail, "done" is the agent's own report, the weakest evidence. The repository check replaces the hand-run reference scan used until now.
 - Why, in the article's words: "If you cannot say what green means, no layer will save you."
-- Basis: Decision, Tested (`factory/checks/check-repo.test.mjs`, 6 tests; seen failing on a deliberately broken copy of the repository, green on the real one)
+- Basis: Decision, Tested (`factory/checks/check-repo.test.mjs`, 7 tests; seen failing on a deliberately broken copy of the repository, green on the real one)
 
 **LADDER-2. Prefer walls to wishes.**
 A rule an agent can break by mistake is a wish; enforce the ones that matter with permissions, branch protection or a failing check.
 - Why: prose rules are followed only as reliably as they are read.
 - Consequences:
   - R-5 (no secrets in git) is now also a failing check (LADDER-1).
-  - "Never push to `master` without the owner" should be branch protection on `master`, set by the owner in GitHub. Until then it is a wish backed only by the session's branch restriction.
+  - "Never push to `master` without the owner" becomes branch protection on `master`: pull request and the `checks` CI required. The owner agreed to set it on 2026-11-19; until it is on, it is a wish backed only by the session's branch restriction.
   - The CI workflow in `.github/workflows/checks.yml` runs every check on each push, so a red result does not depend on an agent remembering to run it.
 - Basis: Decision
 
@@ -78,13 +78,13 @@ The Basis levels in `DOCTRINES.md` follow this order: Tenant-tested and Tested a
 | Needs cleanup | Opening a pull request, posting a comment, creating a scheduled task, creating test data in a tenant | Green checks plus the owner's go-ahead for that kind of action |
 | Irreversible | Merging to `master`, force-pushing, sending email from a real mailbox, sharing a document outside the firm, deleting or closing a real matter, changing permissions on a real site | The owner's sign-off, each time |
 
-The same table governs the cub app itself: sending mail (MAIL-6), external sharing (POLICY-4, POLICY-6) and closing a matter (MATTER-9) are irreversible for the firm and stay behind a person's explicit action.
+The same table governs the cub app itself: sending mail (MAIL-6), external sharing (POLICY-4) and closing a matter (MATTER-9) are irreversible for the firm and stay behind a person's explicit action.
 - Why: confidence is cheap to state and says nothing about damage; the cost of undo is a property of the action.
 - Basis: Decision
 
 **LADDER-6. Run long fix-and-check work as a converging loop, written down as EXPECTED / SAW / FENCE / DEAD ENDS.**
 - EXPECTED: what green looks like for this step. SAW: what actually happened. FENCE: what the next attempt must not change. DEAD ENDS: what was tried and failed.
-- Stop when green. Stop and escalate to the owner when the same SAW appears twice. Stop when the agreed budget (attempts or time) runs out.
+- Stop when green. Stop and escalate to the owner when the same SAW appears twice. Stop after 3 attempts (owner, 2026-11-19).
 - First use: the PLAN-1 tenant tests, one record per test.
 - Why: a loop without a record repeats its mistakes; a loop without a stop condition burns budget on a problem it cannot solve.
 - Basis: Decision
@@ -121,8 +121,7 @@ Most work here should stop at Level 4. Level 5 graphs and Level 6 coded gates ar
 
 ## Open
 
-- **Branch protection on `master`** is the owner's action in GitHub (LADDER-2).
-- **Budgets** for LADDER-6 (attempts per tenant test, time per session) are the owner's call.
+- **Branch protection on `master`**: the owner will set it (LADDER-2).
 - **"Factory".** This article and HUMANS.md together suggest the track is about the agent working setup: who the agents work for (HUMANS) and how they work (LADDER).
 
 ## Sources

@@ -35,6 +35,17 @@ export function assertEmail(value: unknown): string {
   return value;
 }
 
+/**
+ * True when the address belongs to one of the firm's domains. With no domains
+ * configured nobody counts as internal, so every share is treated as external.
+ */
+export function isFirmEmail(email: string, firmDomains: readonly string[]): boolean {
+  const at = email.lastIndexOf("@");
+  if (at < 1) return false;
+  const domain = email.slice(at + 1).toLowerCase();
+  return firmDomains.some((d) => domain === d.toLowerCase());
+}
+
 export function assertGuid(value: unknown, label = "id"): string {
   if (typeof value !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)) {
     throw new InvalidInputError(`Invalid ${label}.`);

@@ -20,13 +20,13 @@ describe("roles", () => {
     expect(roleFromClaims("Admin")).toBeUndefined();
   });
 
-  const all: Action[] = ["matter.create", "matter.read", "matter.manageTeam", "matter.close", "document.write", "mail.file", "share.external"];
+  const all: Action[] = ["matter.create", "matter.read", "matter.manageTeam", "matter.close", "document.write", "mail.file", "share.internal", "share.external"];
 
   it("applies the policy matrix", () => {
     expect(all.every((a) => can("admin", a))).toBe(true);
-    expect(all.filter((a) => can("teamLeader", a))).toEqual(["matter.create", "matter.read", "document.write", "mail.file"]);
+    expect(all.filter((a) => can("teamLeader", a))).toEqual(["matter.create", "matter.read", "document.write", "mail.file", "share.internal"]);
     expect(all.every((a) => can("teamLeader", a, { isMatterLead: true }))).toBe(true);
-    expect(all.filter((a) => can("associate", a, { isMatterLead: true }))).toEqual(["matter.read", "document.write", "mail.file"]);
+    expect(all.filter((a) => can("associate", a, { isMatterLead: true }))).toEqual(["matter.read", "document.write", "mail.file", "share.internal"]);
     expect(all.some((a) => can(undefined, a))).toBe(false);
   });
 
@@ -136,7 +136,7 @@ describe("matter columns and lead (POLICY-4)", () => {
   it("grants the admin group in the first, inheritance-cutting grant", async () => {
     const group = "0f6c5a8e-1b2c-4d3e-8f90-123456789abc";
     const { graph, calls } = graphWith([json(folder(), 201), json({ value: [{ id: "p1" }, { id: "p2" }] }), ...fieldReplies()]);
-    await createMatter(graph, "d", { number: "2026-0042", title: "T", creatorEmail: "a@firm.example", team: [], adminGroupId: group });
+    await createMatter(graph, "d", { number: "2026-0042", title: "T", creatorEmail: "a@firm.example", team: [], firmWideGroupIds: [group] });
     expect(JSON.parse(String(calls[1]!.body))).toMatchObject({ retainInheritedPermissions: false, recipients: [{ email: "a@firm.example" }, { objectId: group }] });
   });
 

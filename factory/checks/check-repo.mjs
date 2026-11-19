@@ -68,7 +68,9 @@ export function checkRepo(root, { trackedFiles } = {}) {
         // A doctrine block runs until the next blank line followed by a heading or definition.
         const block = [];
         for (let j = i + 1; j < lines.length && !DEFINITION.test(lines[j]) && !lines[j].startsWith("#"); j++) block.push(lines[j]);
-        const needsBasis = prefix !== "W" && prefix !== "R";
+        // Repository rules and withdrawn doctrines (DOCTRINES.md, "Doctrine IDs") carry no Basis.
+        const withdrawn = /\*\*[A-Z]+-\d+\. Withdrawn\.\*\*/.test(line);
+        const needsBasis = prefix !== "W" && prefix !== "R" && !withdrawn;
         if (needsBasis && !block.some((l) => l.startsWith("- Basis:"))) problems.push(`${id} (${file}:${i + 1}) has no "- Basis:" line.`);
       }
       for (const m of line.matchAll(REFERENCE)) {

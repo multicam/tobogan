@@ -7,7 +7,7 @@
 ## Doctrines
 
 **PLAN-1. Nothing counts as working until it has run on a test tenant; tenant tests come first.**
-Run these, in order, on a test tenant with an Entra app registration:
+Environment: the owner's staging setup (EC2, AWS Secrets Manager, Redis on the instance), which the owner will connect to a session. Each test runs as a converging loop with a budget of 3 attempts (LADDER-6); irreversible steps follow LADDER-5. Run these, in order:
 1. Sign-in, token refresh after expiry, sign-out (AUTH-1 to AUTH-3).
 2. What restricting a matter folder leaves behind, and whether it works at all on folders (MATTER-3, MATTER-6).
 3. App-only `invite` with `Sites.Selected` (MATTER-7).
@@ -28,12 +28,12 @@ Copy `spike/lib/m365/` (without `server.ts` and `config.ts`) into the existing a
 - Basis: Decision
 
 **PLAN-3. Answer the fit questions against the existing repo before porting.**
-1. Auth: which library signs users in, and is the access token copied onto the session (AUTH-1)?
-2. Session storage: is there a database or Redis for the token store (AUTH-7)?
+1. Auth: which library signs users in, and is the access token copied onto the session (AUTH-1)? Owner does not know yet (2026-11-19).
+2. Session storage: answered 2026-11-19: Redis on the EC2 instance for staging (AUTH-7), app secrets in AWS Secrets Manager (AUTH-8).
 3. Graph access: is `@microsoft/microsoft-graph-client` in use? Keep it and wrap it, or move call sites to the thin client (GRAPH-1).
 4. Next.js version: on 14 or 15, `proxy.ts` is `middleware.ts` and `searchParams` may be synchronous.
 5. Which features already exist, compared against the doctrines in `files.md`, `sharing.md`, `mail.md`.
-6. Hosting: do request duration and body limits allow the streaming upload route (NEXT-2)?
+6. Hosting: staging is a long-running Node process on EC2, so the streaming upload route (NEXT-2) has no serverless duration or body limits; check any load balancer or reverse proxy in front of it.
 7. Tenant policy: external sharing, anonymous links, user consent.
 - Why: the existing repo has not been read from this workspace.
 - Basis: Decision
@@ -60,4 +60,5 @@ Copy `spike/lib/m365/` (without `server.ts` and `config.ts`) into the existing a
 
 ## Open
 
-- Access to the existing repo, and a test tenant with an app registration, are both needed to move past PLAN-1 and PLAN-3.
+- PLAN-1 waits for the owner to connect the staging setup.
+- PLAN-3 waits for access to the cub repository.

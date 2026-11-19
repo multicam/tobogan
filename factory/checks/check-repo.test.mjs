@@ -59,3 +59,8 @@ test("fails when a secret-bearing file is tracked, but allows .env.example", () 
   const { problems } = checkRepo(repo(good), { trackedFiles: [".env.example", "app/.env.local", "key.pem", "src/env.ts"] });
   assert.deepEqual(problems.map((p) => p.split(" ")[0]), ["app/.env.local", "key.pem"]);
 });
+
+test("accepts a withdrawn doctrine without a Basis line", () => {
+  const doc = good["t/a.md"] + "\n**ABC-3. Withdrawn.**\nReplaced by ABC-2.\n";
+  assert.deepEqual(checkRepo(repo({ ...good, "t/a.md": doc }), { trackedFiles: [] }).problems, []);
+});

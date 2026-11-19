@@ -91,28 +91,40 @@ How the owner wants to be asked, written to and interrupted belongs in their per
 - Why: the format's second principle: "A compiler proposes, the owner approves. Consumers do not infer traits, diagnoses or unstated preferences."
 - Evidence: SPEC § 2, § 10.
 - Basis: Verified
-- Proposal from what the owner has said in this repository (not approved; written nowhere else):
+- Profile compiled from the owner's own answers on 2026-11-19 (W-1, then six questions). The owner still approves the final file before copying it to `~/.humans/HUMANS.md`; it is not stored anywhere else, since a repository is not private (`visibility: private`).
 
 ```yaml
 ---
+# HUMANS.md 0.3: how to work with me. Form only, never a permission: repo rules and your harness win.
+# Stored states are inactive: never apply one, and never infer one from content.
+# out_of_scope_steps: whether to LIST next steps outside the task (merge, deploy) in your closing lines.
 humans: "0.3"
 id: owner
 name: Owner
 updated: "2026-11-19"
 visibility: private
+reading:
+  lead_with: tldr
+  length: short
+  structure: bullets
+  visual: [table, example]
 deciding:
-  asks_per_message: one          # W-1: "ask questions one at a time"
-  question_style: multiple_choice  # W-1: "using UI" (labelled options to choose from)
+  reversible: decide_and_report
+  default_answer: always
+  asks_per_message: one
+  question_style: multiple_choice
+interrupting:
+  interrupt_for: blocking_or_risky
 ---
 ```
 
-Everything else (length, lead line, interruptions, quiet hours, languages) is left out because the owner has not said it.
+Each value is in the closed vocabulary of SPEC §§ 3.3 to 3.5. The file was checked by hand against the spec, not with the reference validator (running downloaded code was avoided). Not set because not asked: quiet hours, languages, tone, notes. Change `id` and `name` before use.
 
 ## Open
 
 1. **What "factory" means for this track.** The track was named "factory" with humansmd.dev as its source. HUMANS.md itself never mentions a factory. Possibilities: the owner's term for their agent working setup, the X post's framing, or Factory (factory.ai, whose Droid agent reads AGENTS.md). Owner to say.
 2. **The X post** (`x.com/hanakoxbt/status/2091515787366306154`) could not be read: x.com and every mirror tried are blocked, and search found nothing. Owner to paste its text.
-3. **Adopting it.** Whether the owner wants a profile, and if so: approve or change the proposal in HUMANS-6, install the plugin locally (HUMANS-5), then withdraw W-1 (HUMANS-1).
+3. **Adopting it.** The owner chose to build a profile (2026-11-19). Remaining: approve the file in HUMANS-6, copy it to `~/.humans/HUMANS.md`, install the plugin locally (HUMANS-5), then withdraw W-1 (HUMANS-1).
 4. **Relevance to cub.** Whether the firm's own assistant should honour lawyers' HUMANS.md profiles (for example interruption rules during hearings) is a product question, not yet raised.
 
 ## Sources

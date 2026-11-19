@@ -2,6 +2,7 @@ import "server-only";
 
 export { tenantIssuer } from "./tenant";
 import { graphScope } from "./scopes";
+import { libraryForYear } from "./libraries";
 
 function required(name: string): string {
   const value = process.env[name];
@@ -24,7 +25,8 @@ export const config = {
     return {
       hostname: required("SHAREPOINT_HOSTNAME"),
       sitePath: required("SHAREPOINT_SITE_PATH"),
-      libraryName: process.env.SHAREPOINT_LIBRARY_NAME || undefined,
+      // MATTER-10: "{year}" in the name selects one library per year.
+      libraryName: libraryForYear(process.env.SHAREPOINT_LIBRARY_NAME || undefined, new Date().getUTCFullYear()),
     };
   },
 };
@@ -45,7 +47,21 @@ export function matterProvisioning(): "app" | "delegated" {
   return value;
 }
 
-/** Optional Entra group id granted write on every new matter (POLICY open question 1). */
-export function matterAdminGroupId(): string | undefined {
-  return process.env.MATTER_ADMIN_GROUP_ID || undefined;
+/**
+ * Groups granted edit access on every new matter: firm admins (POLICY-7) and
+ * team leaders (POLICY-8). Both are required: without them a new matter would
+ * silently break the policy, so creation refuses to start.
+ */
+export function firmWideGroupIds(): string[] {
+  const admins = process.env.MATTER_ADMIN_GROUP_ID;
+  const leaders = process.env.MATTER_LEADERS_GROUP_ID;
+  if (!admins || !leaders) {
+    throw new Error("MATTER_ADMIN_GROUP_ID and MATTER_LEADERS_GROUP_ID must be set: admins and team leaders see every matter (POLICY-7, POLICY-8).");
+  }
+  return [admins, leaders];
+}
+
+/** The firm's email domains; addresses elsewhere are external (POLICY-9). */
+export function firmDomains(): string[] {
+  return (process.env.FIRM_EMAIL_DOMAINS ?? "").split(",").map((d) => d.trim().toLowerCase()).filter(Boolean);
 }

@@ -32,7 +32,7 @@ List matters with the user's own token; SharePoint trims the result to folders t
 - Code: `listMatters`
 
 **MATTER-5. No library holds more than about 5,000 matters.**
-Use one library per year (recommended) or per practice area. Use one site per matter only if the firm needs formal ethical walls.
+Use one library per year (decided by the owner on 2026-11-19; see MATTER-10). One site per matter would only be needed for formal ethical walls, which POLICY-7 and POLICY-8 do not call for.
 - Why: a library can hold at most 50,000 uniquely permissioned items, and Microsoft recommends fewer than 5,000. Each restricted matter folder counts as one.
 - Evidence: `migration-perm-guidance.md`. Microsoft Purview Information Barriers apply at site level only (search summary).
 
@@ -42,8 +42,8 @@ Use one library per year (recommended) or per practice area. Use one site per ma
 | One site per matter | Firms needing formal ethical walls | Heavier provisioning |
 | One library for everything | Under about 5,000 matters including closed ones | Hits the limit with no clean way out |
 
-- Basis: Verified (limits), Decision (layout)
-- Code: the spike takes the library and `mattersFolderId` as configuration.
+- Basis: Verified (limits), Decision (layout, owner 2026-11-19)
+- Code: see MATTER-10.
 
 **MATTER-6. The creator is always in the first grant, with write access.**
 - Why: the documentation does not say whether the caller keeps access after `retainInheritedPermissions: false`. If the creator lost access, the rollback delete in MATTER-3 would fail.
@@ -72,6 +72,12 @@ Write grants become read, sharing links are removed, inherited and owner entries
 - Basis: Decision, Tested
 - Code: `closeMatter`; the close button in the sharing panel for admins and the lead. Label name from `MATTER_CLOSED_RETENTION_LABEL`.
 
+**MATTER-10. Matters live in one document library per year.**
+The library name is configured with a `{year}` placeholder (`SHAREPOINT_LIBRARY_NAME="Matters {year}"`). The year's library is created, with its matter columns (MATTER-8), by the app when the year's first matter is created; until then the workspace offers only "create the first matter" to roles allowed to.
+- Why: keeps each library well under the recommended 5,000 restricted folders (MATTER-5), and lets closed years be archived together.
+- Basis: Decision (owner, 2026-11-19), Tested
+- Code: `libraryForYear`, `listYearLibraries`, `ensureLibrary` in `m365/spike/lib/m365/libraries.ts`; `createMatterFormAction`. The year is the UTC year at creation.
+
 ## Open
 
 Test on a tenant first (PLAN-1 items 2 and 3):
@@ -81,9 +87,9 @@ Test on a tenant first (PLAN-1 items 2 and 3):
 4. App-only invite of internal users: the docs only say new guests cannot be invited.
 5. The SharePoint permission level a delegated user needs to restrict a folder.
 
-Decisions owed by the firm: see `policy.md`.
+Decisions owed by the firm: none open; `policy.md` records them. POLICY-10 needs a site setting.
 
-Not built: listing and filtering matters by column, a client column, choosing the library by year (MATTER-5), filing email into a matter from the UI. Built since the first draft: app-only provisioning, the lead and status columns, the optional admins group (`MATTER_ADMIN_GROUP_ID`), closing a matter.
+Not built: listing and filtering matters by column, a client column, browsing earlier years' libraries in the UI (`listYearLibraries` exists), filing email into a matter from the UI. Built since the first draft: app-only provisioning, the lead and status columns, firm-wide groups (POLICY-7, POLICY-8), closing a matter, yearly libraries.
 
 ## Reference
 

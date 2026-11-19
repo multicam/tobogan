@@ -36,14 +36,14 @@ async function loadSharing(itemId: string): Promise<
   { permissions: PermissionSummary[]; isMatter: boolean; status?: string } | { denied: string }
 > {
   try {
-    const { admin, driveId, matterId } = await authorizeItemAction("share.external", itemId);
+    const { admin, driveId, matterId } = await authorizeItemAction("share.internal", itemId);
     const [permissions, fields] = await Promise.all([
       listPermissions(admin, driveId, itemId),
       matterId === itemId ? getMatterFields(admin, driveId, itemId) : undefined,
     ]);
     return { permissions, isMatter: matterId === itemId, status: fields?.status };
   } catch (error) {
-    if (error instanceof ForbiddenError) return { denied: "Only an admin or the matter's lead can manage sharing here." };
+    if (error instanceof ForbiddenError) return { denied: "Your role cannot share this item." };
     if (error instanceof GraphError && (error.isForbidden || error.isNotFound)) return { denied: "You do not have access to this item." };
     throw error;
   }
@@ -73,6 +73,25 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
   } catch (error) {
     // Stored tokens are gone or were revoked: ask for a fresh sign-in.
     if (error instanceof ReauthRequiredError) return <SignIn />;
+    // A new year's library is created with its first matter (MATTER-10).
+    if (error instanceof GraphError && error.code === "libraryNotFound") {
+      const role = (await auth())?.user?.role;
+      return (
+        <main style={{ padding: 24 }}>
+          <p>No matters library exists for this year yet.</p>
+          {params.err && <p role="alert" style={{ color: "crimson" }}>{params.err}</p>}
+          {can(role, "matter.create") ? (
+            <form action={createMatterFormAction}>
+              <input name="number" placeholder="Matter number" required /> <input name="title" placeholder="Title" required />{" "}
+              <input name="writers" placeholder="Team (edit), emails" /> <input name="readers" placeholder="Team (read only), emails" />{" "}
+              <button type="submit">Create the first matter</button>
+            </form>
+          ) : (
+            <p>An admin or team leader creates it with the year's first matter.</p>
+          )}
+        </main>
+      );
+    }
     throw error;
   }
   const { files, inbox, previewUrl, message } = data;

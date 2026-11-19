@@ -65,12 +65,18 @@ Everything in `spike/lib/m365/` except `server.ts` and `config.ts` needs only a 
 Entries are removed at sign-out and after the refresh token's 90-day lifetime.
 Each entry is sealed with AES-256-GCM, with the user key bound as associated data so an entry copied to another user's key fails to decrypt.
 - Why: `MemoryTokenStore` loses every token on restart and is not shared between instances. Refresh tokens are 90-day credentials to the firm's documents and mail.
-- Basis: Decision (Redis chosen as the default; the existing app's infrastructure may change it), Tested
+- Basis: Decision (owner, 2026-11-19: Redis on the staging EC2 instance; ElastiCache or equivalent for production), Tested
 - Code: `EncryptedTokenStore` and `redisBackend` in `spike/lib/m365/tokens.ts`; `spike/lib/m365/server.ts` uses Redis when `REDIS_URL` and `TOKEN_ENCRYPTION_KEY` are set, and refuses to start in production without them unless `TOKEN_STORE=memory`. The store takes any `KeyValueBackend`, so a database table fits the same interface.
+
+**AUTH-8. The app's own secrets live in AWS Secrets Manager, never in files on the server.**
+The Entra client secret, `AUTH_SECRET` and `TOKEN_ENCRYPTION_KEY` are fetched from Secrets Manager when the app starts (for example by the service unit before launching Node) and passed as environment variables. Per-user tokens do not go there (AUTH-7).
+- Why: owner decision (2026-11-19, staging on EC2 with AWS Secrets). Secrets Manager bills and rate-limits per secret, so it suits a handful of app secrets, not one entry per user.
+- Basis: Decision
+- Code: none in the spike; deployment configuration.
 
 ## Open
 
-- **Auth library.** The Auth.js README says it is now part of Better Auth and recommends Better Auth for new projects; Auth.js keeps receiving security and urgent fixes. If the existing app uses Auth.js, staying is reasonable. For a new auth layer, compare Better Auth and MSAL Node (`@azure/msal-node` 7.2.3), which refreshes tokens itself and supports certificates but needs a distributed cache plugin.
+- **Auth library.** The owner does not know yet what cub uses (2026-11-19); settle when the cub repository is attached (PLAN-3). The Auth.js README says it is now part of Better Auth and recommends Better Auth for new projects; Auth.js keeps receiving security and urgent fixes. If the existing app uses Auth.js, staying is reasonable. For a new auth layer, compare Better Auth and MSAL Node (`@azure/msal-node` 7.2.3), which refreshes tokens itself and supports certificates but needs a distributed cache plugin.
 - **Secret or certificate.** A client secret works for a delegated web app. Microsoft ranks it last, after managed identity, federated credentials and certificates. Start with a secret and plan rotation, or go straight to a certificate.
 - **Unverified:** whether `next-auth/jwt` module augmentation applies cleanly in beta.32 (the spike avoids needing it). Sign-in has not been run against a tenant.
 

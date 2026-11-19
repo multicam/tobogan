@@ -15,6 +15,9 @@ export type Action =
   | "matter.close"
   | "document.write"
   | "mail.file"
+  /** Share with people inside the firm (POLICY-9). */
+  | "share.internal"
+  /** Share with anyone outside the firm (POLICY-4). */
   | "share.external";
 
 /** Entra app role values (the `roles` claim) mapped to app roles, highest first. */
@@ -49,6 +52,7 @@ export function can(role: Role | undefined, action: Action, context: MatterConte
         case "matter.read":
         case "document.write":
         case "mail.file":
+        case "share.internal":
           return true;
         case "matter.manageTeam":
         case "matter.close":
@@ -57,7 +61,7 @@ export function can(role: Role | undefined, action: Action, context: MatterConte
       }
       return false;
     case "associate":
-      return action === "matter.read" || action === "document.write" || action === "mail.file";
+      return action === "matter.read" || action === "document.write" || action === "mail.file" || action === "share.internal";
     default:
       return false;
   }

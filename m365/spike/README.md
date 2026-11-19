@@ -30,7 +30,7 @@ To reuse the Graph layer elsewhere, copy `lib/m365/` without `server.ts` and `co
 
 ```bash
 npm install
-npm test          # 106 unit tests against a fake Graph
+npm test          # 112 unit tests against a fake Graph
 npm run typecheck
 cp .env.example .env.local   # fill in, then:
 npm run dev       # http://localhost:3000/workspace

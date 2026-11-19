@@ -2,13 +2,15 @@
 
 import { redirect } from "next/navigation";
 import { authorizeItemAction, provisioningGraph } from "@/lib/m365/authorize";
-import { matterAdminGroupId } from "@/lib/m365/config";
+import { config, firmDomains, firmWideGroupIds } from "@/lib/m365/config";
+import { resolveDrive } from "@/lib/m365/drive";
+import { ensureLibrary } from "@/lib/m365/libraries";
 import { GraphError } from "@/lib/m365/graph-client";
 import { saveAttachmentToDrive } from "@/lib/m365/mail";
-import { closeMatter, createMatter, type MatterMember } from "@/lib/m365/matters";
-import { InvalidInputError } from "@/lib/m365/names";
+import { closeMatter, createMatter, ensureMatterColumns, type MatterMember } from "@/lib/m365/matters";
+import { InvalidInputError, isFirmEmail } from "@/lib/m365/names";
 import { assertCan, ForbiddenError } from "@/lib/m365/roles";
-import { getDriveContext } from "@/lib/m365/server";
+import { getDriveContext, getUserGraph } from "@/lib/m365/server";
 import { createLink, invite, revokePermission } from "@/lib/m365/sharing";
 
 // Every action is a public POST endpoint: each one authenticates, checks the
@@ -52,10 +54,13 @@ export async function inviteFormAction(form: FormData) {
   await attempt(form, async () => {
     const itemId = field(form, "shareId");
     const role = field(form, "role") === "write" ? "write" : "read";
-    const { admin, driveId } = await authorizeItemAction("share.external", itemId);
-    const result = await invite(admin, driveId, itemId, { emails: [field(form, "email")], role, sendInvitation: true });
+    const email = field(form, "email");
+    // Inside the firm: anyone on the matter (POLICY-9). Outside: admins and the lead (POLICY-4).
+    const action = isFirmEmail(email, firmDomains()) ? "share.internal" : "share.external";
+    const { admin, driveId } = await authorizeItemAction(action, itemId);
+    const result = await invite(admin, driveId, itemId, { emails: [email], role, sendInvitation: true });
     if (result.failed.length > 0) throw new InvalidInputError(`Not shared: ${result.failed.map((f) => f.message).join("; ")}`);
-    return `Shared with ${field(form, "email")} (${role}).`;
+    return `Shared with ${email} (${role}).`;
   });
 }
 
@@ -63,9 +68,9 @@ export async function createLinkFormAction(form: FormData) {
   await attempt(form, async () => {
     const itemId = field(form, "shareId");
     const type = field(form, "type") === "edit" ? "edit" : "view";
-    // Anonymous links are never offered (SHARE-2).
+    // Anonymous links are never offered (SHARE-2); the remaining scopes stay inside the firm.
     const scope = field(form, "scope") === "users" ? "users" : "organization";
-    const { admin, driveId } = await authorizeItemAction("share.external", itemId);
+    const { admin, driveId } = await authorizeItemAction("share.internal", itemId);
     const link = await createLink(admin, driveId, itemId, { type, scope });
     return `Link (${type}, ${scope}): ${link.webUrl}`;
   });
@@ -93,9 +98,16 @@ export async function closeMatterFormAction(form: FormData) {
 
 export async function createMatterFormAction(form: FormData) {
   await attempt(form, async () => {
-    const ctx = await getDriveContext();
+    const ctx = await getUserGraph();
     assertCan(ctx.role, "matter.create");
     if (!ctx.email) throw new InvalidInputError("Your account has no email address, so you cannot be added to the matter.");
+    const groups = firmWideGroupIds();
+    const admin = provisioningGraph(ctx.graph);
+    // This year's library (MATTER-10), created with its columns on first use.
+    const target = config.sharePoint;
+    const { siteId } = await resolveDrive(admin, { hostname: target.hostname, sitePath: target.sitePath });
+    const driveId = target.libraryName ? await ensureLibrary(admin, siteId, target.libraryName) : (await resolveDrive(admin, target)).driveId;
+    await ensureMatterColumns(admin, driveId);
     const emails = (name: string) => field(form, name).split(/[\s,;]+/).filter(Boolean);
     const team: MatterMember[] = [
       ...emails("writers").map((email) => ({ email, role: "write" as const })),
@@ -103,13 +115,13 @@ export async function createMatterFormAction(form: FormData) {
     ];
     // Only admins may name someone else as lead; a team leader leads what they create.
     const leadEmail = ctx.role === "admin" ? field(form, "lead") || undefined : undefined;
-    const matter = await createMatter(provisioningGraph(ctx.graph), ctx.driveId, {
+    const matter = await createMatter(admin, driveId, {
       number: field(form, "number"),
       title: field(form, "title"),
       creatorEmail: ctx.email,
       leadEmail,
       team,
-      adminGroupId: matterAdminGroupId(),
+      firmWideGroupIds: groups,
     });
     return `Matter ${matter.number} created.`;
   });

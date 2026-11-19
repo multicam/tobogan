@@ -1,12 +1,12 @@
 # factory
 
-How agents work with the owner and on this repository: who they work for (HUMANS.md) and how far they can run on their own (harness, loops, graphs). Sources: HUMANS.md (https://humansmd.dev) and the article "Harness, Loops, Graphs" (https://x.com/m4lkxx/status/2114338456750997922). Neither page is reachable from this environment; both were read through their source code or public summaries, as each document states.
+How agents work with the owner and on this repository: who they work for (HUMANS.md) and how far they can run on their own (harness, loops, graphs). Sources: HUMANS.md (https://humansmd.dev) and the article "Harness, Loops, Graphs" (https://x.com/m4lkxx/status/2114338456750997922). Neither page is reachable from this environment: HUMANS.md was read through its source repositories, and the article from the text the owner pasted.
 
 ## Documents
 
 | Document | Type | Prefix | Answers | Date |
 | --- | --- | --- | --- | --- |
-| `harness-loops-graphs.md` | Research | LADDER | What the "Harness, Loops, Graphs" ladder says, where this repository stands on it, and the rules adopted from it: defined green, walls, evidence ranking, gates by cost of undo | 2026-11-19 |
+| `harness-loops-graphs.md` | Research | LADDER | What the "Harness, Loops, Graphs" ladder says, where this repository stands on it, and the rules adopted from it: defined green, walls, evidence ranking, gates by cost of undo, frozen results, code for deterministic steps | 2026-11-19 |
 | `humans-md.md` | Research | HUMANS | What HUMANS.md is, whether it is sound, how it fits with `DOCTRINES.md`, and a proposed profile from what the owner has stated | 2026-11-19 |
 
 ## Code

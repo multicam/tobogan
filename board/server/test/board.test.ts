@@ -174,6 +174,23 @@ describe("leases and epoch fencing", () => {
     expect(board.thread(ada, held.id, {}).message.task?.state).toBe("blocked");
   });
 
+  test("the sweeper rearms when its timer fires before the clock says the lease is up", async () => {
+    const clock = fakeClock();
+    const board = await openBoard({ clock, leases: { default: "hold" } });
+    const { task } = await board.createTask(ada, { channel: "work", text: "held" });
+    await board.claimTask(ada, task.id, 30);
+    // 50ms left by the board's clock; a commit rearms the timer for then.
+    clock.advance(30_000 - 50);
+    await board.post(ada, { channel: "dev", text: "tick" });
+    // The timer fires, but the clock lags it: nothing has lapsed yet.
+    await Bun.sleep(150);
+    expect(board.thread(ada, task.id, {}).message.task?.state).toBe("claimed");
+    // Time moves on with no commit: only a rearmed timer can expire the claim now.
+    clock.advance(1000);
+    await Bun.sleep(300);
+    expect(board.thread(ada, task.id, {}).message.task?.state).toBe("blocked");
+  });
+
   test("under hold, a lapsed claim is blocked and labelled lease_expired, not requeued", async () => {
     const clock = fakeClock();
     const board = await openBoard({ clock, leases: { byLabel: { "policy=hold": "hold" } } });
@@ -256,6 +273,18 @@ describe("events", () => {
     await board.post(ada, { channel: "dev", text: "wake" });
     await woken;
     expect(Date.now() - t0).toBeLessThan(1000);
+  });
+
+  test("a board holds at most maxWaiters long-polls at once, and refuses the next with 429", async () => {
+    const board = await openBoard({ maxWaiters: 2 });
+    const release: (() => void)[] = [];
+    const held = [1, 2].map(() => board.waiting(() => new Promise<void>((done) => release.push(done))));
+    const refused = await refusal(() => board.waiting(async () => {}));
+    expect([refused.status, refused.code]).toEqual([429, "too_many_waiters"]);
+    release.forEach((done) => done());
+    await Promise.all(held);
+    // Once they answer, their places are free again.
+    await board.waiting(async () => {});
   });
 
   test("a filtered feed shows an event when the message matched before or after it", async () => {

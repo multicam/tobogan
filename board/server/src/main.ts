@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { z } from "zod";
-import { Board, type LeaseConfig } from "./board.ts";
+import { Board, MAX_WAITERS_DEFAULT, type LeaseConfig } from "./board.ts";
 import { FileStore } from "./file-store.ts";
 import { createHandler } from "./http.ts";
 import { Tokens } from "./tokens.ts";
@@ -17,6 +17,8 @@ export type Config = {
   dataDir: string;
   boards: string[];
   publicUrl?: string;
+  /** Long-polls each board holds at once; past it, 429 `too_many_waiters`. */
+  maxWaiters?: number;
   tokens: Tokens;
 };
 
@@ -32,8 +34,13 @@ export function configFromEnv(env: Record<string, string | undefined> = process.
   if (!Number.isInteger(port) || port < 0 || port > 65535) {
     throw new Error(`CSF_BOARD_PORT: ${env.CSF_BOARD_PORT} isn't a port`);
   }
+  const maxWaiters = Number(env.CSF_BOARD_MAX_WAITERS ?? MAX_WAITERS_DEFAULT);
+  if (!Number.isInteger(maxWaiters) || maxWaiters < 1) {
+    throw new Error(`CSF_BOARD_MAX_WAITERS: ${env.CSF_BOARD_MAX_WAITERS} isn't a positive whole number`);
+  }
   return {
     host: env.CSF_BOARD_HOST ?? "127.0.0.1",
+    maxWaiters,
     port,
     dataDir: env.CSF_BOARD_DATA_DIR ?? join(env.XDG_DATA_HOME || join(homedir(), ".local", "share"), "csf-board"),
     boards,
@@ -70,7 +77,7 @@ export async function start(config: Config): Promise<Running> {
   try {
     for (const name of config.boards) {
       const dir = join(config.dataDir, name);
-      boards.set(name, await Board.open(new FileStore(dir), leaseConfig(dir)));
+      boards.set(name, await Board.open(new FileStore(dir), { leases: leaseConfig(dir), ...(config.maxWaiters ? { maxWaiters: config.maxWaiters } : {}) }));
     }
   } catch (error) {
     await Promise.all([...boards.values()].map((b) => b.close()));

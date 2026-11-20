@@ -58,8 +58,9 @@ export function fakeClock() {
 }
 
 /** A board on a fresh FileStore; closed when the file's tests end. */
-export async function openBoard(options: { leases?: LeaseConfig; clock?: () => number; dir?: string } = {}): Promise<Board> {
-  const board = await Board.open(new FileStore(options.dir ?? scratchDir("board")), options.leases ?? {}, options.clock);
+export async function openBoard(options: { leases?: LeaseConfig; clock?: () => number; dir?: string; maxWaiters?: number } = {}): Promise<Board> {
+  const { dir, ...rest } = options;
+  const board = await Board.open(new FileStore(dir ?? scratchDir("board")), rest);
   opened.push(board);
   return board;
 }

@@ -94,6 +94,28 @@ describe("http", () => {
     expect(await claim.json()).toEqual({ task: null });
   }, 20_000);
 
+  test("past its waiter cap a board answers 429 too_many_waiters with Retry-After, and answers at once when it can", async () => {
+    const tokens = Tokens.parse(JSON.stringify({ tokens: [{ sha256: hashToken(token), principal: "csf:user:ada", handle: "ada", name: "Ada" }] }), "test");
+    const capped = await start({ host: "127.0.0.1", port: 0, dataDir: join(dir, "capped"), boards: ["general"], tokens, maxWaiters: 1 });
+    const at = `${capped.url}/boards/general`;
+    const get = (path: string) => fetch(`${at}${path}`, { headers: { authorization: `Bearer ${token}` } });
+    try {
+      await fetch(`${at}/messages`, { method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/json" }, body: JSON.stringify({ channel: "zero", text: "already here" }) });
+      const held = get("/events?wait=3&channel=one");
+      await Bun.sleep(100);
+      const refused = await get("/events?wait=3&channel=two");
+      expect(refused.status).toBe(429);
+      expect(refused.headers.get("retry-after")).toBe("1");
+      expect(((await refused.json()) as Failure).error.code).toBe("too_many_waiters");
+      // A poll with something to show takes no place: it answers without waiting.
+      const recent = await get(`/events?wait=3&after=0`);
+      expect(recent.status).toBe(200);
+      expect((await held).status).toBe(200);
+    } finally {
+      await capped.stop();
+    }
+  }, 15_000);
+
   test("optional features answer 501, so conformance skips them", async () => {
     expect((await call("/schedules")).status).toBe(501);
     expect((await call("/attachments", { method: "POST" })).status).toBe(501);

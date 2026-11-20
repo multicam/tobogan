@@ -1,5 +1,6 @@
 import { afterAll, afterEach, describe, expect, test } from "bun:test";
-import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
+import * as fs from "node:fs";
+import { appendFileSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { FileStore } from "../src/file-store.ts";
 import { StoreConflict, type Commit } from "../src/store.ts";
@@ -82,6 +83,122 @@ describe("FileStore", () => {
     const dir = scratchDir("fs-lock");
     await opened(dir);
     await expect(new FileStore(dir).open()).rejects.toThrow(/locked/);
+  });
+
+  test("a write that fails part-way is truncated away, and the next append lands cleanly", async () => {
+    const dir = scratchDir("fs-enospc");
+    let failNext = false;
+    const store = new FileStore(dir, {
+      writeSync: ((fd: number, data: string) => {
+        if (failNext) {
+          failNext = false;
+          // Half the line reaches the file, then the disk fills.
+          fs.writeSync(fd, data.slice(0, Math.floor(data.length / 2)));
+          throw Object.assign(new Error("ENOSPC: no space left on device"), { code: "ENOSPC" });
+        }
+        return fs.writeSync(fd, data);
+      }) as typeof fs.writeSync,
+    });
+    await store.open();
+    open.push(store);
+    await store.append(commit(1), 0);
+    const before = statSync(join(dir, "events.jsonl")).size;
+    failNext = true;
+    await expect(store.append(commit(2), 1)).rejects.toThrow(/ENOSPC/);
+    expect(statSync(join(dir, "events.jsonl")).size).toBe(before);
+    await store.append(commit(2), 1);
+    await store.close();
+    open.splice(0);
+    const again = await opened(dir);
+    expect((await all(again)).map((c) => c.events[0]!.seq)).toEqual([1, 2]);
+  });
+
+  test("a short write counts as a failed one and is truncated away", async () => {
+    const dir = scratchDir("fs-short");
+    let shortNext = false;
+    const store = new FileStore(dir, {
+      writeSync: ((fd: number, data: string) => {
+        if (shortNext) {
+          shortNext = false;
+          return fs.writeSync(fd, data.slice(0, 5));
+        }
+        return fs.writeSync(fd, data);
+      }) as typeof fs.writeSync,
+    });
+    await store.open();
+    open.push(store);
+    await store.append(commit(1), 0);
+    const before = statSync(join(dir, "events.jsonl")).size;
+    shortNext = true;
+    await expect(store.append(commit(2), 1)).rejects.toThrow(/short write/);
+    expect(statSync(join(dir, "events.jsonl")).size).toBe(before);
+  });
+
+  test("a store that can't undo a failed write refuses every later append", async () => {
+    const dir = scratchDir("fs-poison");
+    let broken = false;
+    const store = new FileStore(dir, {
+      fsyncSync: ((fd: number) => {
+        if (broken) {
+          throw Object.assign(new Error("EIO: i/o error"), { code: "EIO" });
+        }
+        fs.fsyncSync(fd);
+      }) as typeof fs.fsyncSync,
+      ftruncateSync: ((fd: number, len?: number) => {
+        if (broken) {
+          throw Object.assign(new Error("EIO: i/o error"), { code: "EIO" });
+        }
+        fs.ftruncateSync(fd, len);
+      }) as typeof fs.ftruncateSync,
+    });
+    await store.open();
+    open.push(store);
+    broken = true;
+    await expect(store.append(commit(1), 0)).rejects.toThrow(/EIO/);
+    broken = false;
+    await expect(store.append(commit(1), 0)).rejects.toThrow(/refuses appends/);
+  });
+
+  test("a complete line that isn't JSON fails the open, naming the file and byte offset", async () => {
+    const dir = scratchDir("fs-corrupt");
+    const first = await opened(dir);
+    await first.append(commit(1), 0);
+    await first.close();
+    open.splice(0);
+    const path = join(dir, "events.jsonl");
+    const offset = statSync(path).size;
+    appendFileSync(path, "not json at all\n");
+    appendFileSync(path, `${JSON.stringify(commit(2))}\n`);
+    const store = new FileStore(dir);
+    const failure = await store.open().then(
+      () => null,
+      (error: Error) => error,
+    );
+    open.push(store);
+    expect(failure).toBeInstanceOf(Error);
+    expect(failure?.name).not.toBe("SyntaxError");
+    expect(failure?.message).toContain(path);
+    expect(failure?.message).toContain(`byte ${offset}`);
+  });
+
+  test("taking over a stale lock fails if another starter took it in between", async () => {
+    const dir = scratchDir("fs-race");
+    const lock = join(dir, "board.lock");
+    writeFileSync(lock, "2147483646\n");
+    let raced = false;
+    const store = new FileStore(dir, {
+      readFileSync: ((path: string, options?: unknown) => {
+        const content = fs.readFileSync(path, options as BufferEncoding);
+        if (!raced && path === lock) {
+          // Right after this starter reads the stale pid, a live competitor takes the lock.
+          raced = true;
+          fs.writeFileSync(lock, `${process.ppid} competitor\n`);
+        }
+        return content;
+      }) as typeof fs.readFileSync,
+    });
+    await expect(store.open()).rejects.toThrow(/locked by pid/);
+    expect(fs.readFileSync(lock, "utf8")).toBe(`${process.ppid} competitor\n`);
   });
 
   test("takes over a lock whose holder died", async () => {

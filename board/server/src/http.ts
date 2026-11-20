@@ -197,7 +197,30 @@ function holdOpen(ctx: Ctx): void {
   ctx.server?.timeout(ctx.req, 0);
 }
 
-const notSupported = (what: string): Handler => () => {
+/**
+ * Answers at once when `attempt` has something; otherwise holds the request, in one of the
+ * board's waiter places, retrying on each commit until it does or `deadline` passes.
+ * `attempt(final)` answers null for "nothing yet", and always answers when `final`.
+ */
+async function longPoll(ctx: Ctx, deadline: number, attempt: (final: boolean) => Promise<unknown>): Promise<Response> {
+  const over = () => Date.now() >= deadline || ctx.req.signal.aborted;
+  const first = await attempt(over());
+  if (first !== null) {
+    return json(first);
+  }
+  holdOpen(ctx);
+  return ctx.board.waiting(async () => {
+    for (;;) {
+      await ctx.board.changed(deadline - Date.now(), ctx.req.signal);
+      const got = await attempt(over());
+      if (got !== null) {
+        return json(got);
+      }
+    }
+  });
+}
+
+const notSupported =(what: string): Handler => () => {
   throw notKept("not_supported", `${what} isn't kept on this board`);
 };
 
@@ -264,18 +287,11 @@ const routes: [string, string, Handler][] = [
       }
       const deadline = Date.now() + (q.wait ?? 0) * 1000;
       let after = q.after ?? String(board.state.head);
-      if (q.wait) {
-        holdOpen(ctx);
-      }
-      for (;;) {
+      return longPoll(ctx, deadline, async (final) => {
         const page = board.events(caller, filter, { after, all: q.all });
-        const left = deadline - Date.now();
-        if (page.events.length > 0 || left <= 0 || req.signal.aborted) {
-          return json(page);
-        }
         after = page.cursor;
-        await board.changed(left, req.signal);
-      }
+        return page.events.length > 0 || final ? page : null;
+      });
     },
   ],
   ["GET", "/schemas", ({ board }) => json(board.schemas())],
@@ -328,17 +344,10 @@ const routes: [string, string, Handler][] = [
       const { board, caller, req } = ctx;
       const b = parse(wire.ClaimReadyTaskBody, await body(req));
       const deadline = Date.now() + Math.min(b.wait ?? 0, CLAIM_WAIT_MAX_S) * 1000;
-      if (b.wait) {
-        holdOpen(ctx);
-      }
-      for (;;) {
+      return longPoll(ctx, deadline, async (final) => {
         const got = await board.claimNext(caller, b);
-        const left = deadline - Date.now();
-        if (got || left <= 0 || req.signal.aborted) {
-          return json(got ?? { task: null });
-        }
-        await board.changed(left, req.signal);
-      }
+        return got ?? (final ? { task: null } : null);
+      });
     },
   ],
   ["POST", "/tasks/:id/claim", async ({ board, caller, req, params }) => json(await board.claimTask(caller, params.id!, parse(wire.ClaimTaskBody, await body(req))?.lease))],

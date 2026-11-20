@@ -10,6 +10,7 @@ export const HTTP = {
   conflict: 409,
   internal: 500,
   notImplemented: 501,
+  tooManyRequests: 429,
   unavailable: 503,
 } as const;
 
@@ -22,6 +23,8 @@ export class HttpError extends Error {
     readonly status: number,
     readonly code: string,
     message: string,
+    /** For a 429: seconds until trying again is worth it, sent as `Retry-After`. */
+    readonly retryAfter?: number,
   ) {
     super(message);
     this.name = "HttpError";
@@ -36,5 +39,6 @@ export const notKept = (code: string, message: string) => new HttpError(HTTP.not
 export const messageNotFound = (id: string) => notFound(`message not found: ${id}`, "message_not_found");
 
 export function errorResponse(error: HttpError): Response {
-  return Response.json({ error: { code: error.code, message: error.message } }, { status: error.status });
+  const headers = error.retryAfter !== undefined ? { "retry-after": String(error.retryAfter) } : undefined;
+  return Response.json({ error: { code: error.code, message: error.message } }, { status: error.status, ...(headers ? { headers } : {}) });
 }

@@ -7,7 +7,7 @@ The csf Board server, v1. It speaks Vercel's Board protocol (the routes `@vercel
 ```sh
 bun install
 bun run typecheck
-bun run test          # bun test: conditions, leases and fencing, needs, long-poll, SIGKILL replay, idempotency
+bun run test          # bun test: conditions, leases and fencing, needs, long-poll and waiter cap, SIGKILL replay, torn writes, idempotency
 bun run conformance   # Vercel's own suite, against a throwaway server on 127.0.0.1
 bun run start         # the server, with the configuration below
 ```
@@ -32,6 +32,7 @@ All configuration comes from environment variables.
 | `CSF_BOARD_DATA_DIR` | `$XDG_DATA_HOME/csf-board`, or `~/.local/share/csf-board` | One directory per board. |
 | `CSF_BOARD_BOARDS` | `general` | The boards to serve, comma-separated. Each is served at `/boards/<name>`. |
 | `CSF_BOARD_PUBLIC_URL` | the request's origin | Discovery's `url` and `audience`, behind a proxy. |
+| `CSF_BOARD_MAX_WAITERS` | `256` | Long-polls (`/events` or claim-ready with `wait`) each board holds at once. Past that, 429 `too_many_waiters` with `Retry-After: 1`, which the Board client retries. A poll that can answer at once takes no place. |
 | `CSF_BOARD_TOKENS_FILE` | `$XDG_CONFIG_HOME/csf-board/tokens.json` | The tokens file. |
 | `CSF_BOARD_TOKENS` | none | The tokens file's JSON itself. Used instead of the file when set. |
 
@@ -63,7 +64,7 @@ Optional per-board file `<data dir>/<board>/config.json`:
 
 ```
 <data dir>/<board>/events.jsonl   one commit per line; fsync after every commit
-<data dir>/<board>/board.lock     the owning process's pid; a dead pid's lock is taken over
+<data dir>/<board>/board.lock     "<pid> <nonce>" of the owning process; a dead pid's lock is taken over
 <data dir>/<board>/config.json    optional, as above
 ```
 
@@ -73,7 +74,11 @@ Optional per-board file `<data dir>/<board>/config.json`:
   - the version number.
 - **Reads:** all reads come from in-memory projections, rebuilt by replaying the log at start.
 - **Writes:** writes go through one in-process queue, so each check and its write see the same state.
-- **Recovery:** a torn last line, from a crash in the middle of a write, is truncated on open. A commit that got its 201 was already fsynced. `test/restart.test.ts` kills a real server with SIGKILL and checks this.
+- **Recovery:**
+  - A torn last line, from a crash in the middle of a write, is truncated on open. A commit that got its 201 was already fsynced. `test/restart.test.ts` kills a real server with SIGKILL and checks this.
+  - A write that fails while running (a short write, ENOSPC, a failed fsync) is cut back to the last acknowledged commit at once. If even that cut fails, the store refuses every later append until a restart.
+  - A complete line that isn't a commit means the log is damaged, not torn. Open stops with the file and byte offset.
+- **Lock:** the lock is linked into place whole, so no reader ever sees it empty. A dead holder's lock is replaced only while holding `board.lock.takeover`, after reading the lock again there, and is read back afterwards, so two starters can't both win. A recycled pid reads as alive, so the board refuses to start rather than risk two writers.
 - **Ceiling:** the whole log is held in memory and replayed at start. Move to snapshots or Redis when replay takes noticeably long, or when the log reaches about 1 GB.
 
 ## What it serves

@@ -65,6 +65,11 @@ export type Caller = {
 /** What happens to a claim whose lease runs out: back in the queue, or held for an orchestrator. */
 export type ExpiryPolicy = "requeue" | "hold";
 export type LeaseConfig = { default?: ExpiryPolicy; byLabel?: Record<string, ExpiryPolicy> };
+export type BoardOptions = { leases?: LeaseConfig; clock?: () => number; maxWaiters?: number };
+
+/** Long-polls one board holds at once (owner decision, 2026-11-21); `CSF_BOARD_MAX_WAITERS` overrides. */
+export const MAX_WAITERS_DEFAULT = 256;
+const WAITERS_RETRY_AFTER_S = 1;
 
 type NewEvent = { type: string; payload: Record<string, unknown>; meta?: Record<string, unknown> };
 
@@ -143,15 +148,19 @@ export class Board {
   private closed = false;
   private unsubscribe: () => void = () => {};
 
+  /** Long-polls being held now, against `maxWaiters`. */
+  private holding = 0;
+
   private constructor(
     private readonly store: Store,
     private readonly leases: LeaseConfig,
     private readonly clock: () => number,
+    private readonly maxWaiters: number,
   ) {}
 
   /** `clock` is for tests, which move time past a lease without waiting for it. */
-  static async open(store: Store, leases: LeaseConfig = {}, clock: () => number = Date.now): Promise<Board> {
-    const board = new Board(store, leases, clock);
+  static async open(store: Store, options: BoardOptions = {}): Promise<Board> {
+    const board = new Board(store, options.leases ?? {}, options.clock ?? Date.now, options.maxWaiters ?? MAX_WAITERS_DEFAULT);
     await store.open();
     for await (const commit of store.read(0)) {
       commit.events.forEach((e) => board.state.apply(e));
@@ -210,6 +219,23 @@ export class Board {
       wake();
     }
     this.armSweep();
+  }
+
+  /**
+   * Runs one long-poll (`/events` or claim-ready with `wait`) in one of the board's `maxWaiters`
+   * places; with none free, 429 `too_many_waiters`, which the Board client retries after
+   * `Retry-After`. Each held request costs a socket and a timer, so the cap bounds both.
+   */
+  async waiting<R>(poll: () => Promise<R>): Promise<R> {
+    if (this.holding >= this.maxWaiters) {
+      throw new HttpError(HTTP.tooManyRequests, "too_many_waiters", `this board holds ${this.maxWaiters} waiting requests at most: try again shortly`, WAITERS_RETRY_AFTER_S);
+    }
+    this.holding += 1;
+    try {
+      return await poll();
+    } finally {
+      this.holding -= 1;
+    }
   }
 
   /** Resolves on the next commit, after `ms`, or on abort, whichever comes first. */
@@ -1444,6 +1470,8 @@ export class Board {
     if (this.closed || this.state.claims.size === 0) {
       return;
     }
+    // ceiling: a linear scan of live claims on every commit — upgrade trigger: thousands of live
+    // claims per board (keep them in a min-heap by deadline).
     const due = Math.min(...this.state.claims.values());
     this.sweep = setTimeout(() => {
       this.sweep = null;
@@ -1451,8 +1479,16 @@ export class Board {
     }, Math.max(0, due - this.clock()));
   }
 
-  /** Expires every lapsed claim by its policy: back to ready, or held with a `lease_expired` label. */
+  /**
+   * Expires every lapsed claim by its policy: back to ready, or held with a `lease_expired` label.
+   * It rearms the timer whatever it found: one that fired before the clock reached the deadline
+   * finds nothing and commits nothing, and only this rearm keeps the claim from never expiring.
+   */
   expire(): Promise<number> {
+    return this.expireLapsed().finally(() => this.armSweep());
+  }
+
+  private expireLapsed(): Promise<number> {
     return this.mutate((w, now) => {
       let count = 0;
       for (const id of this.state.claims.keys()) {

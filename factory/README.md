@@ -14,6 +14,6 @@ How agents work with the owner and on this repository: who they work for (HUMANS
 
 | Directory | What | Checks |
 | --- | --- | --- |
-| `checks/` | Repository checker: doctrine references and definitions, track lookup tables, tracked secrets (LADDER-1) | `node --test` (7 tests); run with `node factory/checks/check-repo.mjs .` |
+| `checks/` | Repository checker: doctrine references and definitions, track lookup tables, tracked secrets (LADDER-1) | `bun test` (7 tests); run with `bun factory/checks/check-repo.mjs .` |
 
 CI: `.github/workflows/checks.yml` runs the checker and the `m365` spike's typecheck, tests and build on every push (LADDER-2).

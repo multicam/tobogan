@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Repository checks that can fail (LADDER-1): doctrine references, lookup tables, secrets.",
   "scripts": {
-    "check": "node check-repo.mjs ../..",
-    "test": "node --test"
+    "check": "bun check-repo.mjs ../..",
+    "test": "bun test"
   }
 }

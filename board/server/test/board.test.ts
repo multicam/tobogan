@@ -1,5 +1,8 @@
-import { afterAll, describe, expect, test } from "bun:test";
-import { callerFor, cleanUp, fakeClock, openBoard, refusal } from "./helpers.ts";
+import { afterAll, describe, expect, spyOn, test } from "bun:test";
+import { Board } from "../src/board.ts";
+import { FileStore } from "../src/file-store.ts";
+import type { Store } from "../src/store.ts";
+import { callerFor, cleanUp, fakeClock, openBoard, refusal, scratchDir } from "./helpers.ts";
 
 afterAll(cleanUp);
 
@@ -262,7 +265,76 @@ describe("needs", () => {
   });
 });
 
+describe("sweeper backoff", () => {
+  test("a sweep whose appends keep failing backs off instead of spinning", async () => {
+    const clock = fakeClock();
+    const inner = new FileStore(scratchDir("sweep-fail"));
+    let failing = false;
+    let appends = 0;
+    const store: Store = {
+      open: () => inner.open(),
+      read: (after) => inner.read(after),
+      subscribe: (listener) => inner.subscribe(listener),
+      close: () => inner.close(),
+      append: async (commit, head) => {
+        if (failing) {
+          appends += 1;
+          throw new Error("ENOSPC: no space left on device");
+        }
+        return inner.append(commit, head);
+      },
+    };
+    const board = await Board.open(store, { clock });
+    const errors = spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const { task } = await board.createTask(ada, { channel: "work", text: "x" });
+      await board.claimTask(ada, task.id, 30);
+      clock.advance(MINUTE);
+      failing = true;
+      await board.expire().catch(() => {});
+      await Bun.sleep(2500);
+      // One attempt now, then one after 1s, then the next waits 2s: no spin.
+      expect(appends).toBeGreaterThanOrEqual(2);
+      expect(appends).toBeLessThanOrEqual(3);
+      expect(errors.mock.calls.length).toBeLessThanOrEqual(appends);
+      // Once appends work again, the next try succeeds and the claim expires.
+      failing = false;
+      await Bun.sleep(2200);
+      expect(board.thread(ada, task.id, {}).message.task?.state).toBe("ready");
+    } finally {
+      errors.mockRestore();
+      await board.close();
+    }
+  }, 10_000);
+});
+
 describe("events", () => {
+  test("changed() with an aborted signal returns at once", async () => {
+    const board = await openBoard();
+    const abort = new AbortController();
+    abort.abort();
+    const t0 = Date.now();
+    await board.changed(5000, abort.signal);
+    expect(Date.now() - t0).toBeLessThan(100);
+  });
+
+  test("poll() retries at once when a commit lands between its first attempt and its wait", async () => {
+    const board = await openBoard();
+    let calls = 0;
+    const t0 = Date.now();
+    const got = await board.poll(Date.now() + 3000, undefined, async (final) => {
+      calls += 1;
+      if (calls === 1) {
+        // A write lands after this attempt looked, before the poll starts waiting.
+        await board.post(ada, { channel: "dev", text: "in the gap" });
+        return null;
+      }
+      return board.state.head > 0 ? "seen" : final ? "nothing" : null;
+    });
+    expect(got).toBe("seen");
+    expect(Date.now() - t0).toBeLessThan(1000);
+  });
+
   test("changed() wakes on a commit and times out without one", async () => {
     const board = await openBoard();
     const started = Date.now();

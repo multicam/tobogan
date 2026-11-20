@@ -70,6 +70,8 @@ export type BoardOptions = { leases?: LeaseConfig; clock?: () => number; maxWait
 /** Long-polls one board holds at once (owner decision, 2026-11-21); `CSF_BOARD_MAX_WAITERS` overrides. */
 export const MAX_WAITERS_DEFAULT = 256;
 const WAITERS_RETRY_AFTER_S = 1;
+const SWEEP_BACKOFF_MIN_MS = 1000;
+const SWEEP_BACKOFF_MAX_MS = 30_000;
 
 type NewEvent = { type: string; payload: Record<string, unknown>; meta?: Record<string, unknown> };
 
@@ -150,6 +152,9 @@ export class Board {
 
   /** Long-polls being held now, against `maxWaiters`. */
   private holding = 0;
+  /** The current sweep backoff (0: none), and the real time before which no sweep runs. */
+  private sweepBackoffMs = 0;
+  private sweepRetryAt = 0;
 
   private constructor(
     private readonly store: Store,
@@ -238,8 +243,40 @@ export class Board {
     }
   }
 
+  /**
+   * A long-poll: answers at once when `attempt` has something; otherwise holds a waiter place and
+   * retries on each commit until it does or `deadline` passes. `attempt(final)` answers null for
+   * "nothing yet" and always answers when `final`. The head is read before each attempt, and a
+   * commit that lands after it (while the attempt ran) is retried at once, never slept through.
+   * `onHold` runs once, when it starts waiting.
+   */
+  async poll<R>(deadline: number, signal: AbortSignal | undefined, attempt: (final: boolean) => Promise<R | null>, onHold?: () => void): Promise<R> {
+    const over = () => Date.now() >= deadline || (signal?.aborted ?? false);
+    let seen = this.state.head;
+    const first = await attempt(over());
+    if (first !== null) {
+      return first;
+    }
+    onHold?.();
+    return this.waiting(async () => {
+      for (;;) {
+        if (this.state.head === seen) {
+          await this.changed(deadline - Date.now(), signal);
+        }
+        seen = this.state.head;
+        const got = await attempt(over());
+        if (got !== null) {
+          return got;
+        }
+      }
+    });
+  }
+
   /** Resolves on the next commit, after `ms`, or on abort, whichever comes first. */
   changed(ms: number, signal?: AbortSignal): Promise<void> {
+    if (signal?.aborted) {
+      return Promise.resolve();
+    }
     return new Promise((resolve) => {
       const done = () => {
         clearTimeout(timer);
@@ -1473,19 +1510,38 @@ export class Board {
     // ceiling: a linear scan of live claims on every commit — upgrade trigger: thousands of live
     // claims per board (keep them in a min-heap by deadline).
     const due = Math.min(...this.state.claims.values());
+    const delay = Math.max(0, due - this.clock(), this.sweepRetryAt - Date.now());
     this.sweep = setTimeout(() => {
       this.sweep = null;
-      this.expire().catch((error) => console.error("[csf-board] lease sweep failed:", error));
-    }, Math.max(0, due - this.clock()));
+      this.expire().catch(() => {
+        // Logged and backed off in expire().
+      });
+    }, delay);
   }
 
   /**
    * Expires every lapsed claim by its policy: back to ready, or held with a `lease_expired` label.
    * It rearms the timer whatever it found: one that fired before the clock reached the deadline
    * finds nothing and commits nothing, and only this rearm keeps the claim from never expiring.
+   * When the append fails (a full disk, a poisoned store), the lapsed claim is still due, so the
+   * rearm waits out a backoff (1s, doubling to 30s, reset by a sweep that works) instead of spinning.
    */
   expire(): Promise<number> {
-    return this.expireLapsed().finally(() => this.armSweep());
+    return this.expireLapsed().then(
+      (count) => {
+        this.sweepBackoffMs = 0;
+        this.sweepRetryAt = 0;
+        this.armSweep();
+        return count;
+      },
+      (error: unknown) => {
+        this.sweepBackoffMs = this.sweepBackoffMs === 0 ? SWEEP_BACKOFF_MIN_MS : Math.min(this.sweepBackoffMs * 2, SWEEP_BACKOFF_MAX_MS);
+        this.sweepRetryAt = Date.now() + this.sweepBackoffMs;
+        console.error(`[csf-board] lease sweep failed, retrying in ${this.sweepBackoffMs / 1000}s:`, error);
+        this.armSweep();
+        throw error;
+      },
+    );
   }
 
   private expireLapsed(): Promise<number> {

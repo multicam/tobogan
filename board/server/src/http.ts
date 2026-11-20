@@ -197,27 +197,9 @@ function holdOpen(ctx: Ctx): void {
   ctx.server?.timeout(ctx.req, 0);
 }
 
-/**
- * Answers at once when `attempt` has something; otherwise holds the request, in one of the
- * board's waiter places, retrying on each commit until it does or `deadline` passes.
- * `attempt(final)` answers null for "nothing yet", and always answers when `final`.
- */
+/** A long-poll request (see `Board.poll`), held open past Bun's idle timeout while it waits. */
 async function longPoll(ctx: Ctx, deadline: number, attempt: (final: boolean) => Promise<unknown>): Promise<Response> {
-  const over = () => Date.now() >= deadline || ctx.req.signal.aborted;
-  const first = await attempt(over());
-  if (first !== null) {
-    return json(first);
-  }
-  holdOpen(ctx);
-  return ctx.board.waiting(async () => {
-    for (;;) {
-      await ctx.board.changed(deadline - Date.now(), ctx.req.signal);
-      const got = await attempt(over());
-      if (got !== null) {
-        return json(got);
-      }
-    }
-  });
+  return json(await ctx.board.poll(deadline, ctx.req.signal, attempt, () => holdOpen(ctx)));
 }
 
 const notSupported =(what: string): Handler => () => {

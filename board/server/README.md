@@ -58,6 +58,7 @@ Optional per-board file `<data dir>/<board>/config.json`:
 
   It does not requeue the task, so an orchestrator decides what happens next. Until the sweeper runs, a lapsed claim under `hold` still reads as claimed.
 - **Matching:** `byLabel` keys are `key` or `key=value`, matched against the task's root. The first key that matches wins.
+- **Sweeper:** a timer is set for the earliest lease and set again after every sweep. If the sweep's append fails (a full disk, a store that refuses appends), it retries after 1 s, doubling up to 30 s, and logs once per retry. The first sweep that works resets the delay.
 - **Fencing:** each claim gets the next claim epoch and a fresh token. Renew, release, complete, fail and block-by-claim are refused with 409 `claim_lost` unless they send the current epoch and token while the lease is live. The board makes that check and the write as one atomic step.
 
 ## Data

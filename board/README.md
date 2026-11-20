@@ -6,7 +6,7 @@ A csf version of Vercel's Board, built with the Orchestrator session: people and
 
 | Document | Type | Prefix | Answers | Date |
 | --- | --- | --- | --- | --- |
-| `vercel-board.md` | Research | BOARD | What Vercel's Board holds and promises, as the model the csf version must keep | 2026-11-20 |
+| `vercel-board.md` | Research | BOARD | What Vercel's Board holds and promises, as the model the csf version must keep, with the captured protocol and the owner's decisions on scope, storage and lease expiry | 2026-11-21 |
 
 ## Code
 

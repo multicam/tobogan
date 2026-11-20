@@ -27,7 +27,7 @@ For example: "`m365`, FILES-4" or "MATTER-3".
 
 **R-5. Secrets never enter git.** Commit an `.env.example` with empty values; real values go in `.env.local`. Enforced by `factory/checks` (LADDER-2).
 
-**R-6. Green means the checks pass.** Before a commit is pushed, `node factory/checks/check-repo.mjs .` and the checks of every code directory touched must pass (LADDER-1). CI runs them again on every push.
+**R-6. Green means the checks pass.** Before a commit is pushed, `bun factory/checks/check-repo.mjs .` and the checks of every code directory touched must pass (LADDER-1). CI runs them again on every push.
 
 ## Document format
 

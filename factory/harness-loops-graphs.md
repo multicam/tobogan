@@ -37,7 +37,7 @@
 | --- | --- | --- |
 | 1 | Yes | Agents work with shell, files, tests and git |
 | 2 | Partly | Commits are checkpoints and `DOCTRINES.md` is the memory. Walls: the session may push only to its working branch. Gaps: no wall stops a push to `master` or a committed secret beyond `.gitignore` |
-| 3 | Yes, for code and documents | `m365/spike`: 106 tests, strict typecheck, build. Documents: `factory/checks` (LADDER-1). Not for tenant behaviour, which nothing can check yet (PLAN-1) |
+| 3 | Yes, for code and documents | `m365/spike`: 522 tests with coverage thresholds, strict typecheck, build. Documents: `factory/checks` (LADDER-1). Not for tenant behaviour, which nothing can check yet (PLAN-1) |
 | 4 | No | Iterations are not recorded in a converging format; no budgets |
 | 5 | Ad hoc | Independent research ran in parallel agents; no written graph |
 | 6 | Written (LADDER-5), not coded | Pull requests, merges and real-tenant actions wait for the owner, but nothing in code maps a change's label to its gate, and passed work is not frozen |

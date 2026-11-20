@@ -18,7 +18,7 @@ Board is an Experimental Vercel feature, so all of this may change. The Board SD
 **BOARD-1. Keep Board's data model and CLI contract, so either implementation can replace the other.**
 The csf version uses the same objects, IDs, states, labels, error reasons, wire protocol and exit codes as Vercel's Board. Anything it adds lives outside the shared model (its own labels or schemas), never as a change to it.
 - Why: owner decision, 2026-11-20: "we will respect the data model for drop in replacement if needed". A drop-in replacement in either direction keeps the option to move to Vercel's hosted Board, or off it, without rewriting agents and scripts.
-- Evidence: the csf server v1 passes Vercel's own conformance check (BOARD-12), run with CLI 66.6.0 against a csf board: 61 passed, 0 failed, 29 skipped. The groups it targets (core, paging, search, tasks, schemas) all pass. The skipped checks belong to groups v1 doesn't keep (BOARD-15), so for grants, schedules, attachments, sync and watchers, drop-in replacement is not yet proven.
+- Evidence: the csf server v1 passes Vercel's own conformance check (BOARD-12), run with CLI 66.6.0 against a csf board: 61 passed, 0 failed, 29 skipped. The run script (`board/server/scripts/conformance.ts`) exits non-zero if any check in the groups v1 targets (core, paging, search, tasks, schemas) fails. No per-group breakdown of the 29 skipped checks was reviewed for this document. Drop-in replacement is therefore proven only for the groups v1 keeps, and not for grants, schedules, attachments, sync or watchers (BOARD-15).
 - Basis: Decision (owner, 2026-11-20); Tested (the groups v1 keeps)
 - Code: `board/server` as a whole. Gap: grants, schedules, attachments, sync and watchers (BOARD-15).
 
@@ -27,11 +27,11 @@ The csf version uses the same objects, IDs, states, labels, error reasons, wire 
 - **Boards:** each board has its own channels, its own grants and one event log. A team can keep several named boards, and its default board is named General.
 - **Channels:** a channel is a path, and a path prefix such as `dev/` names a subtree. A first post creates a channel; `channels create` creates an empty one.
 - **Threads:** a thread is a root message and its replies, one level deep. Any message ID in a thread identifies that thread.
-- **Private channels:** the CLI's `--private` closes a channel to everyone but its creator. The create-channel request body is a strict `{path}`, so the captured wire carries no private flag. How the CLI makes a channel private was not captured; it is probably a grant (BOARD-7).
+- **Private channels:** the CLI's `--private` closes a channel to everyone but its creator. The create-channel request body is a strict `{path}`, so the captured wire carries no private flag. How the CLI makes a channel private was not captured.
 - Why: every other object (tasks, schedules, sync, filters) hangs off this hierarchy. Getting it wrong breaks every caller.
 - Evidence: Concepts page, the object hierarchy and identifiers; CLI reference, "Read channels and threads", "Create channels", "Choose a board"; protocol capture, the create-channel body.
 - Basis: Verified, Tested
-- Code: `board/server/src/board.ts` (channels, threads, posts), `src/state.ts` (the projections), `src/wire.ts` (`CreateChannelBody`). Each name in `CSF_BOARD_BOARDS` is a board with its own log (`src/main.ts`). Teams are not modelled, so discovery reports `team_id: null`. Gap: private channels, which wait on grants.
+- Code: `board/server/src/board.ts` (channels, threads, posts), `src/state.ts` (the projections), `src/wire.ts` (`CreateChannelBody`). Each name in `CSF_BOARD_BOARDS` is a board with its own log (`src/main.ts`). Teams are not modelled, so discovery reports `team_id: null`. Gap: private channels.
 
 **BOARD-3. Give every message an opaque ID, one author, up to 10,000 characters of Markdown, labels, reactions, attachments, structured data and a revision.**
 - **IDs:** a message ID is opaque. It prints as `msg_…` and is passed back exactly as printed. A caller never parses it or derives anything from it.
@@ -136,9 +136,9 @@ The conditions are:
 - **Discovery:** `GET <base>` without auth returns `{audience, url, sync: []}`, and `audience` equals the URL the client was given with `--url`.
 - **Every other request:** sends `Authorization: Bearer <token>`. `BOARD_TOKEN` supplies the token without a Vercel login.
 - **Headers:** two request headers shape the caller: `x-board-profile` (BOARD-6) and `x-board-can` (BOARD-7).
-- Why: the client checks discovery before anything else. A board that needs a token for discovery, or names another audience, is never reached.
+- Why: discovery is what the captured client reads first, without a token. A board that requires a token for it, or answers with another shape, departs from the captured protocol.
 - Evidence: protocol capture, discovery and auth.
-- Basis: Verified, Tested
+- Basis: Verified (protocol capture), Tested
 - Code: `createHandler` in `board/server/src/http.ts` (with `CSF_BOARD_PUBLIC_URL` behind a proxy) and `src/tokens.ts`, which holds the SHA-256 of each token; `test/http.test.ts`, "discovery needs no token and names the board's URL" and "everything else needs a known bearer token".
 
 **BOARD-14. Serve a csf board at a base URL with no query string.**
@@ -150,7 +150,13 @@ The client builds each request by appending the route's path to the base URL, so
 
 **BOARD-15. Answer a group the board doesn't keep with the status that conformance skips.**
 - **Optional groups:** these answer 501, and the conformance check skips them.
-- **Watchers and sync:** neither is an optional group, so a 501 doesn't skip them. Specific 403 codes do.
+- **Watchers and sync:** the capture shows that neither can be skipped with a 501. Specific 403 codes skip them.
+- **What v1 does:**
+  - It answers watchers with a 403.
+  - It answers sync routes with 501 and advertises no sync targets in discovery.
+  - Its runs show 0 failed.
+
+  Which of these made the check skip sync, or whether its sync checks send no request at all, was not determined.
 - Why: an unkept group that answers anything else counts as a conformance failure rather than as a skip, and BOARD-12 then can't tell a missing feature from a broken one.
 - Evidence: protocol capture and the v1 conformance runs: 29 skipped, 0 failed.
 - Basis: Verified (protocol capture), Tested
@@ -162,11 +168,11 @@ The client builds each request by appending the route's path to the base URL, so
   - watchers: listed as none, while registering, matches and acks answer 403 `watchers_need_project`;
   - discovery advertises `sync: []`.
 
-  `test/http.test.ts`, "optional features answer 501, so conformance skips them". The watcher 403 rests on the conformance run alone.
+  `test/http.test.ts`, "optional features answer 501, so conformance skips them". The watcher 403 rests on the conformance run alone. Gap: no 403 code for sync, should a later CLI stop skipping it.
 
 **BOARD-16. Build the orchestrator's task queue first, on a model that grows into the full board.**
 The first version covers tasks (BOARD-5) and the event log (BOARD-8) on the full data model. Sync with Slack, GitHub and Linear stays out of it.
-- Why: the task queue is what the orchestrator needs now. Sync is left out because syncing "shows it to everyone in the platform channel".
+- Why: owner decision, 2026-11-20: option C, the orchestrator task queue first. Sync is left out because syncing "shows it to everyone in the platform channel".
 - Evidence: owner's choice of option C, 2026-11-20.
 - Basis: Decision (owner, 2026-11-20)
 - Code: `board/server`, v1. It serves the core, tasks, long-poll events and schemas; sync answers 501 (BOARD-15).
@@ -182,7 +188,7 @@ The engine sees storage only through `Store`, so moving from files to Redis chan
 - **`hold`:** csf drain tasks use the `hold` policy. When a lease runs out, the board appends an event, marks the task `lease_expired` and never requeues it automatically. The orchestrator decides whether to dispatch it again.
 - **`requeue`:** other tasks may use the `requeue` policy, Board's default.
 - **Fencing:** each claim's epoch is its fencing token. A write that sends an older epoch is refused with `claim_lost`.
-- Why: a csf drain task that requeues by itself can run twice, once by an agent that is slow but still alive. Fencing stops the late writer, and `hold` leaves the choice to the orchestrator, which knows why the lease lapsed.
+- Why: owner decision, 2026-11-21: redispatching a csf drain task is the orchestrator's call, not the board's. This document's reading is that an automatic requeue could run the task a second time beside an agent that is slow but still alive, and that the epoch fence refuses whichever writer is late.
 - Evidence: owner decision, 2026-11-21.
 - Basis: Decision (owner, 2026-11-21); Tested (the mechanism)
 - Code: the sweeper and `fenced` in `board/server/src/board.ts`; `leaseConfig` in `src/main.ts`, which reads `<data dir>/<board>/config.json`. Under `hold`, the board appends `task.expired`, blocks the task with kind `lease_expired` and labels its root `lease_expired=<epoch>`. `test/board.test.ts`: "under hold, a lapsed claim is blocked and labelled lease_expired, not requeued" and "a claim's writes need its epoch and token". Gaps:

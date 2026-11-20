@@ -9,20 +9,20 @@
 ## Doctrines
 
 **BOARD-1. Keep Board's data model and CLI contract, so either implementation can replace the other.**
-The csf version uses the same objects, IDs, states, labels, error reasons and exit codes as Vercel's Board. Anything it adds lives outside the shared model (its own labels or schemas), never as a change to it.
+The csf version uses the same objects, IDs, states, labels, error reasons and exit codes as Vercel's Board. Anything it adds lives outside the shared model (its own labels or schemas), never as a change to it. The full task state list and the HTTP protocol are not yet seen (see Open), so the rule covers them once they are.
 - Why: owner decision, 2026-11-20: "we will respect the data model for drop in replacement if needed". A drop-in replacement in either direction keeps the option to move to Vercel's hosted Board, or off it, without rewriting agents and scripts.
 - Evidence: Board publishes a conformance check, `vercel board conformance`, which "checks that a board you name speaks the Board protocol", so compatibility can be tested rather than claimed (BOARD-12).
 - Basis: Decision (owner)
 - Code: Gap: no implementation yet. Where it lives is open (see Open).
 
-**BOARD-2. A board holds channels, a channel holds threads, and a thread is a root message and its replies.**
+**BOARD-2. Model a board as channels that hold threads, each thread a root message and its replies.**
 Channels are paths, and a path prefix such as `dev/` names a subtree. A first post creates a channel; `channels create` creates an empty one, and `--private` closes it to everyone but its creator. A team can keep several named boards, and its default board is named General.
 - Why: every other object (tasks, schedules, sync, filters) hangs off this hierarchy. Getting it wrong breaks every caller.
 - Evidence: CLI reference, "Read channels and threads", "Create channels", "Choose a board".
 - Basis: Verified
 - Code: Gap.
 
-**BOARD-3. A message has an ID, an author, up to 10,000 characters of text, labels, reactions, attachments, structured blocks and a revision.**
+**BOARD-3. Give every message an ID, an author, up to 10,000 characters of text, labels, reactions, attachments, structured blocks and a revision.**
 - IDs print as `msg_…` and are passed back exactly as printed.
 - Attachments: up to 10 per message, each up to 100 MB.
 - Labels are `k=v` pairs, and labels under `board.` are reserved for the board (`reserved_label`).
@@ -32,7 +32,7 @@ Channels are paths, and a path prefix such as `dev/` names a subtree. A first po
 - Basis: Verified
 - Code: Gap.
 
-**BOARD-4. Every write that can race offers a condition, and a failed condition changes nothing.**
+**BOARD-4. Offer a condition on every write that can race, and change nothing when it fails.**
 The conditions are:
 - `reply --after <id>`: only while that message is still the thread's newest (`newer_message`).
 - `edit` or `delete --if-revision <N>`: only at that revision (`revision_conflict`).
@@ -43,7 +43,7 @@ The conditions are:
 - Basis: Verified
 - Code: Gap.
 
-**BOARD-5. A task is a thread with a state the board keeps, claimed under a lease.**
+**BOARD-5. Treat a task as a thread with a state the board keeps, claimed under a lease.**
 - **Operations:** create (a new thread, an existing thread, or a plan from a JSON file), claim (one task, or the oldest ready one with `--ready`, optionally `--wait`), renew, release, complete with a result, fail with a reason, block for a person (`--kind`), unblock, reopen, assign to a profile or `--pool`, set `needs`, cancel.
 - **Who:** an owner, or someone with `manage` in the channel, settles changes reserved to the owner (`task_not_owned`).
 - **Running a command:** `tasks run <id> -- <cmd>` claims a task, runs the command and settles the task by its exit code. A `SIGTERM` releases the task (exit 143).
@@ -55,7 +55,7 @@ The conditions are:
 - Basis: Verified (operations, reasons); Unverified (the full state machine)
 - Code: Gap.
 
-**BOARD-6. An actor is a person or a named profile of a person, and a profile always has its owner's permissions.**
+**BOARD-6. Make every actor a person or a named profile of a person, and give a profile its owner's permissions.**
 - A profile is set with `--as` or `BOARD_PROFILE`, and is "named, never detected". It has its own handle (`ada/fx`), up to 32 letters, numbers and hyphens, starting with a letter.
 - Parallel agents need separate profiles, because "agents that share a profile are one actor".
 - A mention resolves only when exactly one visible actor has that handle. Otherwise it stays plain text, and a mention never makes a write fail. `@[actor-id]` names one of several actors that share a handle.
@@ -64,7 +64,7 @@ The conditions are:
 - Basis: Verified
 - Code: Gap.
 
-**BOARD-7. Access is a set of grants, each naming principals and permissions per channel pattern.**
+**BOARD-7. Control access with grants, each naming principals and permissions per channel pattern.**
 - **Principals:** users, projects (with environments), apps, all users, all projects, all apps, and `--everyone`.
 - **Permissions:** `read`, `post`, `react`, `label`, `sync` and `manage`, or `all` or `none`.
 - **Other operations:** `grants explain` shows which grant decides a channel.
@@ -74,7 +74,7 @@ The conditions are:
 - Basis: Verified (surface); Unverified (how grants combine)
 - Code: Gap.
 
-**BOARD-8. Activity is an event stream that can be followed, waited on and resumed from a cursor.**
+**BOARD-8. Expose activity as an event stream that can be followed, waited on and resumed from a cursor.**
 - `tail` prints events live. `wait` blocks until the next matching event, for 30 minutes by default, and exits 1 with `timeout`.
 - Both take the read filters: `--by`, `--mentions`, `--label`, `--text`, `--source`, `--re` and `--after`.
 - `wait` prints the command that continues from the event it returned, "so a loop misses nothing between two waits".
@@ -83,7 +83,7 @@ The conditions are:
 - Basis: Verified
 - Code: Gap.
 
-**BOARD-9. Structured data is JSON that matches a registered, immutable schema version.**
+**BOARD-9. Accept structured data only as JSON that matches a registered, immutable schema version.**
 - Schemas are named `name@version`, and a version never changes.
 - Data is checked on write: `invalid_block` for data that doesn't match, `schema_not_found` for an unknown schema.
 - `git-commit@1` and `vercel-deployment@1` are built in.
@@ -92,13 +92,13 @@ The conditions are:
 - Basis: Verified
 - Code: Gap.
 
-**BOARD-10. Schedules post later, once or on an interval of at least one minute, as their author.**
+**BOARD-10. Let schedules post later, once or on an interval of at least one minute, as their author.**
 - Why: reminders and recurring check-ins belong to the board, not to a cron job outside it.
 - Evidence: CLI reference, "Schedule posts".
 - Basis: Verified
 - Code: Gap.
 
-**BOARD-11. The CLI contract is `--json` output, a JSON error with `reason` and `next`, and fixed exit codes.**
+**BOARD-11. Keep the CLI contract: `--json` output, a JSON error with `reason` and `next`, and fixed exit codes.**
 - Exit codes: `0` success; `1` failure or timeout; `2` usage error or no board; `130` Ctrl-C; `143` `SIGTERM` during `tasks run`.
 - A board is addressed by URL (`https://api.vercel.com/v1/messageboard/boards/<board>?teamId=<team>`) or by name, in a fixed resolution order: `--url`, then `--scope`/`--name`, then `BOARD_URL`, then the project's team, then the login's default team.
 - Why: scripts and agents branch on `reason` and exit codes. Matching them is what makes the csf version a drop-in replacement for callers.
@@ -106,20 +106,24 @@ The conditions are:
 - Basis: Verified
 - Code: Gap.
 
-**BOARD-12. Compatibility is proven by passing Board's own conformance check.**
+**BOARD-12. Prove compatibility by passing Board's own conformance check.**
 `vercel board conformance --url <csf-board>` against a scratch board of the csf version is the acceptance test for BOARD-1. The check writes to the board, changes grants and deletes what it posted, so it runs only against a test board.
 - Why: "drop-in" is a claim until a check that can fail says so (FLEET-1).
-- Evidence: CLI reference, "Check a board". Whether the protocol it checks is published as a specification was not seen.
+- Evidence: CLI reference, "Check a board", which states that the check "posts test messages", "changes grants, deletes what it posted", and runs only on a board named with `--name`, `--url`, `BOARD_NAME` or `BOARD_URL`. Whether the protocol it checks is published as a specification was not seen.
 - Basis: Verified (the check exists); Unverified (that it accepts a non-Vercel URL)
 - Code: Gap.
 
 ## Open
 
 - **Where the csf version lives,** for example in `csf-build` or its own repository, and how tasks map onto csf drains, work orders and lanes. Owner: the owner, with the Orchestrator session.
-- **The HTTP protocol.** Is it specified (Board SDK page, conformance source), or only implied by the CLI? Needs the Board SDK, Tasks and Access pages, pasted by the owner or read from Vercel's documentation.
-- **The full task state machine** and the lease length (BOARD-5).
-- **First-version scope.** Owner decision 2026-11-20: option C, the orchestrator task queue first (BOARD-5, BOARD-8), on a model that grows into the full board. Sync with Slack, GitHub and Linear is left out of the first version because syncing "shows it to everyone in the platform channel".
-- **Whether `vercel board conformance` accepts a non-Vercel `--url`** (BOARD-12).
+- **The HTTP protocol.** Is it specified (Board SDK page, conformance source), or only implied by the CLI? Owner: the owner, by pasting the Board SDK page or approving a capture of the conformance check's requests.
+- **The full task state machine** and the lease length (BOARD-5). Owner: the owner, by pasting the Tasks page.
+- **How grants combine** (BOARD-7). Owner: the owner, by pasting the Board Access Control page.
+- **Whether `vercel board conformance` accepts a non-Vercel `--url`** (BOARD-12). Owner: the owner, by approving the capture above.
+
+## Reference
+
+- First-version scope, owner decision 2026-11-20: option C, the orchestrator task queue first (BOARD-5, BOARD-8), on a model that grows into the full board. Sync with Slack, GitHub and Linear is left out of the first version because syncing "shows it to everyone in the platform channel". The planning document will carry it as a doctrine.
 
 ## Sources
 

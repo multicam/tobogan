@@ -46,8 +46,8 @@
 ## Doctrines
 
 **LADDER-1. Every track defines "green" as a command that can fail.**
-- Code tracks: their test, typecheck and build commands (`m365/spike`: `npm test`, `npm run typecheck`, `npm run build`).
-- Documents: `node factory/checks/check-repo.mjs .` fails on a dangling doctrine reference, a duplicate or unregistered doctrine, a doctrine without a Basis line, a document missing from its track's lookup table, or a tracked secret file.
+- Code tracks: their test, typecheck and build commands (`m365/spike`: `bun run test`, `bun run typecheck`, `bun run build`).
+- Documents: `bun factory/checks/check-repo.mjs .` fails on a dangling doctrine reference, a duplicate or unregistered doctrine, a doctrine without a Basis line, a document missing from its track's lookup table, or a tracked secret file.
 - Why: without a check that can fail, "done" is the agent's own report, the weakest evidence. The repository check replaces the hand-run reference scan used until now.
 - Why, in the article's words: "If you cannot say what green means, no layer will save you."
 - Basis: Decision, Tested (`factory/checks/check-repo.test.mjs`, 7 tests; seen failing on a deliberately broken copy of the repository, green on the real one)

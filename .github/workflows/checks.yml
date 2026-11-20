@@ -13,14 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
+      - uses: oven-sh/setup-bun@v2
       - name: Checker tests
         working-directory: factory/checks
-        run: node --test
+        run: bun test
       - name: Doctrines, lookup tables, secrets
-        run: node factory/checks/check-repo.mjs .
+        run: bun factory/checks/check-repo.mjs .
 
   m365-spike:
     runs-on: ubuntu-latest
@@ -29,14 +27,14 @@ jobs:
         working-directory: m365/spike
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v4
         with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: m365/spike/package-lock.json
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm run build
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('m365/spike/bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
+      - run: bun run test
+      - run: bun run build
         env:
           AUTH_SECRET: build-only-placeholder

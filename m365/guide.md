@@ -16,7 +16,7 @@ By using **Microsoft Graph** paired with **Auth.js (NextAuth v5) Delegated Authe
 
 ### Installation
 ```bash
-npm install next-auth@beta @microsoft/microsoft-graph-client isomorphic-dompurify
+bun add next-auth@beta @microsoft/microsoft-graph-client isomorphic-dompurify
 ```
 
 ---

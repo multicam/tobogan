@@ -1,9 +1,11 @@
-import { afterEach, describe, expect, test } from "bun:test";
+import { afterAll, afterEach, describe, expect, test } from "bun:test";
 import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { FileStore } from "../src/file-store.ts";
 import { StoreConflict, type Commit } from "../src/store.ts";
-import { scratchDir } from "./helpers.ts";
+import { cleanUp, scratchDir } from "./helpers.ts";
+
+afterAll(cleanUp);
 
 const commit = (seq: number, type = "message.posted"): Commit => ({
   events: [{ seq, at: "2026-11-21T00:00:00.000Z", type, payload: { n: seq } }],

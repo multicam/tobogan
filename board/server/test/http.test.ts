@@ -82,6 +82,18 @@ describe("http", () => {
     expect(typeof page.cursor).toBe("string");
   });
 
+  test("long-polls outlast Bun's 10-second idle timeout", async () => {
+    const t0 = Date.now();
+    const [events, claim] = await Promise.all([
+      call("/events?wait=12&channel=silent"),
+      call("/tasks/claim", { method: "POST", body: JSON.stringify({ channel: "silent", wait: 12 }) }),
+    ]);
+    expect(Date.now() - t0).toBeGreaterThanOrEqual(11_900);
+    expect([events.status, claim.status]).toEqual([200, 200]);
+    expect(((await events.json()) as Page).events).toEqual([]);
+    expect(await claim.json()).toEqual({ task: null });
+  }, 20_000);
+
   test("optional features answer 501, so conformance skips them", async () => {
     expect((await call("/schedules")).status).toBe(501);
     expect((await call("/attachments", { method: "POST" })).status).toBe(501);

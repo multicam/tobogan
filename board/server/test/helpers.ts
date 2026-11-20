@@ -1,4 +1,3 @@
-import { afterAll } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -10,7 +9,7 @@ import { FileStore } from "../src/file-store.ts";
 
 const made: string[] = [];
 
-/** A fresh empty directory for one test, removed when the file's tests end. */
+/** A fresh empty directory for one test, removed by `cleanUp`. */
 export function scratchDir(prefix: string): string {
   const dir = mkdtempSync(join(tmpdir(), `csf-board-${prefix}-`));
   made.push(dir);
@@ -19,14 +18,19 @@ export function scratchDir(prefix: string): string {
 
 const opened: Board[] = [];
 
-afterAll(async () => {
+/**
+ * Closes the boards and removes the dirs this file's tests made. Each test file registers it
+ * itself with `afterAll(cleanUp)`: this module is loaded once for the whole run, so a hook
+ * registered here would attach to the first file that imports it, and later files would leak.
+ */
+export async function cleanUp(): Promise<void> {
   for (const board of opened.splice(0)) {
     await board.close().catch(() => {});
   }
   for (const dir of made.splice(0)) {
     rmSync(dir, { recursive: true, force: true });
   }
-});
+}
 
 /** A principal calling as itself (or as `profile`), with full access unless `can` narrows it. */
 export function callerFor(handle: string, options: { profile?: string; can?: string } = {}): Caller {

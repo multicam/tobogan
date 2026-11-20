@@ -1,5 +1,7 @@
-import { describe, expect, test } from "bun:test";
-import { callerFor, fakeClock, openBoard, refusal } from "./helpers.ts";
+import { afterAll, describe, expect, test } from "bun:test";
+import { callerFor, cleanUp, fakeClock, openBoard, refusal } from "./helpers.ts";
+
+afterAll(cleanUp);
 
 const ada = callerFor("ada");
 const bob = callerFor("bob");
@@ -155,6 +157,21 @@ describe("leases and epoch fencing", () => {
     expect(await board.claimNext(bob, { channel: "work" })).toBeNull();
     const next = await board.claimNext(bob, { channel: "work", from: [ada.principal.id] });
     expect(next?.task.id).toBe(task.id);
+  });
+
+  test("the sweeper's own timer expires a lapsed claim, with no call to expire()", async () => {
+    const clock = fakeClock();
+    const board = await openBoard({ clock, leases: { byLabel: { "policy=hold": "hold" } } });
+    const { task: requeued } = await board.createTask(ada, { channel: "work", text: "requeue" });
+    const { task: held } = await board.createTask(ada, { channel: "work", text: "hold", labels: { policy: "hold" } });
+    await board.claimTask(ada, requeued.id, 30);
+    await board.claimTask(ada, held.id, 30);
+    clock.advance(MINUTE);
+    // Any commit re-arms the timer, now already due.
+    await board.post(ada, { channel: "dev", text: "tick" });
+    await Bun.sleep(100);
+    expect(board.thread(ada, requeued.id, {}).message.task?.state).toBe("ready");
+    expect(board.thread(ada, held.id, {}).message.task?.state).toBe("blocked");
   });
 
   test("under hold, a lapsed claim is blocked and labelled lease_expired, not requeued", async () => {

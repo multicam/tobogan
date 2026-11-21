@@ -18,7 +18,7 @@ What v1 rules today, and the wording v2 would change:
 - `09_deferred.md` §24 (production document serving with E45/E46) is where the serving revival trigger lives and must move with them.
 - Why: these texts cross-refer; amending one leaves the others stating the opposite. The reopen triggers (the firm answers E45/E46) are the owner's to change; this document does not propose new ones.
 - Evidence: the cited cub files above; WO-214 lists the same items as out of scope (`factory/work-orders/WO-214.md:171-173`).
-- Basis: Verified against cub source at `9aee5f63` (a repository read, not Microsoft documentation, so no basis level above Unverified applies to the v2 reading); the v2 wording is Decision (owner).
+- Basis: Decision (owner). What v1 rules today is read from cub at `9aee5f63` (a repository read, cited under Evidence, not a basis level).
 - Code: Gap: none yet; spec and decision edits only.
 
 **WALL-2. Enforce walls in SharePoint and in cub, because neither alone covers every path.**
@@ -72,7 +72,7 @@ The adoption pass reads the library, proposes a binding of each root to a matter
 - Layout interaction: after WO-215, a lookup for a root under `<YYYY>/` falls back to the library root so old roots are not duplicated (`factory/work-orders/WO-215.md`). Adoption must reuse that fallback and never move an old root into a year folder.
 - Binding record: the invariant's explicit non-goal is cross-tenant or site migration, which reissues item IDs and orphans `sp_item_id`-keyed rows (`decisions/2026-09-21-sharepoint-disposability-invariant.md`, point 4). The bound root is the one cub-native fact adoption adds; whether a rebuild can recreate it from the folder name alone is an inference, not a documented fact.
 - Evidence: cub files above; WO-196 removed the code (`d683ff1e`), restorable from `246b5683` and `1632cc97`; WO-215.
-- Basis: Decision (owner) for the no-destructive-change rule; Verified against cub source for what v1 did; the rebuild inference Unverified.
+- Basis: Decision (owner) for the no-destructive-change rule; Unverified for the rebuild inference. What v1 did is read from cub at `9aee5f63` (Evidence above), not a basis level.
 - Code: Gap: restore from `246b5683` under v2 review. The tobogan spike has no adoption code.
 
 **WALL-9. Report access drift between cub's record and SharePoint on a schedule, and never auto-repair it.**

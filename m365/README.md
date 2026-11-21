@@ -13,6 +13,8 @@ Plumbing for Microsoft 365 in a Next.js app: sign-in and tokens, the Graph clien
 | `sharing.md` | Research | SHARE | Inviting people, sharing links, revoking, and tenant policy | 2026-11-19 |
 | `mail.md` | Research | MAIL | Reading mail, rendering bodies safely, filing attachments, sending | 2026-11-19 |
 | `nextjs.md` | Research | NEXT | Next.js 16 behaviours that shape the app layer | 2026-11-19 |
+| `v2-mail-calendar.md` | Research | MAILCAL | What cub would need for Graph mail and calendar in v2, and what its v1 E50 deferral would have to change | 2026-11-22 |
+| `v2-change-notifications.md` | Research | HOOK | What cub would need for Graph change notifications on SharePoint in v2, and what its v1 S7 deferral would have to change | 2026-11-22 |
 | `guide.md` | Reference | none | The original integration guide the research starts from. Not safe to use as written | 2026-11-19 |
 
 ## Code

@@ -87,6 +87,7 @@ Collapse many notifications per drive into one pending delta run; a second notif
 
 ## Open
 
+- **Owner ruling, 2026-11-22:** S7 is not lifted now; v1 ships first, and when a deferral is lifted, mail filing goes first (MAILCAL, Open). A test-tenant check of HOOK-4 comes before any lift. The owner answered "Yes" to that recommendation, in the tobogan session.
 - **Owner:** whether v2 lifts S7's deferral at all, and which trigger justifies it (R3's reopen trigger is "a list read must reflect SharePoint faster than the poll"). (HOOK-1)
 - **Owner:** whether the public endpoint is acceptable for the deployment model (firms behind a private network cannot receive notifications). (HOOK-10)
 - **Owner:** whether a firm that refuses a broader permission than `Sites.Selected` stays poll-only. (HOOK-4)

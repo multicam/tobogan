@@ -78,6 +78,7 @@ Prefer `Mail.ReadBasic` for lists and pickers, `Mail.Read` only when a body or a
 
 ## Open
 
+- **Owner ruling, 2026-11-22:** lift none of the three v1 deferrals (E50, S7, E45/E46) now; ship v1 first. When one is lifted, mail filing goes first, preceded by one test-tenant check (does a `Sites.Selected` app get a drive-root subscription, HOOK-4; does managing item permissions need `fullcontrol`, WALL-6). The owner answered "Yes" to that recommendation, in the tobogan session. The items below stay open until then.
 - **Owner (JM):** which readings of E50 the firm wants first (read, send, file, calendar), and whether the filing mailbox is shared (app-only, MAILCAL-3) or each lawyer's own (delegated, MAILCAL-4).
 - **Owner (JM):** whether trim R1 is lifted for named workloads, with the token-store design (AUTH-1 to AUTH-3) as the condition.
 - **Owner (JM, firm admin):** who runs the Exchange role and scope step. It needs the Organization Management role group and the Entra Exchange Administrator role (Exchange page).

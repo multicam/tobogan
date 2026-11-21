@@ -85,6 +85,7 @@ A doctrine can carry more than one level, for example "Verified, Tested".
 | MATTER | `matters` | `matters/roles-and-matter-folders.md` |
 | POLICY | `matters` | `matters/policy.md` |
 | WALL | `matters` | `matters/v2-folder-walls.md` |
+| INFER | `inference` | `inference/inference-optimisation-skill.md` |
 | HUMANS | `factory` | `factory/humans-md.md` |
 | LADDER | `factory` | `factory/harness-loops-graphs.md` |
 | FLEET | `factory` | `factory/loops-and-graphs.md` |

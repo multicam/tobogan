@@ -13,6 +13,7 @@ Each track is a top-level directory. Use the short name to refer to it.
 | `factory` | `factory/` | How agents work with the owner and the repository: HUMANS.md, the harness/loops/graphs ladder, repository checks and CI | Three research documents and a repository checker; HUMANS.md read from its source repositories, the articles from pasted text |
 | `prompt` | `prompt/` | Analysis of the "AI team architect" prompt shared on X | Critique done, with a revised prompt kept for later; closed unless reopened |
 | `board` | `board/` | A csf version of Vercel's Board, built with the Orchestrator session: channels, threads and tasks agents claim under a lease, keeping Board's data model for drop-in replacement | One research document on the reference model, updated 2026-11-21 with the captured protocol and owner decisions. Server v1 in its own repository, `wove-design/csf-board`: file-backed, passes Vercel's conformance suite (optional groups skipped) |
+| `inference` | `inference/` | What the inference-optimisation skill teaches, and what carries over to running many lighter hosted models in parallel across our subscriptions | One research document, 2026-11-22. Recommends adapting its measurement ideas into a Qara reference, not installing the skill. Adoption not yet decided |
 | `archive` | `archive/` | Frozen earlier work, not a live track | Closed |
 
 ## How this repository works

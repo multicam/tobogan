@@ -98,6 +98,8 @@ Microsoft Purview Information Barriers (IB) associate segments with a site, not 
 
 ## Open
 
+Owner ruling, 2026-11-22: E45/E46 are not lifted now; v1 ships first, and when a deferral is lifted, mail filing goes first (`m365/v2-mail-calendar.md`, Open). A test-tenant check of WALL-6 comes before any lift. The owner answered "Yes" to that recommendation, in the tobogan session.
+
 For the owner:
 1. Does the firm in fact wall any matter folders today? E45 and E46 are still firm questions and this document does not answer them.
 2. Walls between team leaders (conflicts) are not covered by POLICY-8, which gives every leader edit on every matter; POLICY-8 itself says it would have to change. Is a wall against leaders in scope for v2?

@@ -139,7 +139,7 @@ The conditions are:
 - Why: discovery is what the captured client reads first, without a token. A board that requires a token for it, or answers with another shape, departs from the captured protocol.
 - Evidence: protocol capture, discovery and auth.
 - Basis: Verified (protocol capture), Tested
-- Code: `createHandler` in `src/http.ts` (with `CSF_BOARD_PUBLIC_URL` behind a proxy) and `src/tokens.ts`, which holds the SHA-256 of each token; `test/http.test.ts`, "discovery needs no token and names the board's URL" and "everything else needs a known bearer token".
+- Code: `createHandler` in `src/http.ts` (its `publicUrl` option, which `src/main.ts` sets from `CSF_BOARD_PUBLIC_URL` behind a proxy) and `src/tokens.ts`, which holds the SHA-256 of each token; `test/http.test.ts`, "discovery needs no token and names the board's URL" and "everything else needs a known bearer token".
 
 **BOARD-14. Serve a csf board at a base URL with no query string.**
 The client builds each request by appending the route's path to the base URL, so a query string in the base ends up in the middle of the path and breaks routing. A csf board is mounted at a path (`/boards/<name>`), never addressed by a query.

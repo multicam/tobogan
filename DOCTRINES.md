@@ -80,8 +80,11 @@ A doctrine can carry more than one level, for example "Verified, Tested".
 | SHARE | `m365` | `m365/sharing.md` |
 | MAIL | `m365` | `m365/mail.md` |
 | NEXT | `m365` | `m365/nextjs.md` |
+| MAILCAL | `m365` | `m365/v2-mail-calendar.md` |
+| HOOK | `m365` | `m365/v2-change-notifications.md` |
 | MATTER | `matters` | `matters/roles-and-matter-folders.md` |
 | POLICY | `matters` | `matters/policy.md` |
+| WALL | `matters` | `matters/v2-folder-walls.md` |
 | HUMANS | `factory` | `factory/humans-md.md` |
 | LADDER | `factory` | `factory/harness-loops-graphs.md` |
 | FLEET | `factory` | `factory/loops-and-graphs.md` |

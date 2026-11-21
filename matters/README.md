@@ -8,6 +8,7 @@ How the firm's structure maps onto Microsoft 365: admin, team leader and associa
 | --- | --- | --- | --- | --- |
 | `policy.md` | Planning | POLICY | What each role may do, as decided by the owner: admins and team leaders see every matter, everyone shares inside the firm, only admins and leads share outside | 2026-11-19 |
 | `roles-and-matter-folders.md` | Research | MATTER | How roles map to Entra app roles, how a folder is restricted to a team, SharePoint limits, who performs matter creation, what to test first | 2026-11-19 |
+| `v2-folder-walls.md` | Research | WALL | What cub would need for per-matter folder walls and folder adoption in v2, and what its v1 E45/E46, R4 and R7 rulings would have to change | 2026-11-22 |
 
 ## Code
 

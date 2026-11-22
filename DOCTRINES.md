@@ -86,6 +86,12 @@ A doctrine can carry more than one level, for example "Verified, Tested".
 | POLICY | `matters` | `matters/policy.md` |
 | WALL | `matters` | `matters/v2-folder-walls.md` |
 | INFER | `inference` | `inference/inference-optimisation-skill.md` |
+| NSKILL | `noodle` | `noodle/skills.md` |
+| NSCHED | `noodle` | `noodle/scheduling.md` |
+| NBRAIN | `noodle` | `noodle/brain.md` |
+| NMODE | `noodle` | `noodle/modes.md` |
+| NADAPT | `noodle` | `noodle/adapters-events-runtimes.md` |
+| NVIEW | `noodle` | `noodle/cli-config-observability.md` |
 | HUMANS | `factory` | `factory/humans-md.md` |
 | LADDER | `factory` | `factory/harness-loops-graphs.md` |
 | FLEET | `factory` | `factory/loops-and-graphs.md` |

@@ -28,7 +28,7 @@ None.
 
 ## Additional figures from raw data
 
-Read from `results/full-20261122/runs.jsonl` and `manifest.json` (gitignored; not committed). Tokens are input + output + cache read + cache write, one value per run, passing runs only (all 5 per cell passed).
+Read from `results/full-20261122/runs.jsonl` and `manifest.json` (gitignored; not committed). Tokens are input + output + cache read + cache write, one value per run, passing runs only (GLM and Codex passed all 25 runs; the Claude cells have 4 passing runs in total, and 70 Claude runs were deferred).
 
 q1543 (the largest task), total tokens per run, n=5 each:
 

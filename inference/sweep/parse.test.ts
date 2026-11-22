@@ -113,10 +113,17 @@ describe("meteredInit", () => {
     expect(meteredInit(init("ANTHROPIC_API_KEY"))).toBe(true);
     expect(meteredInit(init("none"))).toBe(false);
   });
-  test("ignores other events, non-JSON lines and an init without apiKeySource", () => {
+  test("fails closed: an init with a missing or non-string apiKeySource is metered", () => {
+    expect(meteredInit(JSON.stringify({ type: "system", subtype: "init" }))).toBe(true);
+    expect(meteredInit(JSON.stringify({ type: "system", subtype: "init", apiKeySource: null }))).toBe(true);
+    expect(meteredInit(JSON.stringify({ type: "system", subtype: "init", apiKeySource: 0 }))).toBe(true);
+    expect(meteredInit(init("None"))).toBe(true);
+  });
+  test("ignores other events and non-JSON lines", () => {
     expect(meteredInit(JSON.stringify({ type: "assistant", apiKeySource: "x" }))).toBe(false);
+    expect(meteredInit(JSON.stringify({ type: "system", subtype: "other" }))).toBe(false);
     expect(meteredInit("not json")).toBe(false);
-    expect(meteredInit(JSON.stringify({ type: "system", subtype: "init" }))).toBe(false);
+    expect(meteredInit("{truncated")).toBe(false);
   });
 });
 

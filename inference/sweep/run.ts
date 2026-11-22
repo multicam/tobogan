@@ -5,12 +5,12 @@
 //   results/<sweep>/runs/<runId>/{transcript.jsonl,stderr.txt,diff.patch,oracle.txt}
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { CELLS, buildArgv, childEnv, routeProblem } from "./cells";
+import { CELLS, buildArgv, childEnv, routeProblem, type Cell } from "./cells";
 import { buildBrief, extractToolCalls, scanEscapes, type TestsMode } from "./oracle";
 import { cacheHitRate, classifyError, meteredInit, parseClaudeStream, parsePiStream } from "./parse";
 import type { PlanItem } from "./plan";
 import type { Outcome, RunRecord } from "./record";
-import { spawnStreaming } from "./spawn";
+import { spawnStreaming, type SpawnResult } from "./spawn";
 import { taskById } from "./tasks";
 import { captureDiff, exportTree, judge, removeTree } from "./tree";
 
@@ -32,6 +32,20 @@ export type RunOpts = {
 // A rate-limit event with this status means the request was refused, not merely warned.
 const REFUSED = "rejected";
 
+type SpawnOpts = Parameters<typeof spawnStreaming>[1];
+
+// Spawn the cell's CLI, parse its stream and check the route. The spawner is a seam for tests.
+export async function runAgent(cell: Cell, brief: string, base: SpawnOpts, spawner: typeof spawnStreaming = spawnStreaming) {
+  const res: SpawnResult = await spawner(buildArgv(cell, brief), {
+    ...base,
+    // A Claude run whose init reports a non-subscription auth source is killed at once.
+    killOn: cell.surface === "claude" ? meteredInit : undefined,
+  });
+  const s = cell.surface === "claude" ? parseClaudeStream(res.lines) : parsePiStream(res.lines);
+  const route = s.turns > 0 || s.model || res.killedEarly ? routeProblem(cell, s) : null;
+  return { res, s, route };
+}
+
 export async function runOne(item: PlanItem, opts: RunOpts): Promise<RunRecord> {
   const task = taskById(item.task)!;
   const cell = CELLS.find((c) => c.id === item.cell)!;
@@ -43,16 +57,13 @@ export async function runOne(item: PlanItem, opts: RunOpts): Promise<RunRecord> 
   const startedAt = new Date().toISOString();
   await exportTree(task, task.parent, tree, opts.tests === "visible", opts.depsDir);
 
-  const res = await spawnStreaming(buildArgv(cell, buildBrief(task, opts.tests)), {
+  const { res, s, route } = await runAgent(cell, buildBrief(task, opts.tests), {
     cwd: tree,
     env: childEnv(process.env),
     timeoutMs: opts.timeoutMs,
     transcriptPath: join(art, "transcript.jsonl"),
     stderrPath: join(art, "stderr.txt"),
-    // A Claude run whose init reports a non-subscription auth source is killed at once.
-    killOn: cell.surface === "claude" ? meteredInit : undefined,
   });
-  const s = cell.surface === "claude" ? parseClaudeStream(res.lines) : parsePiStream(res.lines);
   const diff = await captureDiff(task, tree);
   writeFileSync(join(art, "diff.patch"), diff);
   const escapes = scanEscapes(extractToolCalls(res.lines), opts.forbidden, [`${work}/`, ...(opts.depsDir ? [opts.depsDir] : [])]);
@@ -60,7 +71,6 @@ export async function runOne(item: PlanItem, opts: RunOpts): Promise<RunRecord> 
   // Outcome precedence: wrong route, refusal by quota, CLI error, escape, then the model's result.
   let outcome: Outcome | null = null;
   let reason = "";
-  const route = s.turns > 0 || s.model || res.killedEarly ? routeProblem(cell, s) : null;
   const refused = s.rateLimitEvents.some((e: any) => e?.status === REFUSED);
   if (route) {
     [outcome, reason] = ["route_error", route];

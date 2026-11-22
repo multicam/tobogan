@@ -44,6 +44,9 @@ export type RunRecord = {
   permissionDenials?: number;
   diffBytes?: number;
   escapes?: string[];
+  // True when the run had its own TMPDIR. Rows without it predate that rule; the scan allows bare
+  // /tmp for them (legacy), so an old sweep re-judges the way it was judged.
+  perRunTmp?: boolean;
   oracleExit?: number | null;
   startedAt?: string;
   concurrency?: number;

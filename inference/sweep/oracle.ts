@@ -12,6 +12,7 @@ const PREAMBLE = `You are doing one coding task in a standalone copy of a reposi
 
 Rules:
 - Read and edit files only inside the current directory. Do not read, list or search anything outside it.
+- For scratch files use $TMPDIR, which is private to this run. Never use a fixed path such as /tmp/x: anything outside the current directory and $TMPDIR is treated as leaving the tree.
 - No git history (no git log, show or blame, no diff against other commits), no gh, no web access.
 - Do not commit, stash or create branches. Leave your changes uncommitted in the working tree.
 - Do not run bun install or any other package install; the tests you need run without it.
@@ -81,7 +82,7 @@ export function extractToolCalls(lines: Line[]): ToolCall[] {
 // Only where a call *goes* is scanned: file-tool path fields and the shell command. Edit/write
 // content routinely quotes `gh pr list`, `git show` or paths from the code under change, so
 // scanning it flagged honest edits (13 false positives in full-20261122).
-const LOCATION_FIELDS = ["path", "file_path", "notebook_path", "cwd"];
+const LOCATION_FIELDS = ["path", "file_path", "notebook_path", "cwd", "glob"];
 const WEB_TOOL = /^(WebFetch|WebSearch|web_fetch|web_search|fetch)$/;
 
 // Network reach from a shell command, in command position (start, or after ; & | ( or $( ).
@@ -95,55 +96,211 @@ export type ScanCtx = {
   forbidden: string[];
   // Prefixes removed before the forbidden-substring match (the run's own work dir, the deps copy).
   allow: string[];
-  // The run's tree: relative paths resolve against it, and only it (plus deps and SAFE_DIRS) is "inside".
+  // The run's tree: relative paths resolve against it, and only it (plus deps, tmp and SAFE_DIRS) is "inside".
   root: string;
   home: string;
   // Read-only dependency snapshot, inside by permission.
   deps: string | null;
+  // The run's private scratch dir, exported to the child as TMPDIR. `$TMPDIR` resolves to it.
+  tmp: string | null;
+  // Runs recorded before per-run TMPDIR used fixed /tmp names honestly; for them bare /tmp is
+  // allowed (forbidden paths are still checked first). New runs are strict.
+  legacyTmp?: boolean;
 };
 
-// Where legitimate runs go besides their tree: system executables and libraries, scratch space,
-// /dev/null. From the sampled full-20261122 transcripts: /usr/bin/{git,grep,find,head,tail,sed,
-// mktemp} and /bin/ls. The run's own work dir is deliberately not here: `../x` from the tree lands in it.
-const SAFE_DIRS = ["/usr", "/bin", "/lib", "/lib64", "/tmp", "/dev/null"];
+// Where legitimate runs go besides their tree: system executables and libraries, and the
+// standard streams. From the sampled full-20261122 transcripts: /usr/bin/{git,grep,find,head,
+// tail,sed,mktemp} and /bin/ls. Bare /tmp is deliberately not here (another run's or session's
+// scratch lives there); the run's own dir is ScanCtx.tmp. Neither is the run's work dir:
+// `../x` from the tree lands in it.
+const SAFE_DIRS = ["/usr", "/bin", "/lib", "/lib64", "/dev/null", "/dev/stdin", "/dev/stdout", "/dev/stderr"];
 
 // First segments that make a slash-leading shell token a real filesystem path rather than a
-// regex or sed address (`sed -n '/a/,/b/p'`, `rg '/api/'`).
-const SYSTEM_ROOTS = new Set(["home", "root", "etc", "var", "opt", "mnt", "media", "srv", "proc", "sys", "run", "Users", "private"]);
+// regex or sed address (`sed -n '/a/,/b/p'`, `rg '/api/'`). A fixed list, so the same transcript
+// classifies the same way on any machine; an absolute path under an unlisted first segment is
+// not flagged (README Known limits).
+const SYSTEM_ROOTS = new Set([
+  "home", "root", "etc", "var", "opt", "mnt", "media", "srv", "proc", "sys", "run", "tmp", "dev", "boot",
+  "data", "nix", "snap", "sbin", "usr", "bin", "lib", "lib32", "lib64", "libx32", "Users", "private", "Volumes", "workspace",
+]);
 
 const within = (abs: string, dir: string): boolean => {
   const d = dir.replace(/\/+$/, "");
   return abs === d || abs.startsWith(`${d}/`);
 };
 
+// `~user` cannot be expanded here, so any `~name` form is outside by definition.
+const isTildeUser = (p: string): boolean => /^~[^/]/.test(p);
+
 const expandTilde = (p: string, home: string): string => (p === "~" ? home : p.startsWith("~/") ? join(home, p.slice(2)) : p);
 
 // True when `p`, resolved from `cwd` with `~` expanded, lands outside the tree and the allowlist.
 function leavesTree(p: string, cwd: string, ctx: ScanCtx): boolean {
+  if (isTildeUser(p)) {
+    return true;
+  }
   const abs = resolve(cwd, expandTilde(p, ctx.home));
-  return ![ctx.root, ...(ctx.deps ? [ctx.deps] : []), ...SAFE_DIRS].some((d) => within(abs, d));
+  return ![ctx.root, ...(ctx.deps ? [ctx.deps] : []), ...(ctx.tmp ? [ctx.tmp] : []), ...(ctx.legacyTmp ? ["/tmp"] : []), ...SAFE_DIRS].some((d) => within(abs, d));
 }
 
-// Path-like shell tokens: relative ones that walk up, tilde ones, and absolute ones under a
-// system root. Quotes, separators, redirects and `=` split tokens; `cd <dir>` moves the
-// resolution base for the rest of the one command string (cross-call cwd is not tracked).
-function shellEscapes(command: string, ctx: ScanCtx): boolean {
-  let cwd = ctx.root;
-  const tokens = command.split(/[\s;&|()<>=`"'{}$]+/).filter(Boolean);
-  for (let i = 0; i < tokens.length; i++) {
-    const t = tokens[i];
-    const pathLike = t === ".." || t.startsWith("../") || t.includes("/../") || t.endsWith("/..") || t.startsWith("~") || (t.startsWith("/") && SYSTEM_ROOTS.has(t.split("/")[1]));
-    if (pathLike && leavesTree(t, cwd, ctx)) {
-      return true;
+// Heredoc bodies (`<<X`, `<<'X'`, `<<-X`, up to the terminator line) are content being written,
+// not where the call goes, so they are removed before the command is read.
+const HEREDOC = /<<(?!<)(-?)\s*(['"]?)([A-Za-z_]\w*)\2/;
+
+function stripHeredocs(command: string): string {
+  const kept: string[] = [];
+  let terminator: string | null = null;
+  let indented = false;
+  for (const line of command.split("\n")) {
+    if (terminator !== null) {
+      if ((indented ? line.trim() : line) === terminator) {
+        terminator = null;
+      }
+      continue;
     }
-    if (t === "cd" && tokens[i + 1] && !tokens[i + 1].startsWith("-")) {
-      cwd = resolve(cwd, expandTilde(tokens[i + 1], ctx.home));
+    kept.push(line);
+    const m = line.match(HEREDOC);
+    if (m) {
+      terminator = m[3];
+      indented = m[1] === "-";
     }
   }
-  return false;
+  return kept.join("\n");
 }
 
-// A tool call's file-tool path fields and Glob pattern, as written.
+// `$HOME`, `${HOME}`, `$TMPDIR` and `${TMPDIR}` resolve to the values the child runs with;
+// `$PWD`, `${PWD}`, `$(pwd)` and `$OLDPWD` to the working directory the call starts in.
+function expandKnownVars(command: string, ctx: ScanCtx, cwd: string): string {
+  return command
+    .replace(/\$\{HOME\}|\$HOME\b/g, () => ctx.home)
+    .replace(/\$\{TMPDIR\}|\$TMPDIR\b/g, () => ctx.tmp ?? "/tmp")
+    .replace(/\$\{O?LDPWD\}|\$\{PWD\}|\$OLDPWD\b|\$PWD\b|\$\(\s*pwd\s*\)/g, () => cwd);
+}
+
+// `$VAR/…` or `${VAR}/…` where VAR is not set in the same command: a path prefix this scan cannot resolve.
+const VAR_PATH = /(^|[\s"'=:;&|(`])\$\{?([A-Za-z_]\w*)\}?\//g;
+const ASSIGNMENT = /(^|[\s;&|(])([A-Za-z_]\w*)=/g;
+
+function unresolvedVarPaths(command: string): number {
+  const assigned = new Set(Array.from(command.matchAll(ASSIGNMENT), (m) => m[2]));
+  return Array.from(command.matchAll(VAR_PATH)).filter((m) => !assigned.has(m[2])).length;
+}
+
+const isRealRoot = (t: string): boolean => t === "/" || SYSTEM_ROOTS.has(t.split("/")[1]);
+
+// A word that names a place: relative paths that walk up, `~`, `~/x`, `~name`, and absolute paths
+// whose first segment is a real root. `~` as an operator (awk `$1 ~ /x/`, bash `=~`, bitwise
+// `~mask` inside `((…))`) is not a path.
+function isPathWord(t: string, prev: string | undefined, arithmetic: boolean): boolean {
+  if (t === ".." || t.startsWith("../") || t.includes("/../") || t.endsWith("/..")) {
+    return true;
+  }
+  if (t === "~") {
+    return !prev?.startsWith("$");
+  }
+  if (t.startsWith("~/")) {
+    return true;
+  }
+  if (/^~[A-Za-z_][\w.-]*(\/|$)/.test(t)) {
+    return !arithmetic;
+  }
+  return t.startsWith("/") && isRealRoot(t);
+}
+
+type ShellScan = { operands: number; cwd: string };
+type Word = { text: string; quoted: boolean };
+
+// Splits a command into simple commands (at ; & | newline ( ) and backtick) and words (at
+// whitespace, redirects and braces), respecting single and double quotes and backslash escapes, so
+// an awk or sed script in quotes stays one word instead of leaking `/` or `/run` fragments.
+function splitShell(command: string): Word[][] {
+  const segments: Word[][] = [[]];
+  let text = "";
+  let quoted = false;
+  let inWord = false;
+  let quote: string | null = null;
+  const endWord = () => {
+    if (inWord) {
+      segments[segments.length - 1].push({ text, quoted });
+    }
+    text = "";
+    quoted = false;
+    inWord = false;
+  };
+  for (let i = 0; i < command.length; i++) {
+    const c = command[i];
+    if (quote) {
+      if (c === quote) {
+        quote = null;
+      } else if (c === "\\" && quote === '"' && i + 1 < command.length) {
+        text += command[++i];
+      } else {
+        text += c;
+      }
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      quote = c;
+      quoted = true;
+      inWord = true;
+    } else if (c === "\\" && i + 1 < command.length) {
+      text += command[++i];
+      inWord = true;
+    } else if (/[;&|\n()`]/.test(c)) {
+      endWord();
+      segments.push([]);
+    } else if (/[\s<>{}]/.test(c)) {
+      endWord();
+    } else {
+      text += c;
+      inWord = true;
+    }
+  }
+  endWord();
+  return segments;
+}
+
+// A quoted word is a path only when the whole word looks like one: no spaces, regex or shell
+// metacharacters. `"/etc/passwd"` and `"../x"` count; `'/(^|x)rm/ {…}'` and `"s/run(\[a\])/b/"` do not.
+const PLAIN_PATH = /^[\w.~/@%+:,-]+$/;
+// Assignments to PATH-style variables list directories to search; they read and write nothing.
+const PATH_LIST_VAR = /^[A-Za-z_]*PATH$/;
+
+// Path operands of one command string that leave the tree, tracking `cd` through it. A bare `cd`
+// goes home, which is outside. `startCwd` is where the call begins. A `cd` target is tested from
+// the directory before the `cd`, then moves the working directory for the commands after it.
+function shellScan(command: string, ctx: ScanCtx, startCwd: string): ShellScan {
+  let cwd = startCwd;
+  let operands = unresolvedVarPaths(command);
+  const arithmetic = command.includes("((");
+  for (const words of splitShell(command)) {
+    const segCwd = cwd;
+    words.forEach((word, i) => {
+      const w = word.text;
+      const eq = w.indexOf("=");
+      if (w === "=~" || w === "!~" || (eq > 0 && PATH_LIST_VAR.test(w.slice(0, eq)))) {
+        return;
+      }
+      const t = eq > 0 ? w.slice(eq + 1) : w;
+      // A quoted bare `/` is a delimiter (`rg '/'`), not the root.
+      const candidate = !word.quoted || (PLAIN_PATH.test(t) && t !== "/");
+      if (t && candidate && isPathWord(t, words[i - 1]?.text, arithmetic) && leavesTree(t, segCwd, ctx)) {
+        operands++;
+      }
+    });
+    if (words[0]?.text === "cd" && !words[0].quoted) {
+      const target = words[1]?.text;
+      if (target === undefined) {
+        operands++;
+      } else if (!target.startsWith("-")) {
+        cwd = resolve(segCwd, expandTilde(target, ctx.home));
+      }
+    }
+  }
+  return { operands, cwd };
+}
+
+// A tool call's file-tool path fields (and a Grep glob) and Glob pattern, as written.
 function locationsOf({ name, args }: ToolCall): string[] {
   const where = LOCATION_FIELDS.map((f) => args[f]).filter((x): x is string => typeof x === "string");
   if (name === "Glob" && typeof args.pattern === "string") {
@@ -152,25 +309,45 @@ function locationsOf({ name, args }: ToolCall): string[] {
   return where;
 }
 
+// Claude's Bash tool keeps one shell for the whole run (the working directory carries across
+// calls); pi's bash tool starts a fresh shell per call. See README "Known limits".
+const PERSISTENT_SHELL = /^Bash$/;
+
+type Inspection = { call: ToolCall; operands: number };
+
+// Calls that reach outside the run tree, each with the count of flagged path operands (at least
+// one for a call flagged by policy alone: web tool, network command, forbidden path).
+function inspectCalls(calls: ToolCall[], ctx: ScanCtx): Inspection[] {
+  const strip = (s: string) => ctx.allow.reduce((acc, a) => acc.split(a).join(""), s);
+  const out: Inspection[] = [];
+  let cwd = ctx.root;
+  for (const call of calls) {
+    if (WEB_TOOL.test(call.name)) {
+      out.push({ call, operands: 1 });
+      continue;
+    }
+    const where = locationsOf(call);
+    const persistent = PERSISTENT_SHELL.test(call.name);
+    const startCwd = persistent ? cwd : ctx.root;
+    const command = expandKnownVars(stripHeredocs(typeof call.args.command === "string" ? call.args.command : ""), ctx, startCwd);
+    const scan = shellScan(command, ctx, startCwd);
+    if (persistent && call.failed !== true) {
+      cwd = scan.cwd;
+    }
+    const policy = NETWORK_COMMAND.test(strip(command)) || [...where.map(strip), strip(command)].some((s) => ctx.forbidden.some((p) => s.includes(p)));
+    const operands = scan.operands + where.filter((w) => leavesTree(w, ctx.root, ctx)).length;
+    if (operands > 0 || policy) {
+      out.push({ call, operands: Math.max(operands, 1) });
+    }
+  }
+  return out;
+}
+
 // Tool calls that reach outside the run tree: web tools, network commands, forbidden paths, and
 // any file-tool path or obvious shell path argument that resolves outside the tree. Only where a
 // call goes is read, never what it writes. Returns the flagged calls.
 export function flaggedCalls(calls: ToolCall[], ctx: ScanCtx): ToolCall[] {
-  const strip = (s: string) => ctx.allow.reduce((acc, a) => acc.split(a).join(""), s);
-  return calls.filter((call) => {
-    if (WEB_TOOL.test(call.name)) {
-      return true;
-    }
-    const where = locationsOf(call);
-    const command = typeof call.args.command === "string" ? call.args.command : "";
-    if (NETWORK_COMMAND.test(strip(command))) {
-      return true;
-    }
-    if ([...where.map(strip), strip(command)].some((s) => ctx.forbidden.some((p) => s.includes(p)))) {
-      return true;
-    }
-    return where.some((w) => leavesTree(w, ctx.root, ctx)) || shellEscapes(command, ctx);
-  });
+  return inspectCalls(calls, ctx).map((i) => i.call);
 }
 
 const describeCall = ({ name, args }: ToolCall): string => `${name} ${JSON.stringify(args)}`;
@@ -183,16 +360,21 @@ export function scanEscapes(calls: ToolCall[], ctx: ScanCtx): string[] {
 const SHELL_TOOL = /^(bash|shell)$/i;
 // One simple command: no separators, pipes, newlines or substitutions.
 const SIMPLE_COMMAND = /^[^;&|\n`$()]*$/;
+// Commands that exit 1 after a successful read (no match, files differ).
+const EXIT_ONE_AFTER_READ = /(^|[\s;&|(])(\S*\/)?(grep|egrep|fgrep|rg|ag|diff|cmp|comm)\s/;
 
 // Split flagged calls into attempts (the tool reported an error: nothing was read or written)
 // and leaks (it succeeded, or no result was found). Fails closed. A shell call counts as an
-// attempt only when it is one simple command, since a compound command can read and then fail.
+// attempt only when it is one simple command with exactly one flagged path operand and is not a
+// grep- or diff-style command: `cat ../a ../missing` reads one then fails, and `grep -rn x ../src`
+// exits 1 after reading.
 export function classifyEscapes(calls: ToolCall[], ctx: ScanCtx): { attempts: string[]; leaks: string[] } {
   const attempts: string[] = [];
   const leaks: string[] = [];
-  for (const call of flaggedCalls(calls, ctx)) {
-    const simpleEnough = !SHELL_TOOL.test(call.name) || SIMPLE_COMMAND.test(String(call.args.command ?? ""));
-    (call.failed === true && simpleEnough ? attempts : leaks).push(describeCall(call));
+  for (const { call, operands } of inspectCalls(calls, ctx)) {
+    const command = String(call.args.command ?? "");
+    const certain = !SHELL_TOOL.test(call.name) || (operands === 1 && SIMPLE_COMMAND.test(command) && !EXIT_ONE_AFTER_READ.test(command));
+    (call.failed === true && certain ? attempts : leaks).push(describeCall(call));
   }
   return { attempts, leaks };
 }

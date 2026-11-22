@@ -12,13 +12,13 @@ import { parseClaudeStream } from "./parse";
 import { buildPlan, pending, type Ramp } from "./plan";
 import { latestRuns, PARK_FIVE_HOUR, PARK_SEVEN_DAY, windowsFrom, type Windows } from "./quota";
 import type { RunRecord } from "./record";
-import { rejudge } from "./rejudge";
+import { dryRunSweep, rejudge } from "./rejudge";
 import { runOne, type RunOpts } from "./run";
 import { CLAUDE, doneRunIds, schedule } from "./schedule";
 import { spawnStreaming } from "./spawn";
 import { renderSummary } from "./summary";
 import { TASKS, taskById } from "./tasks";
-import { exportTree, judge, referenceDiff, removeTree, runOracle, sh, snapshotDeps } from "./tree";
+import { depsPath, exportTree, judge, referenceDiff, removeTree, runOracle, sh, snapshotDeps } from "./tree";
 
 const HERE = import.meta.dir;
 const DEFAULT_WORK = join(process.env.XDG_CACHE_HOME ?? join(homedir(), ".cache"), "tobogan-model-sweep");
@@ -44,6 +44,7 @@ const { positionals, values: v } = parseArgs({
     "cooldown-min": { type: "string", default: "15" },
     "retry-excluded": { type: "boolean", default: false },
     "keep-trees": { type: "boolean", default: false },
+    "dry-run": { type: "boolean", default: false },
   },
 });
 
@@ -189,7 +190,7 @@ function stubRecord(item: { runId: string; task: string; cell: string; rep: numb
 // Dependency snapshot and forbidden paths for every run. Every path here holds the merged fix
 // or another run's work: the source repo and all its worktrees, CC transcripts, results, work.
 // ceiling: one source repo per sweep — every task today is qara.
-async function isolation(): Promise<{ depsDir: string | null; forbidden: string[] }> {
+async function isolation(readOnly = false): Promise<{ depsDir: string | null; forbidden: string[] }> {
   const repos = [...new Set(tasks.map((id) => taskById(id)!.repo))];
   if (repos.length !== 1) {
     throw new Error(`one source repo per sweep, got ${repos.join(", ")}`);
@@ -199,8 +200,10 @@ async function isolation(): Promise<{ depsDir: string | null; forbidden: string[
     .split("\n")
     .filter((l) => l.startsWith("worktree "))
     .map((l) => l.slice("worktree ".length));
+  // readOnly (dry run): never copy dependencies; use the existing snapshot if there is one.
+  const existing = depsPath(taskById(tasks[0])!, v["work-dir"]!);
   return {
-    depsDir: await snapshotDeps(taskById(tasks[0])!, v["work-dir"]!),
+    depsDir: readOnly ? (existsSync(existing) ? existing : null) : await snapshotDeps(taskById(tasks[0])!, v["work-dir"]!),
     forbidden: [...new Set([repo, ...worktrees, join(homedir(), ".claude", "projects"), v["results-dir"]!, v["work-dir"]!])],
   };
 }
@@ -252,6 +255,14 @@ async function writeManifest(resultsDir: string, cells: string[], planned: numbe
 async function rejudgeExcluded(): Promise<void> {
   if (!v.sweep) {
     throw new Error("--sweep <id> is required");
+  }
+  if (v["dry-run"]) {
+    // Replay every saved transcript through the current scan; print, write nothing.
+    const { depsDir, forbidden } = await isolation(true);
+    for (const line of dryRunSweep(join(v["results-dir"]!, v.sweep), { workDir: join(v["work-dir"]!, v.sweep), depsDir, forbidden })) {
+      console.log(line);
+    }
+    return;
   }
   const runsPath = join(v["results-dir"]!, v.sweep, "runs.jsonl");
   const targets = latestRuns(readRuns(runsPath)).filter((r) => r.outcome === "invalid_escape" || r.outcome === "escape_attempt");

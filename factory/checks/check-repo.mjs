@@ -15,7 +15,9 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 // Any bold line shaped like a definition; a prefix that is not capital letters is reported, never skipped.
-const DEFINITION = /^\*\*([A-Za-z0-9_-]+-\d+)\.\s/;
+// The period must be followed by a space, the closing `**`, or the end of the line.
+const DEFINITION = /^\*\*([A-Za-z0-9_-]+-\d+)\.(\s|\*\*|$)/;
+const REGISTRY_HEADER = /^\|\s*Prefix\s*\|\s*Track\s*\|\s*Document\s*\|\s*$/;
 const LEGAL_PREFIX = /^[A-Z]+$/;
 const REFERENCE = /\b([A-Z]{2,}-\d+)\b/g;
 const SECRET_FILE = /(^|\/)(\.env(\.[^/]*)?|.*\.pem|.*\.pfx|id_rsa[^/]*|credentials\.json)$/;
@@ -40,7 +42,15 @@ export function checkRepo(root, { trackedFiles } = {}) {
   const registry = new Map();
   if (!existsSync(join(root, "DOCTRINES.md"))) problems.push("DOCTRINES.md is missing.");
   else {
+    // Only rows of the table that opens with the `| Prefix | Track | Document |` header are registry rows.
+    let inRegistry = false;
     read("DOCTRINES.md").split("\n").forEach((line, i) => {
+      if (REGISTRY_HEADER.test(line)) {
+        inRegistry = true;
+        return;
+      }
+      if (!line.startsWith("|")) inRegistry = false;
+      if (!inRegistry) return;
       const m = line.match(/^\|\s*([^|`]+?)\s*\|\s*[^|]*\|\s*`([^`]+)`\s*\|$/);
       if (!m) return;
       for (const prefix of m[1].split(",").map((p) => p.trim()).filter(Boolean)) {

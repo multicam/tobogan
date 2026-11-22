@@ -1,7 +1,7 @@
 // The run.ts wiring of the early kill, driven by a fake spawner; no model is called.
 import { describe, expect, test } from "bun:test";
 import { CELLS } from "./cells";
-import { decideOutcome, runAgent } from "./run";
+import { decideOutcome, runAgent, runEnv, scanCtx } from "./run";
 import type { SpawnResult } from "./spawn";
 
 type SpawnOpts = Parameters<typeof import("./spawn").spawnStreaming>[1];
@@ -28,6 +28,22 @@ function fakeSpawner(stdout: string[]) {
   };
   return { spawner, seen };
 }
+
+describe("per-run scratch dir (row 4)", () => {
+  test("both surfaces get the run's own TMPDIR, whatever the parent had", () => {
+    for (const surface of ["claude", "pi"] as const) {
+      expect(runEnv(surface, "/w/r1/tmp", { PATH: "/usr/bin", TMPDIR: "/tmp" }).TMPDIR).toBe("/w/r1/tmp");
+    }
+  });
+  test("the scan allows exactly that directory", () => {
+    const ctx = scanCtx("/w/r1", "/w/r1/tree", { depsDir: null, forbidden: [] });
+    expect(ctx.tmp).toBe("/w/r1/tmp");
+    expect(ctx.legacyTmp).toBe(false);
+  });
+  test("a legacy row (recorded without perRunTmp) allows bare /tmp", () => {
+    expect(scanCtx("/w/r1", "/w/r1/tree", { depsDir: null, forbidden: [] }, true).legacyTmp).toBe(true);
+  });
+});
 
 describe("runAgent", () => {
   test("a Claude run opening with a metered init is killed early and is a route_error", async () => {

@@ -90,6 +90,11 @@ const WEB_TOOL = /^(WebFetch|WebSearch|web_fetch|web_search|fetch)$/;
 // `git -C <source repo> …` is still caught by the forbidden-path check.
 const NETWORK_COMMAND = /(^|[;&|(]\s*|\$\(\s*)(gh\s+\w|git\s+(fetch|pull|clone)\b|curl\s|wget\s)/m;
 
+// Other CC sessions' scratch (`/tmp/claude-<uid>/…`), forbidden under both the strict and the
+// legacy rule: the legacy rule allows bare /tmp, which would otherwise include it. The user's
+// home needs no entry: `home` is on SYSTEM_ROOTS and outside every allowed directory.
+const ALWAYS_FORBIDDEN = ["/tmp/claude-"];
+
 export type ScanCtx = {
   // Paths that hold the fix or other runs' work, matched as substrings (so `<repo>-worktrees`
   // siblings are caught too).
@@ -145,36 +150,102 @@ function leavesTree(p: string, cwd: string, ctx: ScanCtx): boolean {
 
 // Heredoc bodies (`<<X`, `<<'X'`, `<<-X`, up to the terminator line) are content being written,
 // not where the call goes, so they are removed before the command is read.
-const HEREDOC = /<<(?!<)(-?)\s*(['"]?)([A-Za-z_]\w*)\2/;
+const HEREDOC_AT = /^<<(-?)\s*(['"]?)([A-Za-z_]\w*)\2/;
 
+// The heredoc a line opens, or null. `<<` counts only outside quotes and arithmetic, and not as
+// `<<<` (here-string) or after a digit (`1<<N`), which are a string feed and a shift.
+function heredocOf(line: string): { terminator: string; indented: boolean } | null {
+  let quote: string | null = null;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (quote) {
+      if (c === quote) {
+        quote = null;
+      } else if (c === "\\" && quote === '"') {
+        i++;
+      }
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      quote = c;
+    } else if (c === "\\") {
+      i++;
+    } else if (c === "<" && line[i + 1] === "<") {
+      if (line[i + 2] === "<") {
+        i += 2;
+        continue;
+      }
+      const m = line.slice(i).match(HEREDOC_AT);
+      if (m && !/\d/.test(line[i - 1] ?? "") && !line.slice(0, i).includes("((")) {
+        return { terminator: m[3], indented: m[1] === "-" };
+      }
+      i++;
+    }
+  }
+  return null;
+}
+
+// A heredoc with no terminator line is not a heredoc: its lines are scanned, so a stray `<<`
+// cannot hide the rest of a command (fail closed).
 function stripHeredocs(command: string): string {
   const kept: string[] = [];
-  let terminator: string | null = null;
-  let indented = false;
+  let open: { terminator: string; indented: boolean; body: string[] } | null = null;
   for (const line of command.split("\n")) {
-    if (terminator !== null) {
-      if ((indented ? line.trim() : line) === terminator) {
-        terminator = null;
+    if (open) {
+      open.body.push(line);
+      if ((open.indented ? line.trim() : line) === open.terminator) {
+        open = null;
       }
       continue;
     }
     kept.push(line);
-    const m = line.match(HEREDOC);
-    if (m) {
-      terminator = m[3];
-      indented = m[1] === "-";
+    const h = heredocOf(line);
+    if (h) {
+      open = { ...h, body: [] };
     }
+  }
+  if (open) {
+    kept.push(...open.body);
   }
   return kept.join("\n");
 }
 
+// Applies `outside` to the parts of a command outside single quotes and `inside` to each
+// single-quoted part (quotes included). Shell does not expand `$VAR` between single quotes.
+function mapSingleQuotes(command: string, outside: (s: string) => string, inside: (s: string) => string = (s) => s): string {
+  let out = "";
+  let plain = "";
+  let dq = false;
+  for (let i = 0; i < command.length; i++) {
+    const c = command[i];
+    if (c === "\\" && i + 1 < command.length) {
+      plain += c + command[++i];
+    } else if (c === '"') {
+      dq = !dq;
+      plain += c;
+    } else if (c === "'" && !dq) {
+      const end = command.indexOf("'", i + 1);
+      const stop = end === -1 ? command.length : end + 1;
+      out += outside(plain) + inside(command.slice(i, stop));
+      plain = "";
+      i = stop - 1;
+    } else {
+      plain += c;
+    }
+  }
+  return out + outside(plain);
+}
+
 // `$HOME`, `${HOME}`, `$TMPDIR` and `${TMPDIR}` resolve to the values the child runs with;
-// `$PWD`, `${PWD}`, `$(pwd)` and `$OLDPWD` to the working directory the call starts in.
+// `$PWD`, `${PWD}`, `$(pwd)` and `$OLDPWD` to the working directory the call starts in. Nothing
+// is expanded inside single quotes (`grep '$HOME' f` searches for the text).
 function expandKnownVars(command: string, ctx: ScanCtx, cwd: string): string {
-  return command
-    .replace(/\$\{HOME\}|\$HOME\b/g, () => ctx.home)
-    .replace(/\$\{TMPDIR\}|\$TMPDIR\b/g, () => ctx.tmp ?? "/tmp")
-    .replace(/\$\{O?LDPWD\}|\$\{PWD\}|\$OLDPWD\b|\$PWD\b|\$\(\s*pwd\s*\)/g, () => cwd);
+  return mapSingleQuotes(command, (s) =>
+    s
+      .replace(/\$\{HOME\}|\$HOME\b/g, () => ctx.home)
+      .replace(/\$\{TMPDIR\}|\$TMPDIR\b/g, () => ctx.tmp ?? "/tmp")
+      .replace(/\$\{O?LDPWD\}|\$\{PWD\}|\$OLDPWD\b|\$PWD\b|\$\(\s*pwd\s*\)/g, () => cwd),
+  );
 }
 
 // `$VAR/…` or `${VAR}/…` where VAR is not set in the same command: a path prefix this scan cannot resolve.
@@ -182,11 +253,73 @@ const VAR_PATH = /(^|[\s"'=:;&|(`])\$\{?([A-Za-z_]\w*)\}?\//g;
 const ASSIGNMENT = /(^|[\s;&|(])([A-Za-z_]\w*)=/g;
 
 function unresolvedVarPaths(command: string): number {
-  const assigned = new Set(Array.from(command.matchAll(ASSIGNMENT), (m) => m[2]));
-  return Array.from(command.matchAll(VAR_PATH)).filter((m) => !assigned.has(m[2])).length;
+  const live = mapSingleQuotes(command, (s) => s, () => " ");
+  const assigned = new Set(Array.from(live.matchAll(ASSIGNMENT), (m) => m[2]));
+  return Array.from(live.matchAll(VAR_PATH)).filter((m) => !assigned.has(m[2])).length;
 }
 
-const isRealRoot = (t: string): boolean => t === "/" || SYSTEM_ROOTS.has(t.split("/")[1]);
+// `//etc`, `/./etc` and `/../etc` are `/etc`. A path that normalises to `/` but was not written
+// as `/` (a quoted `//` delimiter) is not the root.
+const isRealRoot = (t: string): boolean => {
+  if (t === "/") {
+    return true;
+  }
+  const n = resolve("/", t);
+  return n !== "/" && SYSTEM_ROOTS.has(n.split("/")[1]);
+};
+
+// Inside `((…))` and `$((…))` a spaced `/` is division, not the root.
+function neutraliseArithmeticSlash(command: string): string {
+  let out = "";
+  let i = 0;
+  while (i < command.length) {
+    if (!command.startsWith("((", i)) {
+      out += command[i++];
+      continue;
+    }
+    let depth = 0;
+    let j = i;
+    for (; j < command.length; j++) {
+      if (command[j] === "(") {
+        depth++;
+      } else if (command[j] === ")" && --depth === 0) {
+        j++;
+        break;
+      }
+    }
+    out += command.slice(i, j).replace(/(\s)\/(?=\s)/g, "$1÷");
+    i = j;
+  }
+  return out;
+}
+
+// Commands whose first non-option argument (or the argument of -e) is a pattern or script, not a
+// file. Options that take a value are skipped so the value is not taken for the pattern.
+const PATTERN_COMMANDS = new Set(["grep", "egrep", "fgrep", "rg", "sed", "awk", "gawk"]);
+const VALUE_OPTIONS = new Set(["-A", "-B", "-C", "-m", "-g", "-t", "-T", "-j", "-M", "-F", "-v", "--glob", "--type", "--max-count", "--include", "--exclude"]);
+
+function patternIndices(words: Word[]): Set<number> {
+  const out = new Set<number>();
+  const cmd = words[0];
+  if (!cmd || cmd.quoted || !PATTERN_COMMANDS.has(cmd.text.split("/").pop() ?? "")) {
+    return out;
+  }
+  // With -e the pattern is given by the option, so every positional word is a file.
+  const viaOption = words.some((w, i) => i > 0 && (w.text === "-e" || w.text === "--regexp"));
+  let positionalTaken = viaOption;
+  for (let i = 1; i < words.length; i++) {
+    const t = words[i].text;
+    if (t === "-e" || t === "--regexp") {
+      out.add(++i);
+    } else if (t.startsWith("-") && t !== "-") {
+      i += VALUE_OPTIONS.has(t) ? 1 : 0;
+    } else if (!positionalTaken) {
+      positionalTaken = true;
+      out.add(i);
+    }
+  }
+  return out;
+}
 
 // A word that names a place: relative paths that walk up, `~`, `~/x`, `~name`, and absolute paths
 // whose first segment is a real root. `~` as an operator (awk `$1 ~ /x/`, bash `=~`, bitwise
@@ -239,6 +372,10 @@ function splitShell(command: string): Word[][] {
       }
       continue;
     }
+    if (c === "$" && command[i + 1] === "'") {
+      // ANSI-C quoting `$'..'`: the `$` only selects the quoting style.
+      continue;
+    }
     if (c === "'" || c === '"') {
       quote = c;
       quoted = true;
@@ -273,12 +410,18 @@ function shellScan(command: string, ctx: ScanCtx, startCwd: string): ShellScan {
   let cwd = startCwd;
   let operands = unresolvedVarPaths(command);
   const arithmetic = command.includes("((");
-  for (const words of splitShell(command)) {
+  for (const words of splitShell(neutraliseArithmeticSlash(command))) {
     const segCwd = cwd;
+    const patterns = patternIndices(words);
+    const isExpr = words[0]?.text === "expr" && !words[0].quoted;
     words.forEach((word, i) => {
       const w = word.text;
       const eq = w.indexOf("=");
       if (w === "=~" || w === "!~" || (eq > 0 && PATH_LIST_VAR.test(w.slice(0, eq)))) {
+        return;
+      }
+      // A quoted pattern or script of grep, rg, sed or awk is text to match, not a place; `expr 4 / 2` divides.
+      if ((word.quoted && patterns.has(i)) || (isExpr && w === "/" && !word.quoted)) {
         return;
       }
       const t = eq > 0 ? w.slice(eq + 1) : w;
@@ -334,7 +477,8 @@ function inspectCalls(calls: ToolCall[], ctx: ScanCtx): Inspection[] {
     if (persistent && call.failed !== true) {
       cwd = scan.cwd;
     }
-    const policy = NETWORK_COMMAND.test(strip(command)) || [...where.map(strip), strip(command)].some((s) => ctx.forbidden.some((p) => s.includes(p)));
+    const forbidden = [...ctx.forbidden, ...ALWAYS_FORBIDDEN];
+    const policy = NETWORK_COMMAND.test(strip(command)) || [...where.map(strip), strip(command)].some((s) => forbidden.some((p) => s.includes(p)));
     const operands = scan.operands + where.filter((w) => leavesTree(w, ctx.root, ctx)).length;
     if (operands > 0 || policy) {
       out.push({ call, operands: Math.max(operands, 1) });

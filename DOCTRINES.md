@@ -92,6 +92,13 @@ A doctrine can carry more than one level, for example "Verified, Tested".
 | NMODE | `noodle` | `noodle/modes.md` |
 | NADAPT | `noodle` | `noodle/adapters-events-runtimes.md` |
 | NVIEW | `noodle` | `noodle/cli-config-observability.md` |
+| PMODE | `pstack` | `pstack/poteto-mode.md` |
+| PPRIN | `pstack` | `pstack/principles.md` |
+| PPAR | `pstack` | `pstack/parallel-and-autonomous.md` |
+| PPROOF | `pstack` | `pstack/verification.md` |
+| PLEARN | `pstack` | `pstack/learning-and-explaining.md` |
+| PWRITE | `pstack` | `pstack/writing-and-code-craft.md` |
+| PPACK | `pstack` | `pstack/packaging-and-automations.md` |
 | HUMANS | `factory` | `factory/humans-md.md` |
 | LADDER | `factory` | `factory/harness-loops-graphs.md` |
 | FLEET | `factory` | `factory/loops-and-graphs.md` |

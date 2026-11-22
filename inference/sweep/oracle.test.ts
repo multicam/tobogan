@@ -371,6 +371,27 @@ describe("scan false positives found in review (row 3)", () => {
     expect(hits("grep -A 3 '../' f")).toBe(0);
     expect(hits("/usr/bin/grep -n '/etc/' f")).toBe(0);
   });
+  test("the operand of any option other than -e is a path, quoted or not (review A)", () => {
+    expect(hits("grep -f '/etc/passwd' x")).toBe(1);
+    expect(hits("grep --file '/etc/passwd' x")).toBe(1);
+    expect(hits("sed -f '/etc/passwd' x")).toBe(1);
+    expect(hits("awk -f '/etc/passwd' x")).toBe(1);
+    expect(hits("rg --ignore-file '/etc/passwd' foo")).toBe(1);
+    expect(hits("grep --file='/etc/passwd' x")).toBe(1);
+    expect(hits("rg --pre '/etc/x' foo")).toBe(1);
+    expect(hits("rg --pre '/etc/x' '../'")).toBe(1);
+  });
+  test("with -f there is no positional pattern: the first operand is a file (review A)", () => {
+    expect(hits("grep -f pats '/etc/passwd'")).toBe(1);
+    expect(hits("sed -f s.sed '/etc/passwd'")).toBe(1);
+    expect(hits("awk -f p.awk '/etc/passwd'")).toBe(1);
+  });
+  test("a pattern after an unrelated option is still a pattern, and mixed-quote words resolve as the shell does (review B)", () => {
+    expect(hits("grep -rn '/home/' .")).toBe(0);
+    expect(hits("rg -g '*.ts' '../' src")).toBe(0);
+    expect(hits("cat 'a'\"$HOME/.ssh/id\"")).toBe(0);
+    expect(hits("cat \"$HOME\"'/.ssh/id'")).toBe(1);
+  });
   test("file operands after the pattern, and non-pattern commands, are still scanned", () => {
     expect(hits("grep -rn x ../src")).toBe(1);
     expect(hits("grep '..' ../f")).toBe(1);

@@ -304,18 +304,28 @@ function patternIndices(words: Word[]): Set<number> {
   if (!cmd || cmd.quoted || !PATTERN_COMMANDS.has(cmd.text.split("/").pop() ?? "")) {
     return out;
   }
-  // With -e the pattern is given by the option, so every positional word is a file.
-  const viaOption = words.some((w, i) => i > 0 && (w.text === "-e" || w.text === "--regexp"));
-  let positionalTaken = viaOption;
+  // Only two positions are patterns: the argument of -e / --regexp / --expression, and the first
+  // positional word. With -e or -f (a pattern or script file) there is no positional pattern, so
+  // every positional word is a file. Every other option's operand is scanned as a path; a word
+  // after an unrecognised long option may be that option's value, so it is not taken as the pattern.
+  const patternOption = (t: string) => t === "-e" || t === "--regexp" || t === "--expression";
+  let positionalTaken = words.some((w, i) => i > 0 && (patternOption(w.text) || w.text === "-f" || w.text === "--file" || w.text.startsWith("--file=")));
+  let prev = "";
   for (let i = 1; i < words.length; i++) {
     const t = words[i].text;
-    if (t === "-e" || t === "--regexp") {
+    if (patternOption(t)) {
       out.add(++i);
+      prev = "";
     } else if (t.startsWith("-") && t !== "-") {
-      i += VALUE_OPTIONS.has(t) ? 1 : 0;
-    } else if (!positionalTaken) {
-      positionalTaken = true;
-      out.add(i);
+      const takesValue = VALUE_OPTIONS.has(t);
+      i += takesValue ? 1 : 0;
+      prev = takesValue ? "" : t;
+    } else {
+      if (!positionalTaken && !(prev.startsWith("--") && !prev.includes("="))) {
+        positionalTaken = true;
+        out.add(i);
+      }
+      prev = "";
     }
   }
   return out;

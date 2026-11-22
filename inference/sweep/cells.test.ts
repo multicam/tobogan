@@ -74,6 +74,15 @@ describe("childEnv for claude cells (allowlist)", () => {
   });
 });
 
+describe("KNOWN LIMIT: the Claude and pi child environments differ (documented gap, not desired behaviour)", () => {
+  const parent = { PATH: "/usr/bin", CLAUDE_CONFIG_DIR: "/c", BUN_INSTALL: "/b", NODE_OPTIONS: "--x", GIT_AUTHOR_NAME: "n", CI: "1", SSH_AUTH_SOCK: "/s" };
+
+  test("the same parent env reaches pi cells but is dropped for Claude cells", () => {
+    expect(childEnv(parent, "claude")).toEqual({ PATH: "/usr/bin" });
+    expect(childEnv(parent, "pi")).toEqual(parent);
+  });
+});
+
 describe("buildArgv", () => {
   const brief = "do the task";
   const cell = (id: string) => CELLS.find((c) => c.id === id)!;

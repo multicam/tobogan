@@ -293,42 +293,87 @@ function neutraliseArithmeticSlash(command: string): string {
   return out;
 }
 
-// Commands whose first non-option argument (or the argument of -e) is a pattern or script, not a
-// file. Options that take a value are skipped so the value is not taken for the pattern.
-const PATTERN_COMMANDS = new Set(["grep", "egrep", "fgrep", "rg", "sed", "awk", "gawk"]);
-const VALUE_OPTIONS = new Set(["-A", "-B", "-C", "-m", "-g", "-t", "-T", "-j", "-M", "-F", "-v", "--glob", "--type", "--max-count", "--include", "--exclude"]);
+// The pattern exemption: a quoted pattern or script of grep, rg, sed or awk is text to match, not a
+// file. It is a narrow exemption for exactly one word: the argument of -e / --regexp /
+// --expression, or else the first positional word. Finding that word must be certain, so each
+// command has a small table of the options it knows (boolean short letters, value short letters,
+// boolean long, value long). On ANY option outside the table the exemption is given up for the
+// whole command and everything is scanned: a false positive at worst, never a miss. The operand of
+// every option other than -e (including -f / --file) is scanned as a path.
+type OptTable = { shortBool: string; shortValue: string; longBool: string[]; longValue: string[] };
+const GREP: OptTable = {
+  shortBool: "EFGPivwxcLlonqsrRHhbTUzaIZy",
+  shortValue: "ABCmdD",
+  longBool: ["--color", "--colour", "--recursive", "--dereference-recursive", "--line-number", "--ignore-case", "--no-ignore-case", "--invert-match", "--word-regexp", "--line-regexp", "--count", "--files-with-matches", "--files-without-match", "--only-matching", "--quiet", "--silent", "--no-messages", "--with-filename", "--no-filename", "--null", "--text", "--extended-regexp", "--fixed-strings", "--basic-regexp", "--perl-regexp"],
+  longValue: ["--after-context", "--before-context", "--context", "--max-count", "--include", "--exclude", "--exclude-dir", "--directories", "--devices"],
+};
+const RG: OptTable = {
+  shortBool: "iSsnNuvwxcHlLoqFza",
+  shortValue: "ABCmgtTjM",
+  longBool: ["--hidden", "--no-ignore", "--ignore-case", "--smart-case", "--line-number", "--no-line-number", "--files-with-matches", "--count", "--fixed-strings", "--word-regexp", "--invert-match", "--only-matching", "--quiet"],
+  longValue: ["--glob", "--type", "--max-count", "--max-depth", "--threads"],
+};
+const SED: OptTable = {
+  shortBool: "nErsuzi",
+  shortValue: "l",
+  longBool: ["--quiet", "--silent", "--regexp-extended", "--separate", "--unbuffered", "--null-data", "--posix", "--debug", "--sandbox"],
+  longValue: ["--line-length"],
+};
+const AWK: OptTable = { shortBool: "", shortValue: "Fv", longBool: ["--posix", "--traditional", "--characters-as-bytes"], longValue: [] };
+const OPTION_TABLES: Record<string, OptTable> = { grep: GREP, egrep: GREP, fgrep: GREP, rg: RG, sed: SED, awk: AWK, gawk: AWK };
 
 function patternIndices(words: Word[]): Set<number> {
-  const out = new Set<number>();
+  const none = new Set<number>();
   const cmd = words[0];
-  if (!cmd || cmd.quoted || !PATTERN_COMMANDS.has(cmd.text.split("/").pop() ?? "")) {
-    return out;
+  const table = cmd && !cmd.quoted ? OPTION_TABLES[cmd.text.split("/").pop() ?? ""] : undefined;
+  if (!table) {
+    return none;
   }
-  // Only two positions are patterns: the argument of -e / --regexp / --expression, and the first
-  // positional word. With -e or -f (a pattern or script file) there is no positional pattern, so
-  // every positional word is a file. Every other option's operand is scanned as a path; a word
-  // after an unrecognised long option may be that option's value, so it is not taken as the pattern.
-  const patternOption = (t: string) => t === "-e" || t === "--regexp" || t === "--expression";
-  let positionalTaken = words.some((w, i) => i > 0 && (patternOption(w.text) || w.text === "-f" || w.text === "--file" || w.text.startsWith("--file=")));
-  let prev = "";
+  const exempt = new Set<number>();
+  let first = -1;
+  let filePatterns = false;
   for (let i = 1; i < words.length; i++) {
     const t = words[i].text;
-    if (patternOption(t)) {
-      out.add(++i);
-      prev = "";
-    } else if (t.startsWith("-") && t !== "-") {
-      const takesValue = VALUE_OPTIONS.has(t);
-      i += takesValue ? 1 : 0;
-      prev = takesValue ? "" : t;
-    } else {
-      if (!positionalTaken && !(prev.startsWith("--") && !prev.includes("="))) {
-        positionalTaken = true;
-        out.add(i);
+    if (t === "--") {
+      first = first === -1 ? i + 1 : first;
+      break;
+    }
+    if (t.startsWith("--")) {
+      const name = t.split("=")[0];
+      if (name === "--regexp" || name === "--expression") {
+        filePatterns = true;
+        if (!t.includes("=")) {
+          exempt.add(++i);
+        }
+      } else if (name === "--file") {
+        filePatterns = true;
+        i += t.includes("=") ? 0 : 1;
+      } else if (table.longValue.includes(name)) {
+        i += t.includes("=") ? 0 : 1;
+      } else if (!table.longBool.includes(name)) {
+        return none;
       }
-      prev = "";
+    } else if (t.startsWith("-") && t !== "-") {
+      const letters = t.slice(1);
+      if (letters === "e") {
+        filePatterns = true;
+        exempt.add(++i);
+      } else if (letters === "f") {
+        filePatterns = true;
+        i++;
+      } else if (letters.length === 1 && table.shortValue.includes(letters)) {
+        i++;
+      } else if (![...letters].every((c) => table.shortBool.includes(c))) {
+        return none;
+      }
+    } else if (first === -1) {
+      first = i;
     }
   }
-  return out;
+  if (!filePatterns && first !== -1) {
+    exempt.add(first);
+  }
+  return exempt;
 }
 
 // A word that names a place: relative paths that walk up, `~`, `~/x`, `~name`, and absolute paths

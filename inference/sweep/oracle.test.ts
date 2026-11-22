@@ -386,6 +386,31 @@ describe("scan false positives found in review (row 3)", () => {
     expect(hits("sed -f s.sed '/etc/passwd'")).toBe(1);
     expect(hits("awk -f p.awk '/etc/passwd'")).toBe(1);
   });
+  test("a quoted file after the pattern is flagged whatever options precede the pattern (second review A)", () => {
+    expect(hits("grep -- pat '/etc/passwd'")).toBe(1);
+    expect(hits("grep -i -- pat '/etc/passwd'")).toBe(1);
+    expect(hits("grep --color pat '/etc/passwd'")).toBe(1);
+    expect(hits("grep --recursive pat '/etc'")).toBe(1);
+    expect(hits("grep --line-number pat '/etc/passwd'")).toBe(1);
+    expect(hits("rg --hidden pat '/etc'")).toBe(1);
+    expect(hits("sed --quiet '1p' '/etc/passwd'")).toBe(1);
+    expect(hits("awk --posix '{print}' '/etc/passwd'")).toBe(1);
+    expect(hits("grep pat -- '/etc/passwd'")).toBe(1);
+    expect(hits("grep --unknown-opt 'x' '/etc/passwd'")).toBe(1);
+  });
+  test("an unknown option gives up the pattern exemption: a false positive, never a miss", () => {
+    expect(hits("grep --unknown-opt '/home/' .")).toBe(1);
+    expect(hits("grep -Q '/home/' .")).toBe(1);
+  });
+  test("known options keep the exemption", () => {
+    expect(hits("grep -rn '/home/' .")).toBe(0);
+    expect(hits("rg -g '*.ts' '../' src")).toBe(0);
+    expect(hits("grep -e '/etc/passwd' f")).toBe(0);
+    expect(hits("sed 's#/etc/#X#' f")).toBe(0);
+    expect(hits("awk '/\\/etc\\//' f")).toBe(0);
+    expect(hits("grep -- '/etc/' f")).toBe(0);
+    expect(hits("grep --color=auto -i '../' f")).toBe(0);
+  });
   test("a pattern after an unrelated option is still a pattern, and mixed-quote words resolve as the shell does (review B)", () => {
     expect(hits("grep -rn '/home/' .")).toBe(0);
     expect(hits("rg -g '*.ts' '../' src")).toBe(0);

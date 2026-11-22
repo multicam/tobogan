@@ -12,7 +12,7 @@
 - This host (jmbox), inspected read-only on 2026-11-22.
 - Primary documentation pages, fetched on 2026-11-22 and listed under Sources.
 
-"Verified" below means the claim was checked on a fetched primary page. Each mapping from GPU serving to hosted agents is this document's reasoning, so it is Unverified until tested. Nothing here is Tested.
+"Verified" below means the claim was checked on a fetched primary page, or read in local source (the skill's repository, Qara, csf, this host). "Verified (paraphrase)" marks a claim that rests on a fetch tool's summary of a page, not on the page text. Each mapping from GPU serving to hosted agents is this document's reasoning, so it is Unverified until tested. The 2026-11-22 model sweep (`inference/sweep/`) is the only Tested material, and it is cited where it applies (INFER-4 to INFER-7).
 
 ## Doctrines
 
@@ -62,7 +62,7 @@ The prose is careful. The scripts enforce less than the prose requires.
 - Evidence:
   - The skill's rules: `SKILL.md:80-85`, `100-101`, `52`, `142-150`; `references/methodology.md:42` (a 117 tok/s "record" was a model looping).
   - `performance-goal`'s contract already names `aa-dispersion`, `interleaved-ab-calibration`, `derived-noise-margin` and `max-consecutive-no-progress` (`qara/.claude/skills/performance-goal/decision-contract.json`).
-  - The 2026-11-12 qara sweep: 45/45 runs passed at every model and effort, and sonnet at low effort was the cheapest per finished task (`qara/.claude/context/delegation-roster-and-tiers.md:102`). "Price per token is not price per task" (`delegation-roster-and-tiers.md:54`).
+  - The 2026-11-12 qara sweep: 45/45 runs passed at every model and effort (5 small-to-medium tasks at n=5), and sonnet at low effort was the cheapest per finished task (`qara/.claude/context/delegation-roster-and-tiers.md:102`). "Price per token is not price per task" (`delegation-roster-and-tiers.md:54`).
 - Basis: Unverified (the mapping); Verified (the Qara facts, read in source)
 - Code: Gap: no hosted-agent reference in `performance-goal`.
 
@@ -78,8 +78,9 @@ The analogy breaks in one place. Speculative decoding is lossless: the target mo
   - The skill's lessons: `references/levers.md:25-36`; `references/methodology.md:29-31` (a 7-token draft accepted 3.26 tokens against 2.85, yet ran 11–14% slower).
   - Exactness: the target "still verifies against the full vocabulary, so output is unchanged" (`references/levers.md:26`).
   - Qara's ladder: `self-check → haiku → sonnet → opus` (`qara/.claude/context/delegation-roster-and-tiers.md:93-111`). The first lever is a self-check the agent must pass, such as a test or build (`delegation-roster-and-tiers.md:97-100`). That is the nearest thing to an exact verifier.
-- Basis: Unverified (the mapping); Verified (the repository and Qara text)
-- Code: Gap: acceptance rate per rung is not recorded. The `[ESCALATED]` marker counts only opus rungs (`delegation-roster-and-tiers.md:86`).
+  - Sweep, 2026-11-22 (`inference/sweep/results-full-20261122.md`; hidden tests, 5 tasks, n=5, effort/thinking medium): GLM (`glm-5.3-flash`, Coding Plan) and Codex (`gpt-6.2-sol` via pi) each passed 25/25. Pass rate is at ceiling, so it does not discriminate between them; cost does. GLM used about 4.6x Codex's tokens per pass (1,221k against 266k, mean), and up to 10x on the larger task q1543 (per-task figure from the raw runs, not in the committed summary). Its list-price cost per pass was lower ($0.053 against $0.128), and it was much slower (median wall 249 s against 68 s). List-price dollars are pi's estimate, not plan credits. The Claude cells have 1 to 2 runs each (haiku 2, sonnet 1, opus 1) because the quota guard parked the rest, so no Claude claim is made.
+- Basis: Tested (the sweep, for GLM and Codex only); Unverified (the mapping); Verified (the repository and Qara text)
+- Code: `inference/sweep/` measures first-attempt acceptance once. Gap: acceptance rate per rung is not recorded permanently. The `[ESCALATED]` marker counts only opus rungs (`delegation-roster-and-tiers.md:86`).
 
 **INFER-5. Keep one stable prompt prefix per worker kind, confirm cache hits from usage, and warm one request before a fan-out.**
 - **Stable prefix:** a cached prefix must match exactly. Put the stable brief, tools and instructions first and the variable part last.
@@ -87,14 +88,15 @@ The analogy breaks in one place. Speculative decoding is lossless: the target mo
 - **Warm first:** on Anthropic's API, a cache entry becomes usable only once the first response starts. Parallel requests sent at the same moment all miss.
 - **Keep it warm:** Anthropic's default cache lives 5 minutes, refreshed on each hit. OpenAI keeps entries for at least 30 minutes on GPT-5.6 and later.
 - Why: this is the hosted twin of the skill's first lever, persisting JIT and graph caches across restarts (`SKILL.md:116`, `references/levers.md:12-14`). It is cheap to try.
-- Evidence (the caching pages were read through a fetch tool's summary, so these are paraphrases):
+- Evidence (the caching pages were read through a fetch tool's summary, so the page claims below are paraphrases):
+  - Sweep, 2026-11-22 (`inference/sweep/results-full-20261122.md`): median cache-read share of tokens was 0.93 for GLM and 0.83 for Codex, both through pi. These are measured on those two routes only; Claude cells have 1 to 2 runs and are not claimed.
   - Anthropic prompt caching: a 5-minute default lifetime, refreshed free on each use. Segments must be 100% identical. For concurrent requests, a cache entry becomes available only after the first response starts. The minimum is 512 tokens on Haiku 5.5, Sonnet 5.5 and Opus 5.5.
   - Anthropic rate limits: cache reads do not count toward ITPM or ramp limits.
   - OpenAI prompt caching: on by default, and the whole rendered prefix must match. The page advises about 15 requests a minute per `prompt_cache_key`, above which traffic can overflow to other machines. On GPT-5.6 and later the key is optional.
   - Qara already measures this. The inlined core text is served from cache 96.6% of the time, and a weekly `cache_hit_rate` below about 0.85 is a watched signal (`qara/decisions/2026-10-21-core-inline-delivered-under-hook-output-cap.md:14`, `:84`).
   - csf staggers dispatches 60 s apart by default (`csf-build/src/drain/drain-config/drain-paths.ts:72-80`). That spacing would let a first worker warm a shared prefix, if workers shared one. Whether they do was not checked.
-- Basis: Verified (metered API pages only); Unverified (whether the same behaviour holds on the subscription surfaces: Claude Code on a subscription, Codex through `openai-codex`, the GLM Coding Plan, Gemini CLI)
-- Code: Gap: no per-worker-kind cache-hit measurement for pi Runs or csf drain workers.
+- Basis: Verified (paraphrase) (metered API pages only); Tested (cache hit on GLM and Codex via pi, one sweep); Unverified (whether the documented lifetimes hold on the subscription surfaces: Claude Code on a subscription, Codex through `openai-codex`, the GLM Coding Plan, Gemini CLI)
+- Code: `inference/sweep/` records cache hit per run. Gap: no per-worker-kind cache-hit measurement for csf drain workers.
 
 **INFER-6. Shrink the context before counting on caching.**
 For an agent, "prefill" is the context it reloads on every turn, and "decode" is what it writes. Context reload dominates. Write the ceiling as an arithmetic budget first: tokens per task ≈ the sum over turns of context size, plus output. Then move the big term.
@@ -102,7 +104,8 @@ For an agent, "prefill" is the context it reloads on every turn, and "decode" is
 - Evidence:
   - The Codex audit: 2.35B tokens a week, 97.6% of input being cache re-reads, `tokens/week ≈ Σ_turns(context_size)`; "Prompt caching was already at 97.6%: discounting, not shrinking." The fix was the auto-compact limit, 900000 → 175000, estimated at 40–55% (`qara/decisions/2026-09-20-codex-token-burn-remediation.md:20-24`, `:33-35`).
   - The skill's "profile by stage first" rule (`references/levers.md:73`) maps onto measuring per turn and per context bucket, which `qara/scripts/codex-token-audit.ts` already does for Codex.
-- Basis: Verified (Qara's measured audit); Unverified (the mapping, and whether the same shape holds for Claude subagents and GLM pi Runs)
+  - Sweep, 2026-11-22: GLM's token use per pass was 4.6x Codex's with the same 25/25 pass rate, and cache-read share was 0.93 and 0.83 (`inference/sweep/results-full-20261122.md`). Most tokens are replayed context, so token count tracks turns and context size more than output.
+- Basis: Verified (Qara's measured audit); Tested (token and cache figures, GLM and Codex only); Unverified (the mapping, and whether the same shape holds for Claude subagents)
 - Code: `qara/scripts/codex-token-audit.ts` (Codex only). Gap: no matching audit for Claude subagents, pi Runs or csf drain workers.
 
 **INFER-7. Find the cap that actually binds before adding parallel workers, and ramp up rather than burst.**
@@ -118,7 +121,8 @@ The skill warns that the advertised capacity is often not the binding one: for h
   - Quotas: the GLM Coding Plan is metered in plan credits and quotas (`qara/decisions/2026-09-30-zai-coding-plan-subscription.md:16`). glm-5.3-flash costs 0.4× off-peak and 1.2× at peak (`qara/.claude/context/model-policy.md:69`). That makes bulk GLM work cheaper off-peak.
   - Rate-limit handling today is recovery, not prevention. Qara's StopFailure hook saves a checkpoint and logs the failure (`qara/hooks-rs/src/hooks/stop_failure.rs:1-3`; a `rate_limit` stop is tested in `stop_failure_tests.rs:20`, `:84`). csf's pi login preflight treats a 429 as a transit failure (`csf-build/src/runner/pi-login-preflight.ts:36`). Weekly Codex rate-limit peaks are reported by `codex-token-audit.ts`.
   - Anthropic ramp limits and cache-aware ITPM: the Rate limits page (metered API).
-- Basis: Verified (Qara and csf source; Anthropic's metered API page); Unverified (the subscription quota windows for Claude, Codex and Gemini)
+  - Sweep, 2026-11-22: the binding limit was the Claude five-hour window, which reached 0.98, not any provider rate limit; the quota guard parked Claude after one run per cell and no pi run (GLM, Codex) was rate-limited (excluded count 0 in `inference/sweep/results-full-20261122.md`). The 0.98 reading comes from the run's quota log, which is raw data and not committed.
+- Basis: Verified (Qara and csf source); Verified (paraphrase) (Anthropic's metered API page); Tested (the Claude window as the binding cap, one sweep); Unverified (the subscription quota windows for Claude, Codex and Gemini)
 - Code: Gap: no quota-aware scheduling in csf, and no measure of drain throughput per wall-clock hour.
 
 **INFER-8. Measure spawn overhead as the hosted TTFT, before tuning it.**
@@ -183,12 +187,26 @@ The options, with the conditions for each:
 
 ## Open
 
-- **Which adoption option** (INFER-10): adapt into `performance-goal` plus the delegation note, reference only, or nothing. Owner: the owner.
-- **Subscription limits** (INFER-5, INFER-7): whether prompt caching, its lifetime and ramp behaviour hold on Claude Code subscriptions, Codex through `openai-codex`, the GLM Coding Plan and Gemini CLI, and what each quota window is. The fetched pages cover the metered APIs only. Owner: the owner, or a measurement run.
-- **What csf drains actually run on** (INFER-9): confirm the provider and model a drain worker resolves to. Dispatch never passes `--model` (`csf-build/src/engine/stage-dispatch-pane.ts:266-271`), so the answer is whichever pi settings the pane loads. No model ID was found in cub's run records. Owner: the owner, or a csf-build reading.
+Rulings by the owner in the tobogan session, 2026-11-22, each Basis Decision:
+
+- **Ruled: adoption option** (INFER-10, Q1). Adapt the method into a Qara reference under `performance-goal`, taking no files and installing nothing. Done in Qara PR #1960, merge head 2fdde680. Basis: Decision.
+- **Ruled: timing** (Q2). Write it now. Basis: Decision.
+- **Ruled: draft acceptance per rung** (INFER-4, Q3). Measure first-attempt acceptance once, with no permanent logging. Basis: Decision.
+- **Ruled: sweep shape** (Q4). Five cells (Claude Haiku, Sonnet and Opus on subscription, GLM `glm-5.3-flash` on the Coding Plan, Codex `gpt-6.2-sol` via pi) on 5 tasks at n=5. Basis: Decision.
+- **Ruled: drain metrics** (INFER-7, INFER-8, Q5). Suggest them to the Orchestrator. The Orchestrator adopted measure-first but deferred it to a low-priority csf-build debt row behind cub WO-212. Basis: Decision.
+- **Ruled: run timing** (Q6). Run now. The Claude quota guard parked Claude after one run per cell. 70 runs (sonnet 23, opus 24, haiku 23) are deferred until JM approves after the Thu 26 Nov 11:00Z reset. Basis: Decision.
+
+Answered, relayed:
+
+- **What csf drains actually run on** (INFER-9). The Orchestrator reports that drain pi panes take their model from the global `~/.pi/agent/settings.json` (gpt-6.2-sol, medium thinking), since `bsvc run pi` passes no `--model`. Basis: Unverified (relayed by the Orchestrator, not checked here). Which file a pane actually loads stays in the Orchestrator's debt row.
+
+Still open:
+
+- **Claude wave** (INFER-4): the 70 deferred Claude runs, after JM's approval past the quota reset. Until then there are no Claude findings beyond 1 to 2 runs per cell. Owner: JM.
+- **A discriminating wave** (INFER-4): pass rate was at ceiling, so harder tasks are needed before pass rate can rank models. Owner: the owner.
+- **Subscription limits** (INFER-5, INFER-7): whether prompt caching, its lifetime and ramp behaviour hold on Claude Code subscriptions, Codex through `openai-codex`, the GLM Coding Plan and Gemini CLI, and what each quota window is. The fetched pages cover the metered APIs only. The sweep measured cache-read share on GLM and Codex but not lifetimes. Owner: the owner, or a measurement run.
 - **Whether csf workers share a cacheable prefix** (INFER-5): if they do, the 60 s stagger already warms it. Test with cache fields from one drain.
-- **Spawn overhead and wall-clock drain throughput** (INFER-7, INFER-8): neither is measured. Decide whether csf-build should record them. Owner: the owner.
-- **Draft acceptance per rung** (INFER-4): whether to record how often haiku and sonnet first passes are accepted, so the ladder can be judged by cost per accepted result. Owner: the owner.
+- **Spawn overhead and wall-clock drain throughput** (INFER-7, INFER-8): neither is measured in csf. They sit in the Orchestrator's deferred csf-build debt row.
 
 ## Reference
 
@@ -199,6 +217,8 @@ How work is routed to models today, as read on 2026-11-22:
 - **Gemini:** the `gemini-researcher` fallback, through `qara/.claude/hooks/lib/llm/gemini-call.ts`.
 - **csf drain workers:** `bsvc run pi` in a pane, with pi's default route (`csf-build/src/engine/stage-dispatch-pane.ts:178`, `:266-271`). At most 5 at once, 60 s apart (INFER-7).
 - **Local:** Ollama for scans, judges and fallbacks (INFER-9).
+
+Other notes:
 
 - The repository's history is one commit, `fda968e` on 2026-11-16, by one author. Stars and forks were not re-checked.
 - Files read: `README.md`, `PROMPT.md`, `LICENSE`, `.gitignore`, and under `skills/inference-optimisation/`: `SKILL.md`, `references/{ceilings,gotchas,levers,methodology,publishing}.md`, `scripts/{bench.py,ceiling.py,mem.sh,queue.sh}`, `examples/{ceiling-ornith-b390,config-existing-server,config-sglang-docker}.json`. There are no hooks, settings or `.claude` files.

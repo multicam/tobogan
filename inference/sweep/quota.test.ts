@@ -13,6 +13,16 @@ describe("windowsFrom", () => {
   test("falls back to the top-level window when unifiedWindows is absent", () => {
     expect(windowsFrom([{ rateLimitType: "seven_day", utilization: 0.97 }])).toEqual({ fiveHour: null, sevenDay: 0.97 });
   });
+  test("reads the old one-window-per-event shape across events", () => {
+    const five = { rateLimitType: "five_hour", utilization: 0.99 };
+    const week = { rateLimitType: "seven_day", utilization: 0.4 };
+    expect(windowsFrom([five, week])).toEqual({ fiveHour: 0.99, sevenDay: 0.4 });
+  });
+  test("a last event missing a window keeps the latest earlier reading of that window", () => {
+    const partial = { status: "allowed", unifiedWindows: { seven_day: { utilization: 0.5 } } };
+    expect(windowsFrom([ev(0.99, 0.4), partial])).toEqual({ fiveHour: 0.99, sevenDay: 0.5 });
+    expect(windowsFrom([ev(0.99, 0.4), { status: "allowed" }])).toEqual({ fiveHour: 0.99, sevenDay: 0.4 });
+  });
   test("is null without events", () => {
     expect(windowsFrom([])).toBeNull();
   });

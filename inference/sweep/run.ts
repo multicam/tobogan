@@ -7,7 +7,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { CELLS, buildArgv, childEnv, routeProblem } from "./cells";
 import { buildBrief, extractToolCalls, scanEscapes, type TestsMode } from "./oracle";
-import { cacheHitRate, classifyError, parseClaudeStream, parsePiStream } from "./parse";
+import { cacheHitRate, classifyError, meteredInit, parseClaudeStream, parsePiStream } from "./parse";
 import type { PlanItem } from "./plan";
 import type { Outcome, RunRecord } from "./record";
 import { spawnStreaming } from "./spawn";
@@ -49,6 +49,8 @@ export async function runOne(item: PlanItem, opts: RunOpts): Promise<RunRecord> 
     timeoutMs: opts.timeoutMs,
     transcriptPath: join(art, "transcript.jsonl"),
     stderrPath: join(art, "stderr.txt"),
+    // A Claude run whose init reports a non-subscription auth source is killed at once.
+    killOn: cell.surface === "claude" ? meteredInit : undefined,
   });
   const s = cell.surface === "claude" ? parseClaudeStream(res.lines) : parsePiStream(res.lines);
   const diff = await captureDiff(task, tree);
@@ -58,7 +60,7 @@ export async function runOne(item: PlanItem, opts: RunOpts): Promise<RunRecord> 
   // Outcome precedence: wrong route, refusal by quota, CLI error, escape, then the model's result.
   let outcome: Outcome | null = null;
   let reason = "";
-  const route = s.turns > 0 || s.model ? routeProblem(cell, s) : null;
+  const route = s.turns > 0 || s.model || res.killedEarly ? routeProblem(cell, s) : null;
   const refused = s.rateLimitEvents.some((e: any) => e?.status === REFUSED);
   if (route) {
     [outcome, reason] = ["route_error", route];

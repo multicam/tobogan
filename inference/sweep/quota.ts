@@ -12,18 +12,25 @@ export const PARK_FIVE_HOUR = 0.98;
 const util = (x: unknown): number | null => (typeof x === "number" && Number.isFinite(x) ? x : null);
 
 export function windowsFrom(events: unknown[]): Windows | null {
-  const last = events.at(-1) as Record<string, any> | undefined;
-  if (!last) {
+  if (events.length === 0) {
     return null;
   }
-  if (last.unifiedWindows) {
-    return { fiveHour: util(last.unifiedWindows.five_hour?.utilization), sevenDay: util(last.unifiedWindows.seven_day?.utilization) };
+  // Keep the latest non-null reading per window across all events: an event that omits a window
+  // must not blank it, or the guard would fail open.
+  const w: Windows = { fiveHour: null, sevenDay: null };
+  for (const e of events as Record<string, any>[]) {
+    if (e?.unifiedWindows) {
+      w.fiveHour = util(e.unifiedWindows.five_hour?.utilization) ?? w.fiveHour;
+      w.sevenDay = util(e.unifiedWindows.seven_day?.utilization) ?? w.sevenDay;
+    }
+    // Older event shape: one window per event, named by rateLimitType.
+    if (e?.rateLimitType === "five_hour") {
+      w.fiveHour = util(e.utilization) ?? w.fiveHour;
+    } else if (e?.rateLimitType === "seven_day") {
+      w.sevenDay = util(e.utilization) ?? w.sevenDay;
+    }
   }
-  // Older event shape: one window per event, named by rateLimitType.
-  return {
-    fiveHour: last.rateLimitType === "five_hour" ? util(last.utilization) : null,
-    sevenDay: last.rateLimitType === "seven_day" ? util(last.utilization) : null,
-  };
+  return w;
 }
 
 export function parkReason(w: Windows): string | null {

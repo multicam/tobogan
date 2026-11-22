@@ -4,7 +4,7 @@ import { describe, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { dryRunSweep } from "./rejudge";
+import { dryRunSweep, rejudgeTargets } from "./rejudge";
 
 const opts = { workDir: "/w/work", depsDir: null, forbidden: [] as string[] };
 
@@ -53,6 +53,26 @@ function snapshot(dir: string): string {
   walk(dir);
   return out.join("\n");
 }
+
+describe("rejudgeTargets", () => {
+  test("targets excluded rows and counted rows the current scan now flags; leaves clean and transcript-less rows", () => {
+    const { root, sweep } = fixture();
+    try {
+      rmSync(join(sweep, "runs", "r-clean"), { recursive: true });
+      expect(rejudgeTargets(sweep, opts).map((r) => r.runId)).toEqual(["r-old-flag", "r-new-flag"]);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+  test("a counted row that stays clean is not a target", () => {
+    const { root, sweep } = fixture();
+    try {
+      expect(rejudgeTargets(sweep, opts).map((r) => r.runId)).not.toContain("r-clean");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+});
 
 describe("dryRunSweep", () => {
   test("prints old and new outcomes per run, flagging the ones that change", () => {

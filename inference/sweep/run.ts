@@ -50,7 +50,15 @@ export async function runAgent(cell: Cell, brief: string, base: SpawnOpts, spawn
 // Escape-scan context for one run: its tree is the only inside; its work dir and the deps copy
 // are stripped from the forbidden-substring check.
 export function scanCtx(work: string, tree: string, opts: Pick<RunOpts, "depsDir" | "forbidden">): ScanCtx {
-  return { forbidden: opts.forbidden, allow: [`${work}/`, ...(opts.depsDir ? [opts.depsDir] : [])], root: tree, home: homedir(), deps: opts.depsDir };
+  return { forbidden: opts.forbidden, allow: [`${work}/`, ...(opts.depsDir ? [opts.depsDir] : [])], root: tree, home: homedir(), deps: opts.depsDir, tmp: runTmp(work) };
+}
+
+// Each run's private scratch dir, so no run reads another's (or another session's) files in /tmp.
+const runTmp = (work: string): string => join(work, "tmp");
+
+// The child's environment for one run: the surface's filtered env, with TMPDIR pointing at the run's own dir.
+export function runEnv(surface: Cell["surface"], tmp: string, base: Record<string, string | undefined> = process.env): Record<string, string> {
+  return { ...childEnv(base, surface), TMPDIR: tmp };
 }
 
 // Outcome precedence: wrong route, refusal by quota, timeout, CLI error, escape; null when the
@@ -97,10 +105,11 @@ export async function runOne(item: PlanItem, opts: RunOpts): Promise<RunRecord> 
   const tree = join(work, "tree");
   const startedAt = new Date().toISOString();
   await exportTree(task, task.parent, tree, opts.tests === "visible", opts.depsDir);
+  mkdirSync(runTmp(work), { recursive: true });
 
   const { res, s, route } = await runAgent(cell, buildBrief(task, opts.tests), {
     cwd: tree,
-    env: childEnv(process.env, cell.surface),
+    env: runEnv(cell.surface, runTmp(work)),
     timeoutMs: opts.timeoutMs,
     transcriptPath: join(art, "transcript.jsonl"),
     stderrPath: join(art, "stderr.txt"),

@@ -35,7 +35,9 @@ const call = (name: string, args: Record<string, unknown>) => ({ name, args });
 describe("scanEscapes", () => {
   const forbidden = ["/home/u/qara", "/home/u/.cache/sweep"];
   const own = ["/home/u/.cache/sweep/full/q1468__glm__r1/"];
-  const ctx = { forbidden, allow: [...own, "/home/u/.cache/sweep/deps"], root: "/home/u/.cache/sweep/full/q1468__glm__r1/tree", home: "/home/u", deps: "/home/u/.cache/sweep/deps" };
+  const tmp = "/home/u/.cache/sweep/full/q1468__glm__r1/tmp";
+  const ctx = { forbidden, allow: [...own, "/home/u/.cache/sweep/deps"], root: "/home/u/.cache/sweep/full/q1468__glm__r1/tree", home: "/home/u", deps: "/home/u/.cache/sweep/deps", tmp };
+  const flaggedCount = (...commands: string[]) => scanEscapes(commands.map((command) => call("bash", { command })), ctx).length;
 
   test("flags reads of the source repo, gh run as a command, network git and web tools", () => {
     const hits = scanEscapes(
@@ -135,12 +137,46 @@ describe("scanEscapes", () => {
         call("bash", { command: "sed -n '/a/,/b/p' scripts/x.ts" }),
         call("bash", { command: "rg '/api/' scripts" }),
         call("bash", { command: "git diff HEAD~1 main..feature -- x" }),
-        call("bash", { command: "f=$(/usr/bin/mktemp -d /tmp/x.XXXX) && echo ok > /tmp/out.txt" }),
+        call("bash", { command: "f=$(/usr/bin/mktemp -d $TMPDIR/x.XXXX) && echo ok > $TMPDIR/out.txt" }),
         call("bash", { command: "cd scripts && ls ../scripts" }),
       ],
       ctx,
     );
     expect(hits).toEqual([]);
+  });
+
+  test("row 4: bare /tmp is outside; the run's own TMPDIR is inside", () => {
+    expect(flaggedCount("cat /tmp/x.test.ts", "ls /tmp", "cat /tmp/qref-check/a")).toBe(3);
+    expect(flaggedCount("cat $TMPDIR/x", "cat ${TMPDIR}/x", `cat ${tmp}/x`, "echo hi > $TMPDIR/a.txt")).toBe(0);
+    expect(scanEscapes([call("Read", { file_path: "/tmp/other-session/x" }), call("Write", { file_path: `${tmp}/ok.ts` })], ctx)).toHaveLength(1);
+  });
+
+  test("row 5: ~user forms are outside the tree", () => {
+    expect(flaggedCount("cat ~root/x", "ls ~jean-marc/qara", "cat ~other")).toBe(3);
+    expect(scanEscapes([call("Read", { file_path: "~root/x" })], ctx)).toHaveLength(1);
+  });
+
+  test("row 6: ~ as an operator is not a path", () => {
+    expect(flaggedCount("awk '$1 ~ /x/' f.txt", "[[ $x =~ re ]] && echo yes", "echo $((m & ~mask))", "grep -c 'a~b' f")).toBe(0);
+  });
+
+  test("row 7: $HOME and ${HOME} resolve; an unassigned $VAR/ prefix and bare cd are flagged", () => {
+    expect(flaggedCount("cat $HOME/x", "cat ${HOME}/qara/x", "cat $DIR/x", "cat ${DIR}/x", "cd", "cd && ls")).toBe(6);
+    expect(flaggedCount("d=$TMPDIR/sub; mkdir -p $d && cat $d/y", "cd scripts && cat $TMPDIR/x")).toBe(0);
+  });
+
+  test("row 8: heredoc bodies are content, not a call target", () => {
+    expect(flaggedCount("cat > a.ts <<'EOF'\nsee ../x and /home/u/other and ~/y\nEOF\nls", "cat <<-END > a\n\t../z\n\tEND\nls", "cat <<EOF\n../w\nEOF")).toBe(0);
+    expect(flaggedCount("cat <<EOF > ../x\nbody\nEOF", "cat <<EOF\nbody\nEOF\ncat ../after")).toBe(2);
+  });
+
+  test("row 9: any absolute path outside the tree and the allowlist is flagged", () => {
+    expect(flaggedCount("find /", "ls /", "ls /data", "cat /dev/shm/x", "ls /boot", "ls /nix/store", "ls /snap", "cd / && cat etc/passwd")).toBe(8);
+    expect(flaggedCount("cat /dev/null", "echo x 2>/dev/stderr", "sed -n '/a/,/b/p' f", "rg '/api/' .")).toBe(0);
+  });
+
+  test("row 9: the Grep tool's glob field is scanned", () => {
+    expect(scanEscapes([call("Grep", { pattern: "x", glob: "../**/*.ts" }), call("Grep", { pattern: "x", glob: "**/*.ts" })], ctx)).toHaveLength(1);
   });
 });
 
@@ -166,7 +202,7 @@ describe("pairing flagged calls with their results", () => {
 });
 
 describe("classifyEscapes", () => {
-  const ctx = { forbidden: ["/home/u/qara"], allow: [], root: "/w/tree", home: "/home/u", deps: null };
+  const ctx = { forbidden: ["/home/u/qara"], allow: [], root: "/w/tree", home: "/home/u", deps: null, tmp: "/w/tmp" };
   const flagged = (args: Record<string, unknown>, failed?: boolean, name = "Read") => ({ name, args, failed });
 
   test("a failed file-tool call is an attempt; a successful or unpaired one is a leak", () => {

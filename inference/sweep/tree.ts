@@ -54,12 +54,14 @@ export async function exportTree(task: Task, sha: string, dest: string, withTest
 // (or walk from) the live checkout. Reused across runs and resumes.
 // ceiling: the copy is of the repo's *current* dependencies, not the parent's lockfile — fine
 // for tasks ~10 days old; pin per task if an oracle starts failing on deps.
+export const depsPath = (task: Task, workDir: string): string => join(workDir, "deps", basename(task.repo), "node_modules");
+
 export async function snapshotDeps(task: Task, workDir: string): Promise<string | null> {
   const src = join(task.repo, "node_modules");
   if (!existsSync(src)) {
     return null;
   }
-  const dest = join(workDir, "deps", basename(task.repo), "node_modules");
+  const dest = depsPath(task, workDir);
   if (existsSync(dest)) {
     return dest;
   }

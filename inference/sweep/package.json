@@ -1,0 +1,13 @@
+{
+  "name": "inference-model-sweep",
+  "private": true,
+  "type": "module",
+  "description": "One-off sweep: first-attempt acceptance and cost per accepted result for five hosted model routes (INFER-3 to INFER-8).",
+  "scripts": {
+    "test": "bun test",
+    "probe": "bun probe.ts",
+    "prove": "bun sweep.ts prove",
+    "sweep": "bun sweep.ts run",
+    "summarize": "bun sweep.ts summarize"
+  }
+}

@@ -1,7 +1,7 @@
 // The run.ts wiring of the early kill, driven by a fake spawner; no model is called.
 import { describe, expect, test } from "bun:test";
 import { CELLS } from "./cells";
-import { decideOutcome, runAgent, runEnv, scanCtx } from "./run";
+import { RUN_MARKER, decideOutcome, isLegacyRow, runAgent, runEnv, scanCtx } from "./run";
 import type { SpawnResult } from "./spawn";
 
 type SpawnOpts = Parameters<typeof import("./spawn").spawnStreaming>[1];
@@ -42,6 +42,15 @@ describe("per-run scratch dir (row 4)", () => {
   });
   test("a legacy row (recorded without perRunTmp) allows bare /tmp", () => {
     expect(scanCtx("/w/r1", "/w/r1/tree", { depsDir: null, forbidden: [] }, true).legacyTmp).toBe(true);
+  });
+});
+
+describe("new runs carry the strict-scan marker (review row 5)", () => {
+  test("the marker runOne stamps on its record makes the row non-legacy, so rejudge scans it strictly", () => {
+    expect(RUN_MARKER).toEqual({ perRunTmp: true });
+    expect(isLegacyRow({ ...RUN_MARKER })).toBe(false);
+    expect(isLegacyRow({})).toBe(true);
+    expect(isLegacyRow({ perRunTmp: false })).toBe(true);
   });
 });
 

@@ -27,11 +27,11 @@ export function checkRepo(root, { trackedFiles } = {}) {
   const problems = [];
   const read = (p) => readFileSync(join(root, p), "utf8");
 
-  // All Markdown files outside dependencies and build output.
+  // All Markdown files outside dependencies, build output and .claude (agent worktrees there are copies).
   const markdown = [];
   (function walk(dir) {
     for (const name of readdirSync(join(root, dir))) {
-      if (["node_modules", ".next", ".git"].includes(name)) continue;
+      if (["node_modules", ".next", ".git", ".claude"].includes(name)) continue;
       const path = dir ? `${dir}/${name}` : name;
       if (statSync(join(root, path)).isDirectory()) walk(path);
       else if (name.endsWith(".md")) markdown.push(path);

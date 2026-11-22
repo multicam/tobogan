@@ -12,7 +12,7 @@ import { parseClaudeStream } from "./parse";
 import { buildPlan, pending, type Ramp } from "./plan";
 import { latestRuns, PARK_FIVE_HOUR, PARK_SEVEN_DAY, windowsFrom, type Windows } from "./quota";
 import type { RunRecord } from "./record";
-import { dryRunSweep, rejudge } from "./rejudge";
+import { dryRunSweep, rejudge, rejudgeTargets } from "./rejudge";
 import { runOne, type RunOpts } from "./run";
 import { CLAUDE, doneRunIds, schedule } from "./schedule";
 import { spawnStreaming } from "./spawn";
@@ -265,10 +265,11 @@ async function rejudgeExcluded(): Promise<void> {
     return;
   }
   const runsPath = join(v["results-dir"]!, v.sweep, "runs.jsonl");
-  const targets = latestRuns(readRuns(runsPath)).filter((r) => r.outcome === "invalid_escape" || r.outcome === "escape_attempt");
   const { depsDir, forbidden } = await isolation();
+  const workDir = join(v["work-dir"]!, v.sweep);
+  const targets = rejudgeTargets(join(v["results-dir"]!, v.sweep), { workDir, depsDir, forbidden });
   for (const row of targets) {
-    const rec = await rejudge(row, { workDir: join(v["work-dir"]!, v.sweep), depsDir, forbidden, oracleTimeoutMs: Number(v["oracle-timeout-min"]) * MINUTE_MS });
+    const rec = await rejudge(row, { workDir, depsDir, forbidden, oracleTimeoutMs: Number(v["oracle-timeout-min"]) * MINUTE_MS });
     appendFileSync(runsPath, JSON.stringify(rec) + "\n");
     console.log(`${rec.runId} ${row.outcome} -> ${rec.outcome}${rec.reason ? ` (${rec.reason.slice(0, 160)})` : ""}`);
   }

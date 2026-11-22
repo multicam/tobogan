@@ -53,6 +53,11 @@ export function scanCtx(work: string, tree: string, opts: Pick<RunOpts, "depsDir
   return { forbidden: opts.forbidden, allow: [`${work}/`, ...(opts.depsDir ? [opts.depsDir] : [])], root: tree, home: homedir(), deps: opts.depsDir, tmp: runTmp(work), legacyTmp };
 }
 
+// Stamped on every record runOne writes. Rows without it are legacy (recorded before per-run
+// TMPDIR) and are re-scanned with bare /tmp allowed; every new row is scanned strictly.
+export const RUN_MARKER = { perRunTmp: true } as const;
+export const isLegacyRow = (row: { perRunTmp?: boolean }): boolean => row.perRunTmp !== true;
+
 // Each run's private scratch dir, so no run reads another's (or another session's) files in /tmp.
 const runTmp = (work: string): string => join(work, "tmp");
 
@@ -163,7 +168,7 @@ export async function runOne(item: PlanItem, opts: RunOpts): Promise<RunRecord> 
     permissionDenials: s.permissionDenials,
     diffBytes: diff.length,
     escapes,
-    perRunTmp: true,
+    ...RUN_MARKER,
     oracleExit,
     startedAt,
     concurrency: opts.concurrency,

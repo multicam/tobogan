@@ -303,6 +303,157 @@ describe("legacy scratch rule for runs recorded before per-run TMPDIR", () => {
   });
 });
 
+// Debt batch 3 (blind review of PR #20): heredoc fail-open, root normalisation, false positives,
+// other sessions' scratch.
+describe("heredoc detection does not fail open (review row 1)", () => {
+  const ctx = { forbidden: [], allow: [], root: "/w/tree", home: "/home/u", deps: null, tmp: "/w/tmp" };
+  const hits = (command: string) => scanEscapes([call("bash", { command })], ctx).length;
+
+  test("a here-string `<<<word` is not a heredoc, so later lines are still scanned", () => {
+    expect(hits("grep x <<<word\ncat ../after")).toBe(1);
+    expect(hits("cat <<< hello\ncat ../after")).toBe(1);
+  });
+  test("a shift operator inside quoted code or arithmetic is not a heredoc", () => {
+    expect(hits("bun -e 'console.log(1<<N)'\ncat ../after")).toBe(1);
+    expect(hits("echo $((1<<N))\ncat ../after")).toBe(1);
+    expect(hits("echo $(( x << n ))\ncat ../after")).toBe(1);
+  });
+  test("an unterminated heredoc does not drop the rest: the body is scanned", () => {
+    expect(hits("cat <<EOF\nbody\ncat ../x")).toBe(1);
+  });
+  test("a terminated heredoc still hides its body, and a quoted `<<` earlier on the line does not hide a real one", () => {
+    expect(hits("cat <<EOF\n../x\nEOF\nls")).toBe(0);
+    expect(hits("echo '<<' && cat <<EOF\n../x\nEOF\nls")).toBe(0);
+  });
+});
+
+describe("root detection is normalised (review row 2)", () => {
+  const ctx = { forbidden: [], allow: [], root: "/w/tree", home: "/home/u", deps: null, tmp: "/w/tmp" };
+  const hits = (command: string) => scanEscapes([call("bash", { command })], ctx).length;
+
+  test("//etc/passwd, /./etc/passwd and /../etc/passwd are the real etc", () => {
+    expect(hits("cat //etc/passwd")).toBe(1);
+    expect(hits("cat /./etc/passwd")).toBe(1);
+    expect(hits("cat /../etc/passwd")).toBe(1);
+    expect(hits("cat //home/u/x")).toBe(1);
+  });
+  test("a quoted `//` delimiter is still not a path", () => {
+    expect(hits("rg '//' f")).toBe(0);
+  });
+});
+
+describe("scan false positives found in review (row 3)", () => {
+  const ctx = { forbidden: [], allow: [], root: "/w/tree", home: "/home/u", deps: null, tmp: "/w/tmp" };
+  const hits = (command: string) => scanEscapes([call("bash", { command })], ctx).length;
+
+  test("$HOME and $PWD are not expanded inside single quotes, but are inside double quotes", () => {
+    expect(hits("grep '$HOME' f")).toBe(0);
+    expect(hits("grep '$PWD' f")).toBe(0);
+    expect(hits("grep '${HOME}/x' f")).toBe(0);
+    expect(hits("grep '$HOME/x' f")).toBe(0);
+    expect(hits('cat "$HOME/x"')).toBe(1);
+    expect(hits("cat $HOME/x")).toBe(1);
+  });
+  test("a spaced `/` in arithmetic or as an expr operand is division, not the root", () => {
+    expect(hits("echo $((a / b))")).toBe(0);
+    expect(hits("x=$(( 10 / 2 )); echo $x")).toBe(0);
+    expect(hits("expr 4 / 2")).toBe(0);
+    expect(hits("ls /")).toBe(1);
+    expect(hits("echo $((a / b)); ls /")).toBe(1);
+  });
+  test("the pattern of grep, rg, sed and awk is not a path, however it is quoted", () => {
+    expect(hits("grep '..' f")).toBe(0);
+    expect(hits("rg '../' src")).toBe(0);
+    expect(hits("sed '/home/d' f")).toBe(0);
+    expect(hits("awk '/home/ {print}' f")).toBe(0);
+    expect(hits("grep -e '../' f")).toBe(0);
+    expect(hits("grep -rn '/home/' .")).toBe(0);
+    expect(hits("grep -A 3 '../' f")).toBe(0);
+    expect(hits("/usr/bin/grep -n '/etc/' f")).toBe(0);
+  });
+  test("the operand of any option other than -e is a path, quoted or not (review A)", () => {
+    expect(hits("grep -f '/etc/passwd' x")).toBe(1);
+    expect(hits("grep --file '/etc/passwd' x")).toBe(1);
+    expect(hits("sed -f '/etc/passwd' x")).toBe(1);
+    expect(hits("awk -f '/etc/passwd' x")).toBe(1);
+    expect(hits("rg --ignore-file '/etc/passwd' foo")).toBe(1);
+    expect(hits("grep --file='/etc/passwd' x")).toBe(1);
+    expect(hits("rg --pre '/etc/x' foo")).toBe(1);
+    expect(hits("rg --pre '/etc/x' '../'")).toBe(1);
+  });
+  test("with -f there is no positional pattern: the first operand is a file (review A)", () => {
+    expect(hits("grep -f pats '/etc/passwd'")).toBe(1);
+    expect(hits("sed -f s.sed '/etc/passwd'")).toBe(1);
+    expect(hits("awk -f p.awk '/etc/passwd'")).toBe(1);
+  });
+  test("a quoted file after the pattern is flagged whatever options precede the pattern (second review A)", () => {
+    expect(hits("grep -- pat '/etc/passwd'")).toBe(1);
+    expect(hits("grep -i -- pat '/etc/passwd'")).toBe(1);
+    expect(hits("grep --color pat '/etc/passwd'")).toBe(1);
+    expect(hits("grep --recursive pat '/etc'")).toBe(1);
+    expect(hits("grep --line-number pat '/etc/passwd'")).toBe(1);
+    expect(hits("rg --hidden pat '/etc'")).toBe(1);
+    expect(hits("sed --quiet '1p' '/etc/passwd'")).toBe(1);
+    expect(hits("awk --posix '{print}' '/etc/passwd'")).toBe(1);
+    expect(hits("grep pat -- '/etc/passwd'")).toBe(1);
+    expect(hits("grep --unknown-opt 'x' '/etc/passwd'")).toBe(1);
+  });
+  test("an unknown option gives up the pattern exemption: a false positive, never a miss", () => {
+    expect(hits("grep --unknown-opt '/home/' .")).toBe(1);
+    expect(hits("grep -Q '/home/' .")).toBe(1);
+  });
+  test("known options keep the exemption", () => {
+    expect(hits("grep -rn '/home/' .")).toBe(0);
+    expect(hits("rg -g '*.ts' '../' src")).toBe(0);
+    expect(hits("grep -e '/etc/passwd' f")).toBe(0);
+    expect(hits("sed 's#/etc/#X#' f")).toBe(0);
+    expect(hits("awk '/\\/etc\\//' f")).toBe(0);
+    expect(hits("grep -- '/etc/' f")).toBe(0);
+    expect(hits("grep --color=auto -i '../' f")).toBe(0);
+  });
+  test("a pattern after an unrelated option is still a pattern, and mixed-quote words resolve as the shell does (review B)", () => {
+    expect(hits("grep -rn '/home/' .")).toBe(0);
+    expect(hits("rg -g '*.ts' '../' src")).toBe(0);
+    expect(hits("cat 'a'\"$HOME/.ssh/id\"")).toBe(0);
+    expect(hits("cat \"$HOME\"'/.ssh/id'")).toBe(1);
+  });
+  test("file operands after the pattern, and non-pattern commands, are still scanned", () => {
+    expect(hits("grep -rn x ../src")).toBe(1);
+    expect(hits("grep '..' ../f")).toBe(1);
+    expect(hits("grep -e x '/etc/passwd'")).toBe(1);
+    expect(hits("rg foo /etc")).toBe(1);
+    expect(hits("sed -n 1p ../f")).toBe(1);
+    expect(hits("cat '../x'")).toBe(1);
+    expect(hits("ls '..'")).toBe(1);
+  });
+});
+
+describe("other sessions' scratch is forbidden under both rules (review row 4)", () => {
+  const base = { forbidden: [] as string[], allow: [], root: "/w/tree", home: "/home/u", deps: null, tmp: "/w/tmp" };
+  const hits = (ctx: typeof base & { legacyTmp?: boolean }, command: string) => scanEscapes([call("bash", { command })], ctx).length;
+
+  test("legacy rows may use /tmp but not /tmp/claude-*", () => {
+    expect(hits({ ...base, legacyTmp: true }, "cat /tmp/x.test.ts")).toBe(0);
+    expect(hits({ ...base, legacyTmp: true }, "ls /tmp/claude-1000/proj/scratchpad")).toBe(1);
+    expect(hits({ ...base, legacyTmp: true }, "cat /tmp/claude-x")).toBe(1);
+    expect(hits(base, "ls /tmp/claude-1000")).toBe(1);
+  });
+  test("a file tool reading /tmp/claude-* is flagged under the legacy rule too", () => {
+    expect(scanEscapes([call("Read", { file_path: "/tmp/claude-1000/a" })], { ...base, legacyTmp: true })).toHaveLength(1);
+  });
+});
+
+describe("$'..' quoting is read as a quoted word (review row 6, fixed)", () => {
+  const ctx = { forbidden: [], allow: [], root: "/w/tree", home: "/home/u", deps: null, tmp: "/w/tmp" };
+  const hits = (command: string) => scanEscapes([call("bash", { command })], ctx).length;
+
+  test("$'../x' is the path ../x; $'a b' is one word", () => {
+    expect(hits("cat $'../x'")).toBe(1);
+    expect(hits("cat $'/etc/passwd'")).toBe(1);
+    expect(hits("echo $'a b'")).toBe(0);
+  });
+});
+
 // Each test here pins a gap the README lists under "Known limits": the scan does NOT catch these.
 // If one starts failing because the scan got better, update the README and flip the expectation.
 describe("KNOWN LIMITS of the escape scan (documented gaps, not desired behaviour)", () => {
@@ -330,6 +481,21 @@ describe("KNOWN LIMITS of the escape scan (documented gaps, not desired behaviou
     expect(passes("bun -e 'require(\"fs\").readFileSync(\"../x\")'")).toEqual([]);
     expect(passes("cat '/etc/my file'")).toEqual([]);
     expect(passes("bun -e 'require(\"fs\").readFileSync(process.env.X)'")).toEqual([]);
+  });
+  test("a quoted path containing a space is not scanned: cat \"../my file\" passes", () => {
+    expect(passes('cat "../my file"')).toEqual([]);
+  });
+  test("a cd inside a subshell leaks into the tracked directory: (cd sub); cat ../f reads ../f from the tree but passes", () => {
+    expect(passes("(cd sub); cat ../f")).toEqual([]);
+  });
+  test("cd - is not tracked: cd sub; cd -; cat ../f is outside the tree but passes", () => {
+    expect(passes("cd sub; cd -; cat ../f")).toEqual([]);
+  });
+  test("pushd and popd are not tracked: pushd sub; cat ../f stays inside but is flagged", () => {
+    expect(passes("pushd sub; cat ../f")).toHaveLength(1);  });
+  test("FALSE POSITIVE: cd / is flagged like find / and ls /, even when the command then only touches its own temp dir (q1543__glm__r3)", () => {
+    expect(passes("cd / && rm -rf /w/tmp/x")).toHaveLength(1);
+    expect(passes("cd /")).toHaveLength(1);
   });
 });
 

@@ -14,4 +14,4 @@ Model inference speed and cost: what external work on serving optimisation teach
 
 | Directory | What | Checks |
 | --- | --- | --- |
-| `sweep/` | One-off model sweep harness: first-attempt acceptance and cost per accepted result for haiku, sonnet, opus (Claude Code subscription), GLM (Coding Plan via pi) and Codex (pi default route), judged by merged PRs' own tests (INFER-3 to INFER-8) | `bun test` in `sweep/` |
+| `sweep/` | One-off model sweep harness: first-attempt acceptance and cost per accepted result for haiku, sonnet, opus (Claude Code subscription), GLM (Coding Plan via pi) and Codex (pi default route), judged by merged PRs' own tests (INFER-3 to INFER-8) | `bun test` and `bun run typecheck` in `sweep/` |

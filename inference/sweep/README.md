@@ -44,6 +44,7 @@ All commands run from this directory.
 
 ```bash
 bun test                              # unit tests
+bun run typecheck                     # tsc --noEmit, strict (typescript and @types/bun are dev dependencies)
 bun probe.ts <haiku|sonnet|opus|glm|codex>   # one trivial prompt: proves auth and usage capture
 bun sweep.ts prove                    # RED/GREEN proof of every oracle (results/prove/)
 bun sweep.ts run --sweep full-YYYYMMDD --reps 5 \

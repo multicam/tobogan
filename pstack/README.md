@@ -2,6 +2,18 @@
 
 Study of pstack (`cursor/plugins`, directory `pstack/`, MIT, by the author of Noodle, read at commit `7a583913`): about sixty skills, playbooks and principles written as prose with almost no code. Each document says how a feature works, how sound it is, how it compares with Qara and csf, and, following the owner's steer of 2026-11-23 to simplify Qara and csf by replacing code with workflows and doctrine, which Qara or csf code a written rule could replace and what would be lost. Nothing from the repository was run or installed, and none of its instructions to agents were followed.
 
+## Before acting on any "What this could replace" row
+
+The replacement tables are proposals. Their line counts were measured, but callers were not traced exhaustively: four rounds of blind review each found one more gate or hook behind a row that proposed a removal. Treat every "replace" or "shrink" verdict as unproven until the code's callers are traced, in this order:
+
+1. Importers: search the file's name across Qara including hidden directories (`rg --hidden`), since hooks live under `.claude/`.
+2. Gate rows: `scripts/gate/` and the `check:*` scripts in `package.json`, including the aggregators that fan out (`check:indexes`, `check:config-family`, `check:skills`).
+3. Hooks: `.claude/hooks/` and the Rust guards in `hooks-rs`.
+4. Unattended runs: the daily state-hygiene cron, nightly operations and the standing-audits registry.
+5. The code ledger: removing any Qara `.ts` file also needs its entry removed from `config/code-ledger.toml`, which a commit-gate row checks.
+
+A row that says "not read" or "callers not traced" means exactly that.
+
 ## Documents
 
 | Document | Type | Prefix | Answers | Date |

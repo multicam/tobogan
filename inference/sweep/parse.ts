@@ -44,8 +44,9 @@ function emptySummary(): StreamSummary {
   };
 }
 
-// True for a Claude init line whose apiKeySource is not subscription auth: the run is on a
-// metered or foreign route and can be killed before it spends anything.
+// True for a Claude init line whose apiKeySource is not exactly subscription auth: the run is on
+// a metered or foreign route and can be killed before it spends anything. Fails closed: a missing
+// or non-string apiKeySource counts as metered.
 export function meteredInit(line: string): boolean {
   const trimmed = line.trim();
   if (!trimmed.startsWith("{")) {
@@ -53,7 +54,7 @@ export function meteredInit(line: string): boolean {
   }
   try {
     const ev = JSON.parse(trimmed);
-    return ev.type === "system" && ev.subtype === "init" && typeof ev.apiKeySource === "string" && ev.apiKeySource !== SUBSCRIPTION_AUTH;
+    return ev.type === "system" && ev.subtype === "init" && ev.apiKeySource !==SUBSCRIPTION_AUTH;
   } catch {
     return false;
   }

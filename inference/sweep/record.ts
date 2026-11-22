@@ -4,7 +4,8 @@ export type Usage = { input: number; output: number; cacheRead: number; cacheWri
 
 // Outcome of one run. "pass", "fail", "sanity_fail" (empty or non-applying diff) and "timeout"
 // (the model never finished) count toward pass rate. Rate limits, CLI/harness errors, route
-// mismatches and escapes outside the run tree are excluded and logged separately.
+// mismatches and escapes outside the run tree are excluded and logged separately: "invalid_escape"
+// when a call that left the tree succeeded, "escape_attempt" when every such call failed.
 export type Outcome =
   | "pass"
   | "fail"
@@ -14,6 +15,7 @@ export type Outcome =
   | "run_error"
   | "route_error"
   | "invalid_escape"
+  | "escape_attempt"
   // Claude cells parked by the quota guard (quota.ts): not attempted, resumed by a later `run`.
   | "deferred";
 

@@ -225,7 +225,7 @@ async function liveClaudeWindows(workDir: string): Promise<Windows | null> {
   const haiku = CELLS.find((c) => c.id === "haiku")!;
   const res = await spawnStreaming(buildArgv(haiku, "Reply with exactly: OK"), {
     cwd: dir,
-    env: childEnv(process.env),
+    env: childEnv(process.env, haiku.surface),
     timeoutMs: 3 * MINUTE_MS,
     transcriptPath: join(dir, "transcript.jsonl"),
     stderrPath: join(dir, "stderr.txt"),
@@ -310,18 +310,18 @@ async function writeManifest(resultsDir: string, cells: string[], planned: numbe
   return manifest;
 }
 
-// Offline: re-scan and re-judge every run whose latest outcome is invalid_escape. No model call.
+// Offline: re-scan and re-judge every run whose latest outcome is invalid_escape or escape_attempt. No model call.
 async function rejudgeExcluded(): Promise<void> {
   if (!v.sweep) {
     throw new Error("--sweep <id> is required");
   }
   const runsPath = join(v["results-dir"]!, v.sweep, "runs.jsonl");
-  const targets = latestRuns(readRuns(runsPath)).filter((r) => r.outcome === "invalid_escape");
+  const targets = latestRuns(readRuns(runsPath)).filter((r) => r.outcome === "invalid_escape" || r.outcome === "escape_attempt");
   const { depsDir, forbidden } = await isolation();
   for (const row of targets) {
     const rec = await rejudge(row, { workDir: join(v["work-dir"]!, v.sweep), depsDir, forbidden, oracleTimeoutMs: Number(v["oracle-timeout-min"]) * MINUTE_MS });
     appendFileSync(runsPath, JSON.stringify(rec) + "\n");
-    console.log(`${rec.runId} invalid_escape -> ${rec.outcome}${rec.reason ? ` (${rec.reason.slice(0, 160)})` : ""}`);
+    console.log(`${rec.runId} ${row.outcome} -> ${rec.outcome}${rec.reason ? ` (${rec.reason.slice(0, 160)})` : ""}`);
   }
   summarize();
 }
@@ -333,12 +333,13 @@ function summarize(): void {
   const resultsDir = join(v["results-dir"]!, v.sweep);
   const rows = latestRuns(readRuns(join(resultsDir, "runs.jsonl")));
   const manifestPath = join(resultsDir, "manifest.json");
-  const tests = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, "utf8")).tests : v.tests;
+  const manifest = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, "utf8")) : null;
+  const tests = manifest?.tests ?? v.tests;
   const notes = [
     `Tests mode: ${tests}.${tests === "hidden" ? " The model never saw the PR tests; this differs from Qara's 2026-11-12 sweep, which handed them over." : ""}`,
     "Profile: effort/thinking medium everywhere; Claude with no settings sources (no hooks), pi on its defaults. Claude cost here runs lower than a real Claude Code subagent carrying Qara's hooks.",
   ];
-  const { json, markdown } = renderSummary(v.sweep, rows, notes);
+  const { json, markdown } = renderSummary(v.sweep, rows, notes, manifest?.bindingEvents ?? []);
   writeFileSync(join(resultsDir, "summary.json"), JSON.stringify(json, null, 1));
   writeFileSync(join(resultsDir, "summary.md"), markdown);
   console.log(markdown);

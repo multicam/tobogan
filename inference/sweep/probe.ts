@@ -21,7 +21,7 @@ mkdirSync(root, { recursive: true });
 const dir = mkdtempSync(join(root, `${cell.id}-`));
 const res = await spawnStreaming(buildArgv(cell, "Reply with exactly: OK"), {
   cwd: dir,
-  env: childEnv(process.env),
+  env: childEnv(process.env, cell.surface),
   timeoutMs: PROBE_TIMEOUT_MS,
   transcriptPath: join(dir, "transcript.jsonl"),
   stderrPath: join(dir, "stderr.txt"),

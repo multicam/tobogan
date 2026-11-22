@@ -25,6 +25,7 @@ const RATE_LIMIT = /rate.?limit|\b429\b|quota|usage limit|overloaded|too many re
 
 // Claude Code's init event reports "none" when no API key is in play (subscription OAuth).
 const SUBSCRIPTION_AUTH = "none";
+const SUBSCRIPTION_PROVIDER = "anthropic-subscription";
 
 type Json = Record<string, any>;
 
@@ -53,11 +54,25 @@ export function meteredInit(line: string): boolean {
     return false;
   }
   try {
-    const ev = JSON.parse(trimmed);
-    return ev.type === "system" && ev.subtype === "init" && ev.apiKeySource !==SUBSCRIPTION_AUTH;
+    const init = readInit(JSON.parse(trimmed));
+    return init !== null && init.provider !== SUBSCRIPTION_PROVIDER;
   } catch {
     return false;
   }
+}
+
+// The one reading of a Claude init event, shared by the stream parser and the kill check.
+// Null for any other event. Fails closed: only apiKeySource "none" is the subscription.
+function readInit(ev: Json): { model: string | null; authSource: string | null; provider: string } | null {
+  if (ev?.type !== "system" || ev.subtype !== "init") {
+    return null;
+  }
+  const authSource = ev.apiKeySource ?? null;
+  return {
+    model: ev.model ?? null,
+    authSource,
+    provider: authSource === SUBSCRIPTION_AUTH ? SUBSCRIPTION_PROVIDER : "anthropic-metered",
+  };
 }
 
 function* events(lines: Line[]): Generator<{ t: number; ev: Json }> {
@@ -127,10 +142,9 @@ export function parsePiStream(lines: Line[]): StreamSummary {
 export function parseClaudeStream(lines: Line[]): StreamSummary {
   const s = emptySummary();
   for (const { t, ev } of events(lines)) {
-    if (ev.type === "system" && ev.subtype === "init") {
-      s.model = ev.model ?? null;
-      s.authSource = ev.apiKeySource ?? null;
-      s.provider = s.authSource === SUBSCRIPTION_AUTH ? "anthropic-subscription" : "anthropic-metered";
+    const init = readInit(ev);
+    if (init) {
+      [s.model, s.authSource, s.provider] = [init.model, init.authSource, init.provider];
       continue;
     }
     if (ev.type === "rate_limit_event") {

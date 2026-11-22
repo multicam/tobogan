@@ -32,6 +32,48 @@ describe("childEnv", () => {
   });
 });
 
+describe("childEnv for claude cells (allowlist)", () => {
+  test("keeps only what claude -p needs and drops other routing, credential and model-override variables", () => {
+    const env = childEnv(
+      {
+        PATH: "/usr/bin",
+        HOME: "/home/x",
+        LANG: "en_US.UTF-8",
+        LC_ALL: "C",
+        TERM: "xterm",
+        XDG_CACHE_HOME: "/home/x/.cache",
+        HTTPS_PROXY: "http://proxy",
+        CLAUDE_CODE_OAUTH_TOKEN: "subscription-token",
+        AWS_BEARER_TOKEN_BEDROCK: "placeholder",
+        AWS_ACCESS_KEY_ID: "placeholder",
+        AWS_SECRET_ACCESS_KEY: "placeholder",
+        AWS_REGION: "x",
+        GOOGLE_APPLICATION_CREDENTIALS: "/x.json",
+        ANTHROPIC_MODEL: "opus",
+        ANTHROPIC_DEFAULT_SONNET_MODEL: "x",
+        OPENAI_API_KEY: "placeholder",
+        ZAI_API_KEY: "placeholder",
+      },
+      "claude",
+    );
+    expect(env).toEqual({
+      PATH: "/usr/bin",
+      HOME: "/home/x",
+      LANG: "en_US.UTF-8",
+      LC_ALL: "C",
+      TERM: "xterm",
+      XDG_CACHE_HOME: "/home/x/.cache",
+      HTTPS_PROXY: "http://proxy",
+      CLAUDE_CODE_OAUTH_TOKEN: "subscription-token",
+    });
+  });
+
+  test("pi cells keep their provider credentials (denylist only)", () => {
+    const env = childEnv({ PATH: "/usr/bin", ZAI_API_KEY: "placeholder", ANTHROPIC_API_KEY: "placeholder" }, "pi");
+    expect(env).toEqual({ PATH: "/usr/bin", ZAI_API_KEY: "placeholder" });
+  });
+});
+
 describe("buildArgv", () => {
   const brief = "do the task";
   const cell = (id: string) => CELLS.find((c) => c.id === id)!;

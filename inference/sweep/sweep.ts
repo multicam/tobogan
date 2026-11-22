@@ -9,11 +9,12 @@ import { parseArgs } from "node:util";
 import { buildArgv, CELLS, childEnv } from "./cells";
 import { isGenuineRed, type TestsMode } from "./oracle";
 import { parseClaudeStream } from "./parse";
-import { buildPlan, nextConcurrency, pending, type Ramp } from "./plan";
-import { latestRuns, PARK_FIVE_HOUR, PARK_SEVEN_DAY, parkReason, windowsFrom, type Windows } from "./quota";
-import { COUNTED_OUTCOMES, type RunRecord } from "./record";
+import { buildPlan, pending, type Ramp } from "./plan";
+import { latestRuns, PARK_FIVE_HOUR, PARK_SEVEN_DAY, windowsFrom, type Windows } from "./quota";
+import type { RunRecord } from "./record";
 import { rejudge } from "./rejudge";
 import { runOne, type RunOpts } from "./run";
+import { CLAUDE, doneRunIds, schedule } from "./schedule";
 import { spawnStreaming } from "./spawn";
 import { renderSummary } from "./summary";
 import { TASKS, taskById } from "./tasks";
@@ -22,8 +23,6 @@ import { exportTree, judge, referenceDiff, removeTree, runOracle, sh, snapshotDe
 const HERE = import.meta.dir;
 const DEFAULT_WORK = join(process.env.XDG_CACHE_HOME ?? join(homedir(), ".cache"), "tobogan-model-sweep");
 const MINUTE_MS = 60_000;
-// Surface key shared by every Claude cell: they draw on one subscription plan.
-const CLAUDE = "claude";
 
 const { positionals, values: v } = parseArgs({
   allowPositionals: true,
@@ -102,8 +101,7 @@ async function run(): Promise<void> {
   mkdirSync(resultsDir, { recursive: true });
   const runsPath = join(resultsDir, "runs.jsonl");
   const prior = latestRuns(readRuns(runsPath));
-  // Deferred runs are never done: a later `run` picks them up without --retry-excluded.
-  const done = new Set(prior.filter((r) => r.outcome !== "deferred" && (!v["retry-excluded"] || COUNTED_OUTCOMES.has(r.outcome))).map((r) => r.runId));
+  const done = doneRunIds(prior, v["retry-excluded"]!);
   const plan = buildPlan(tasks, cells, Number(v.reps), Number(v.seed));
   const waiting = pending(plan, done);
   const ramp: Ramp = { start: Number(v["concurrency-start"]), max: Number(v["concurrency-max"]), raiseEvery: Number(v["raise-every"]) };
@@ -121,89 +119,29 @@ async function run(): Promise<void> {
     keepTrees: v["keep-trees"]!,
     ...(await isolation()),
   };
-  // Limits are per surface: all Claude cells share one plan; each pi cell is its own provider.
   const surfaceKey = (cell: string) => (CELLS.find((c) => c.id === cell)!.surface === "claude" ? CLAUDE : cell);
-  const parked = new Map<string, string>();
-  const pausedUntil = new Map<string, number>();
-  let conc = ramp.start;
-  let clean = 0;
-  let lastLaunch = 0;
-  const inflight = new Set<Promise<void>>();
-  const park = (key: string, reason: string, runId?: string) => {
-    if (parked.has(key)) {
-      return;
-    }
-    parked.set(key, reason);
-    manifest.bindingEvents.push({ at: new Date().toISOString(), kind: "park", surface: key, runId, concurrency: conc, reason });
-    saveManifest();
-    console.log(`PARK ${key}: ${reason}`);
-  };
   const usesClaude = waiting.some((it) => surfaceKey(it.cell) === CLAUDE);
-  let windows: Windows | null = usesClaude ? (latestClaudeWindows(prior) ?? (await liveClaudeWindows(opts.workDir))) : null;
+  const windows: Windows | null = usesClaude ? (latestClaudeWindows(prior) ?? (await liveClaudeWindows(opts.workDir))) : null;
   manifest.claudeWindowsAtStart = windows;
   saveManifest();
 
-  while (waiting.length > 0) {
-    while (inflight.size >= conc) {
-      await Promise.race(inflight);
-    }
-    // Quota guard before every Claude launch, on the latest reading; parked runs are deferred.
-    const reason = windows ? parkReason(windows) : null;
-    if (reason) {
-      park(CLAUDE, reason);
-    }
-    for (let i = waiting.length - 1; i >= 0; i--) {
-      const key = surfaceKey(waiting[i].cell);
-      if (parked.has(key)) {
-        const [item] = waiting.splice(i, 1);
-        appendFileSync(runsPath, JSON.stringify(stubRecord(item, "deferred", `parked: ${parked.get(key)}`)) + "\n");
-      }
-    }
-    if (waiting.length === 0) {
-      break;
-    }
-    // Ramp, not burst: the launch gap, then the first item whose surface is not cooling down.
-    const now = Date.now();
-    const gap = lastLaunch + Number(v["min-gap-s"]) * 1000 - now;
-    const idx = waiting.findIndex((it) => (pausedUntil.get(surfaceKey(it.cell)) ?? 0) <= now);
-    if (gap > 0 || idx === -1) {
-      const cooldown = Math.min(...waiting.map((it) => pausedUntil.get(surfaceKey(it.cell)) ?? 0)) - now;
-      await Promise.race([Bun.sleep(Math.max(gap, idx === -1 ? cooldown : 0, 1000)), ...inflight]);
-      continue;
-    }
-    const [item] = waiting.splice(idx, 1);
-    lastLaunch = now;
-    const p: Promise<void> = runOne(item, { ...opts, concurrency: conc })
-      .catch((e): RunRecord => stubRecord(item, "run_error", `harness: ${String((e as Error)?.message ?? e).slice(0, 300)}`))
-      .then((rec) => {
-        appendFileSync(runsPath, JSON.stringify(rec) + "\n");
-        console.log(`${rec.runId} ${rec.outcome}${rec.reason ? ` (${rec.reason.slice(0, 120)})` : ""} wall=${Math.round(rec.wallMs / 1000)}s conc=${conc}`);
-        const key = surfaceKey(rec.cell);
-        if (key === CLAUDE) {
-          windows = windowsFrom(rec.rateLimitEvents ?? []) ?? windows;
-        }
-        if (rec.outcome === "rate_limited") {
-          manifest.bindingEvents.push({ at: new Date().toISOString(), kind: "rate_limited", surface: key, runId: rec.runId, concurrency: conc, reason: rec.reason });
-          saveManifest();
-          conc = nextConcurrency(conc, { cleanSinceChange: 0, rateLimited: true }, ramp);
-          clean = 0;
-          if (key === CLAUDE) {
-            park(CLAUDE, `rate limited: ${rec.reason ?? ""}`, rec.runId);
-          } else {
-            pausedUntil.set(key, Date.now() + Number(v["cooldown-min"]) * MINUTE_MS);
-          }
-          return;
-        }
-        clean += 1;
-        const next = nextConcurrency(conc, { cleanSinceChange: clean, rateLimited: false }, ramp);
-        if (next !== conc) {
-          [conc, clean] = [next, 0];
-        }
-      })
-      .finally(() => inflight.delete(p));
-    inflight.add(p);
-  }
-  await Promise.all(inflight);
+  await schedule(
+    waiting,
+    windows,
+    { ramp, minGapMs: Number(v["min-gap-s"]) * 1000, cooldownMs: Number(v["cooldown-min"]) * MINUTE_MS, surfaceOf: surfaceKey },
+    {
+      now: Date.now,
+      sleep: (ms) => Bun.sleep(ms),
+      runOne: (item, concurrency) => runOne(item, { ...opts, concurrency }),
+      append: (rec) => appendFileSync(runsPath, JSON.stringify(rec) + "\n"),
+      event: (e) => {
+        manifest.bindingEvents.push(e);
+        saveManifest();
+      },
+      stub: stubRecord,
+      log: console.log,
+    },
+  );
   manifest.finishedAt = new Date().toISOString();
   saveManifest();
   summarize();

@@ -31,7 +31,7 @@ A one-off measurement harness: how often each lighter hosted model's first attem
     - Not flagged: `git log` and `git show` inside the tree, because the tree holds a single commit and has no history to leak.
   - **Oracle:** the model's diff, minus the test files, is applied to a second clean parent export that holds the pristine PR tests. `bun test` then decides; no model judges.
   - **Recorded:** tokens (input, output, cache read, cache write) from the usage fields, time to first streamed output (spawn overhead), wall time, cache-hit rate, the list-price estimate the CLI reports, and quota-window readings where visible.
-- **Schedule:**
+- **Schedule** (decisions live in `schedule.ts`, tested with an injected clock and runner):
   - The run order is shuffled with a seed and interleaved, so cells alternate.
   - Concurrency starts at `--concurrency-start` and rises by one after every `--raise-every` clean runs, up to `--concurrency-max`, with at least `--min-gap-s` between launches.
   - A rate limit halves concurrency, pauses launches for `--cooldown-min`, and is logged in `manifest.json` under `bindingEvents`. The first entry there is the limit that bound first.

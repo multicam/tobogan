@@ -16,7 +16,7 @@
 "Verified" means read in the files above, with `path:line`. Every judgement about fit for Qara or csf, and every analogy, is Unverified until tested. Nothing here is Tested: we ran nothing. Two channels were not run: the compound recall (this task had no recall target beyond the files named) and the Diderot vault search (no vault question; the sources are code and prompts). Neither is claimed as complete.
 
 **Summary.**
-- On the owner's removal goal (addendum, 2026-11-23): little code in the principles area can go, because the principles are the part of Qara that is already enforced by checks, and pstack's own principle 24 says a structural fix beats more text. Of the roughly 1,900 lines of principle-enforcing checks and hooks read or measured, I judge about 200 lines removable now (`scripts/check-doc-terms.ts`, 90 lines, a no-op with no glossary; `scripts/check-typescript-exports-shape.ts`, 112 lines, a reminder of a decision's revisit trigger). The rest should stay code or needs a read I did not finish (see "What this could replace").
+- On the owner's removal goal (addendum, 2026-11-23): little code in the principles area can go, because the principles are the part of Qara that is already enforced by checks, and pstack's own principle 24 says a structural fix beats more text. Of the 1,705 lines of principle-enforcing checks and hooks measured, I judge 112 lines removable now (`scripts/check-typescript-exports-shape.ts`, 112 lines, a reminder of a decision's revisit trigger). `scripts/check-doc-terms.ts` stays: it is live and a commit-gate matcher (an earlier draft of this document wrongly called it a no-op). The rest should stay code or needs a read I did not finish (see "What this could replace").
 - pstack ships 24 principles as 24 one-rule skills (10 to 21 lines each), plus a copy of each rule in the `poteto-mode` index, the README table and guide chapter 8. Fifteen are the principles from brainmaxxing (NBRAIN-11), one of them renamed; nine are new.
 - The leaf files are never loaded by the platform: every one carries `disable-model-invocation: true`, and the Claude Code adapter says the Skill tool refuses most pstack skills. A leaf is read only because a prose line in `poteto-mode` or `poteto-agent` tells the agent to read it. Qara measured exactly that kind of pointer at 0 of 4 loads (`.claude/skills/code-style/SKILL.md:54-58`). The only script check on the principles is the count and the links.
 - About half are operational (they name a trigger and a check you can run): 12 of 24, plus 8 partial and 4 that are slogans. The best are `explain-the-number`, `test-behavior-not-implementation`, `attack-the-premise`, `fix-root-causes`, `sequence-verifiable-units` and `make-operations-idempotent`.
@@ -146,12 +146,12 @@ The refactoring playbook is the best example: each step ends with the check that
 - Basis: Verified (texts); Unverified (comparative effectiveness).
 - Code: none.
 
-**PPRIN-17. Overall judgement: about 200 lines of principle-enforcing code can become doctrine now; the other principle checks guard repeated mistakes and should stay code.**
+**PPRIN-17. Overall judgement: about 112 lines of principle-enforcing code can become doctrine now; the other principle checks guard repeated mistakes and should stay code.**
 Qara's checks and hooks that exist only to enforce something a principle or style rule states (test separation, temp-dir hand-rolling, raw module mocks, env restore, file size, doc caps, naming) are deterministic scans that run at commit. pstack replaces none of them: its leaves are prose with no check behind them, its docs checker covers only counts and links, and its principle 24 ("If the fix is structural, only use the structural fix. The instruction is the symptom") argues for the checks, not against them. The removable part is code that only reminds or guards a state that no longer exists.
 - Why: swapping a check for a paragraph turns a gate into a request. Qara measured the weakest form of that request at 0 of 4 loads (PPRIN-3). The addendum's own limit applies: prose is not enforcement.
 - Evidence: line counts and headers in "What this could replace" (`wc -l` on each file; headers read at the cited lines). pstack side: PPRIN-2, PPRIN-3.
 - Basis: Verified (line counts, what the headers say the code does); Unverified (that any removal is safe; no test run, sibling test files not counted).
-- Code: Gap: none to add; the two removals need a decision by the owner.
+- Code: Gap: none to add; the one removal needs a decision by the owner.
 
 ## What this could replace
 
@@ -164,12 +164,11 @@ Sizes are `wc -l` of the script only; sibling test files and library helpers wer
 | `scripts/audit-raw-module-mocks.ts` (151), `scripts/audit-test-env-restore.ts` (215) | Enforce the testing-ladder stance on stand-ins and env restore (`CLAUDE.md:40`, `testing-guide.md:85-86`) | none | Fail the commit on a raw module mock or an unrestored env | Keep as code; read before any shrink | Medium |
 | `scripts/check-source-file-sizes.ts` (300), `scripts/check-doc-line-cap.ts` (99) | Size caps with an allowlist (`review-rubric.md:16`) | none | A hard stop, allowlist with reasons | Keep as code | Low to change, high to lose: size drift is silent |
 | `.claude/hooks/pre-tool-use-naming.ts` (218) | Rewrites whimsical plan and research filenames to `YYYY-MM-DD-<slug>` (`:5-25`); denies plans written to the plan-mode scratch dir | JM's `~/.claude/CLAUDE.md` File Naming rule (advisory elsewhere) | The Write succeeds first time with a compliant name; the rule says the hook is the only enforcement in qara | Keep as code (the name is injected by the harness, so no paragraph reaches it) | Low |
-| `scripts/check-doc-terms.ts` (90), `check:doc-terms` | Checks glossary terms map to one registered doc kind; header says qara has no glossary file, so the usual run prints a notice and exits 0 (`:6-10`) | none needed | Nothing today (no glossary exists) | Replace: delete, or leave a one-line doctrine "one word, one artifact" | Low; revives only if a glossary is created |
+| `scripts/check-doc-terms.ts` (90), `check:doc-terms` | Live check. Enforces the `Doc-kind terms` block of `UBIQUITOUS_LANGUAGE.md` (122 lines; block near line 113, which says it is machine-checked by this script): one word maps to one registered doc kind. `config/doc-types.json:2` sets `"glossary": "UBIQUITOUS_LANGUAGE.md"`; `scripts/gate/matchers.ts:68` has a `DOC_TERMS` matcher; `package.json:91` has `check:doc-terms`. The script header's "passes when the glossary is absent" describes a case that does not apply here. An earlier draft of this document wrongly called the check a no-op | none needed | Fails the commit when a glossary term maps to two doc kinds | Keep as code (it is a commit-gate matcher) | Low to change, medium to lose: term drift is silent |
 | `scripts/check-typescript-exports-shape.ts` (112), `check:typescript-exports-shape` | Asserts an installed package's `exports` map still matches a recorded shape, to remind that a pinned alias can be dropped (`:3-12`) | none | A red check when the package changes; the decision record `decisions/2026-07-03-ts7-tsgo-migration.md` already holds the revisit trigger | Replace: move the trigger into a dated note in the decision and drop the script | Low to medium: the reminder is lost until someone re-checks the package |
 | `scripts/check-rule-owners.ts` (121), `scripts/check-stated-caps.ts` (54) | Doc-hygiene checks (rule owners, stated caps) | `.claude/context/doc-hygiene.md` (named at `CLAUDE.md:56`, not opened) | Not read past file names | Not judged: unread | |
 
-Principle lines that could be read at task start instead of enforced: none of the rows above. The principle lines worth adding are the four in PPRIN-11, and each is a clause beside an existing check or rule (testing guide, brief template, hook-authoring), not a replacement for one. Total I judge removable: 202 lines (90 plus 112), against about 1,890 measured. Unmeasured: the sibling `.test.ts` files for the two removals.
-
+Principle lines that could be read at task start instead of enforced: none of the rows above. The principle lines worth adding are the four in PPRIN-11, and each is a clause beside an existing check or rule (testing guide, brief template, hook-authoring), not a replacement for one. Total I judge removable: 112 lines (`check-typescript-exports-shape.ts` only), against 1,705 measured (the sum of the table's script sizes). Unmeasured: the sibling `.test.ts` file for the removal.
 ## Reference
 
 ### The 24 principles
@@ -295,7 +294,7 @@ Rating: Have = Qara holds it equal or stronger; Weaker = holds a part; Opposite 
 
 Each question can be asked alone, with the recommendation first.
 
-0a. Replace `scripts/check-doc-terms.ts` (90 lines, a no-op with no glossary) with nothing, noting the "one word, one artifact" rule in `doc-hygiene.md`? Recommendation: yes.
+0a. Withdrawn. `scripts/check-doc-terms.ts` is live and enforces the `Doc-kind terms` block of `UBIQUITOUS_LANGUAGE.md`; keep it as code. An earlier draft recommended deleting it because it wrongly called the check a no-op.
 0b. Replace `scripts/check-typescript-exports-shape.ts` (112 lines) with a dated revisit note in `decisions/2026-07-03-ts7-tsgo-migration.md`? Recommendation: yes, if JM accepts losing the red signal; otherwise keep.
 
 Borrows (all text only; none adds code, so the ranking is unchanged):

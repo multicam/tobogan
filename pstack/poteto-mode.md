@@ -412,7 +412,7 @@ Source: `pstack/skills/poteto-mode/playbooks/<name>.md`. pstack gives no trigger
 
 ## What this could replace
 
-Line counts by `wc -l`, 2026-11-23. Rows judged only from headers and the router read; none was run or tested. Prose is a request, code is a guarantee: a row that guards an outward or irreversible act stays code.
+Line counts by `wc -l`, 2026-11-23. Rows judged only from headers and the router read; none was run or tested. Prose is a request, code is a guarantee: a row that guards an outward or irreversible act stays code. (csf line counts taken from the installed package, not independently re-checked in review.)
 
 | Qara or csf code (lines) | Job | pstack prose that does it | What code guarantees that prose cannot | Verdict | Risk |
 |---|---|---|---|---|---|

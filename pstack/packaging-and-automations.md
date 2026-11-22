@@ -175,9 +175,11 @@ Line counts (`wc -l`): `harness-topology.ts` 236, `harness-topology-rows.ts` 154
 
 ## What this could replace
 
+(csf line counts taken from the installed package, not independently re-checked in review.)
+
 | Qara or csf code (lines) | Job | pstack prose doing the same job | What the code guarantees that prose cannot | Verdict | Risk |
 | --- | --- | --- | --- | --- | --- |
-| `scripts/harness-topology.ts` (236), expected-shape rows `harness-topology-rows.ts` (154) stay | Reports each host path's shape against a declared table. Header: not wired into any blocking gate, "expected to be RED on mac" | none; nearest is the benny "setup check" list (`control-adapter.md:155-169`), also manual | Nothing blocks on it; `check:harness-links` and `check:harness-topology` (package.json:70,73) are the gates. A written audit would lose the one-command matrix | replace the 236-line reporter with a written audit workflow that reads the rows file; keep the rows | low: rows still feed `harness-links.ts` |
+| `scripts/harness-topology.ts` (236), expected-shape rows `harness-topology-rows.ts` (154) stay | Reports each host path's shape against a declared table. Header: not wired into any blocking gate, "expected to be RED on mac" | none; nearest is the benny "setup check" list (`control-adapter.md:155-169`), also manual | Nothing blocks on it: `check:harness-links` and `check:harness-topology` (package.json:70,73) are package scripts with `just` aliases, and neither is named under `scripts/gate/`, so I found no commit or push gate for either. `harness-topology` is also a standing-audits entry (`registry.ts:94`), so this proposal and the standing-audits runner shrink in PPROOF-21 touch the same code and must be decided together. A written audit would lose the one-command matrix | replace the 236-line reporter with a written audit workflow that reads the rows file; keep the rows | low: rows still feed `harness-links.ts` |
 | `scripts/check-skill-trigger-overlap.ts` (120) | Flags skills whose triggers overlap | none; judgement a model does from a paragraph (`poteto-help` routes by description) | A commit fails on a new overlap. Prose reminds only at authoring time | replace with a paragraph in `system-create-skill` and `core/skill-structure.md` ("read the neighbours' USE WHEN before adding one"); keep `check-skill-route-conflicts.ts` (131), which is exact-match | medium: overlaps could creep in; recheck after a month |
 | `scripts/check-skill-definitions.ts` (300) | Frontmatter, class clause, path lints | adapter row check is the analogue (`generate-pstack-harness-trees.mjs:90-102`) | Structure errors fail a commit; a model forgets a field | shrink: keep exact frontmatter and path rules, drop anything that is advice | low |
 | `scripts/check-wrapper-externals.ts` (202) | Drift gate for wrapper skills and external targets | none | Fails when an external skill lands ungated | keep (an outward-facing trust boundary) | n/a |
@@ -352,7 +354,7 @@ Not to borrow, and why:
 
 Questions for the owner, each askable alone:
 
-1. Replace `scripts/harness-topology.ts` (236 lines, report-only, not a gate) with a written audit workflow that reads `harness-topology-rows.ts`? Recommendation: yes; the gates `check:harness-links` and `check:harness-topology` stay.
+1. Replace `scripts/harness-topology.ts` (236 lines, report-only, not a gate) with a written audit workflow that reads `harness-topology-rows.ts`? Recommendation: yes, but decide it together with the standing-audits shrink in PPROOF-21 (`harness-topology` is registered at `registry.ts:94`); `check:harness-links` stays.
 2. Replace `scripts/check-skill-trigger-overlap.ts` (120 lines) with a paragraph in `system-create-skill` and `core/skill-structure.md` telling the author to read neighbouring `USE WHEN` lines? Recommendation: yes, recheck in a month; keep `check-skill-route-conflicts.ts`.
 3. Add the four intake rules (verify existing fix, repro twice, stop when a person claimed it, compensate a half-made record) as about 20 lines in `triage-issue`? Recommendation: yes, Qara first; csf after reading how cub admits work orders.
 4. Is a UI reproduction path in scope for Qara or cub at all? Recommendation: no for now; skip the control-adapter contract.

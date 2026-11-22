@@ -16,7 +16,7 @@
 
 ## Short answer
 
-Owner's steer of 2026-11-23: remove code and replace it with workflows and doctrine. For this feature the answer is small and specific. About 700 to 900 lines of Qara code (turbo's graph scheduler, progress and revision writers; the generated model roster and its drift check; probably part of the pane-placement helper) track state or mirror text for the agent's own benefit, and a written paragraph could carry them. Roughly 2,000 lines stay code: every gate that merges, pushes, deletes, admits work or spends quota, and csf's merge train entirely. pstack offers no replacement for any of those gates; its landing playbooks are the prose version of what `/push` and the train enforce, and they are weaker (PPAR-10, 16, 18).
+Owner's steer of 2026-11-23: remove code and replace it with workflows and doctrine. For this feature the answer is small and specific. About 700 to 900 lines of Qara code (turbo's graph scheduler, progress and revision writers; the generated model roster and its drift check; probably part of the pane-placement helper) track state or mirror text for the agent's own benefit, and a written paragraph could carry them. About 2,100 Qara lines (about 2,700 with csf's merge train) stay code: every gate that merges, pushes, deletes, admits work or spends quota, and csf's merge train entirely. pstack offers no replacement for any of those gates; its landing playbooks are the prose version of what `/push` and the train enforce, and they are weaker (PPAR-10, 16, 18).
 
 arena, swarm and interrogate are three short prompts (48, 41 and 31 lines) with no code behind them. arena runs N candidates on one brief in separate worktrees, has one read-only judge from another vendor score them against a rubric, and lets the parent pick a base and graft the best parts by hand. swarm splits work into slices or races and returns one table. interrogate reuses arena's fan-out to send adversaries at a diff and keeps only findings whose command the parent reruns and sees fail. Nothing stops a bad merge except the parent following the text and verifying the result afterwards. Of the whole feature, only `watch-pr`, a read-only PR status watcher, is code with tests.
 
@@ -150,7 +150,7 @@ pstack: land "the contiguous verified run rooted at the bottom", one PR at a tim
 - Code: n/a.
 
 **PPAR-18. In this area, replace state-tracking and mirroring code with doctrine; keep every gate on an irreversible or outward act as code.**
-Roughly 700-900 of about 3,000 counted lines are replaceable; the rest guard merge, push, delete, admission or spend. See "What this could replace".
+Roughly 700-900 of about 3,000 counted Qara lines (about 3,630 with the csf rows) are replaceable; the rest guard merge, push, delete, admission or spend. See "What this could replace".
 - Why: prose is a request, not a guarantee. pstack's own gates (verifier independence, patch-id recheck, "never merge on green alone") are prose with no script behind them, as Noodle's were. Code that only schedules, formats or mirrors text for the agent's benefit is where a capable model can follow a paragraph.
 - Evidence: the table below; line counts from `wc -l` on 2026-11-23. I read `graph-scheduler.ts:1-60` and `pre-tool-use-agent-discipline.ts:1-70` only; other rows rest on file names, headers and the Qara docs cited, so those verdicts are lower confidence.
 - Basis: line counts Verified; verdicts Unverified.
@@ -173,7 +173,7 @@ Roughly 700-900 of about 3,000 counted lines are replaceable; the rest guard mer
 | csf `src/trains/csf-drain-train.ts` 219, `train-landing/drain-train-close.ts` 167, `drain/drain-schedule/drain-schedule-next.ts` 257 | Pick, gate, land, bisect, record each transition; choose the next action | `shipping.md:6-10` | Ledger of transitions, trunk pinning, refusal on a moved trunk (`merge-train-solver-and-escalations.md:14-27`) | keep (merge, admission) | High if removed |
 | `commands/spotcheck.md` | Already a prose command | | | already prose | none |
 
-Total in this table's replace or shrink rows: 493 (turbo scheduler family) + 240 (roster check) + 167 (pane helper) = 900 lines at most, about 700 if the pane helper stays. Kept: about 2,100 counted lines.
+Total in this table's replace or shrink rows: 493 (turbo scheduler family) + 240 (roster check) + 167 (pane helper) = 900 lines at most, about 700 if the pane helper stays. Kept: about 2,091 counted lines in the Qara rows (474 + 152 + 296 + 173 + 453 + 325 + 218), or about 2,734 with the three csf rows (643). Counted in all: about 2,991 Qara lines (900 + 2,091), about 3,634 with csf. (csf line counts taken from the installed package, not independently re-checked in review.)
 
 The limit: pstack replaces none of the gate rows and shows no case of a prose gate that held without a script or a human behind it.
 

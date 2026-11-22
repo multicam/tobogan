@@ -201,6 +201,18 @@ describe("pairing flagged calls with their results", () => {
   });
 });
 
+describe("row 12: pi marks a non-zero bash exit as isError", () => {
+  // Shape copied from full-20261122 (q1928__codex__r4, q1468__glm__r1): text "…\n\nCommand exited with code 1", isError true.
+  const L = (o: unknown): Line => ({ t: 1, line: JSON.stringify(o) });
+  test("a bash toolResult with isError true pairs as failed; exit 0 pairs as not failed", () => {
+    const calls = extractToolCalls([
+      L({ type: "message_end", message: { role: "assistant", content: [{ type: "toolCall", id: "a", name: "bash", arguments: { command: "cat ../x" } }, { type: "toolCall", id: "b", name: "bash", arguments: { command: "ls" } }] } }),
+      L({ type: "turn_end", toolResults: [{ role: "toolResult", toolCallId: "a", toolName: "bash", content: [{ type: "text", text: "(no output)\n\nCommand exited with code 1" }], isError: true }, { role: "toolResult", toolCallId: "b", toolName: "bash", content: [{ type: "text", text: "(no output)" }], isError: false }] }),
+    ]);
+    expect(calls.map((c) => c.failed)).toEqual([true, false]);
+  });
+});
+
 describe("classifyEscapes", () => {
   const ctx = { forbidden: ["/home/u/qara"], allow: [], root: "/w/tree", home: "/home/u", deps: null, tmp: "/w/tmp" };
   const flagged = (args: Record<string, unknown>, failed?: boolean, name = "Read") => ({ name, args, failed });
@@ -221,6 +233,45 @@ describe("classifyEscapes", () => {
     );
     expect(r.attempts).toHaveLength(1);
     expect(r.leaks).toHaveLength(2);
+  });
+});
+
+describe("row 10: a failed shell call is an attempt only with exactly one flagged operand and no read-then-exit-1 command", () => {
+  const ctx = { forbidden: [], allow: [], root: "/w/tree", home: "/home/u", deps: null, tmp: "/w/tmp" };
+  const failedBash = (command: string) => ({ name: "Bash", args: { command }, failed: true });
+  const kind = (command: string) => {
+    const r = classifyEscapes([failedBash(command)], ctx);
+    return r.attempts.length === 1 ? "attempt" : r.leaks.length === 1 ? "leak" : "none";
+  };
+
+  test("one flagged path operand that failed is an attempt", () => {
+    expect(kind("cat ../x")).toBe("attempt");
+  });
+  test("cat ../a ../missing may have read ../a, so it is a leak", () => {
+    expect(kind("cat ../a ../missing")).toBe("leak");
+  });
+  test("grep, rg and diff exit 1 after reading, so they are leaks", () => {
+    expect(kind("grep -rn foo ../src")).toBe("leak");
+    expect(kind("/usr/bin/grep -n foo ../src/a.ts")).toBe("leak");
+    expect(kind("rg foo ../src")).toBe("leak");
+    expect(kind("diff ../a b")).toBe("leak");
+  });
+});
+
+describe("row 11: working directory across calls (pinned limit: claude persists, pi does not)", () => {
+  const ctx = { forbidden: [], allow: [], root: "/w/tree", home: "/home/u", deps: null, tmp: null };
+  const seq = (name: string, ...commands: string[]) => scanEscapes(commands.map((command) => call(name, { command })), ctx);
+
+  test("claude's Bash tool keeps its cwd, so `cd sub` then `cat ../file` stays inside", () => {
+    expect(seq("Bash", "cd sub", "cat ../file")).toEqual([]);
+    expect(seq("Bash", "cd sub", "cat ../../file")).toHaveLength(1);
+  });
+  test("pi's bash tool starts fresh each call, so the same pair resolves from the tree root and is flagged", () => {
+    expect(seq("bash", "cd sub", "cat ../file")).toHaveLength(1);
+  });
+  test("a failed cd does not move the tracked directory", () => {
+    const calls = [{ name: "Bash", args: { command: "cd sub" }, failed: true }, call("Bash", { command: "cat ../file" })];
+    expect(scanEscapes(calls, ctx)).toHaveLength(1);
   });
 });
 

@@ -25,6 +25,11 @@ const good = {
   "t/a.md": "# ABC\n\n**ABC-1. Do it.**\nText.\n- Basis: Decision\n\n**ABC-2. Also.**\n- Basis: Verified\n\nSee ABC-1 and W-1.\n",
 };
 
+// Adds a row inside the registry table (rows outside it are not registry rows).
+function withRegistryRow(row) {
+  return good["DOCTRINES.md"].replace("| ABC | `t` | `t/a.md` |\n", (last) => `${last}${row}\n`);
+}
+
 test("green on a consistent repository", () => {
   const { problems, stats } = checkRepo(repo(good), { trackedFiles: [] });
   assert.deepEqual(problems, []);
@@ -74,9 +79,9 @@ test("an illegal definition still ends the previous doctrine's block", () => {
 });
 
 test("fails on a registry row whose prefix is not letters only", () => {
-  const doctrines = good["DOCTRINES.md"] + "| V2MAIL | `t` | `t/a.md` |\n";
+  const doctrines = withRegistryRow("| V2MAIL | `t` | `t/a.md` |");
   const text = checkRepo(repo({ ...good, "DOCTRINES.md": doctrines }), { trackedFiles: [] }).problems.join("\n");
-  assert.match(text, /DOCTRINES\.md:7 registers prefix V2MAIL, which is not letters only/);
+  assert.match(text, /DOCTRINES\.md:5 registers prefix V2MAIL, which is not letters only/);
 });
 
 test("fails on hyphen and underscore prefixes, ending the ID at the last -digits, and they end the previous block", () => {
@@ -87,15 +92,39 @@ test("fails on hyphen and underscore prefixes, ending the ID at the last -digits
   assert.match(text, /ABC-1 .* has no "- Basis:" line/);
 });
 
-test("an illegal prefix yields exactly one problem for that definition", () => {
+test("an illegal prefix that carries a Basis line yields exactly one problem", () => {
   const doc = good["t/a.md"] + "\n**V2MAIL-1. Digit prefix.**\n- Basis: Decision\n";
   const { problems } = checkRepo(repo({ ...good, "t/a.md": doc }), { trackedFiles: [] });
   assert.equal(problems.length, 1);
 });
 
+test("an illegal prefix with no Basis line reports two separate defects: the prefix and the missing Basis", () => {
+  const doc = good["t/a.md"] + "\n**V2MAIL-1. Digit prefix.**\nText.\n";
+  const { problems } = checkRepo(repo({ ...good, "t/a.md": doc }), { trackedFiles: [] });
+  assert.equal(problems.length, 2);
+  assert.match(problems[0], /uses prefix V2MAIL, which is not capital letters only/);
+  assert.match(problems[1], /V2MAIL-1 .* has no "- Basis:" line/);
+});
+
+test("a bold doctrine ID with no space after the period is still a definition", () => {
+  const bare = checkRepo(repo({ ...good, "t/a.md": good["t/a.md"] + "\n**ABC-3.**\nText.\n" }), { trackedFiles: [] }).problems.join("\n");
+  assert.match(bare, /ABC-3 \(t\/a\.md:12\) has no "- Basis:" line/);
+  const glued = checkRepo(repo({ ...good, "t/a.md": good["t/a.md"] + "\n**abc-4.**\n- Basis: Decision\n" }), { trackedFiles: [] }).problems.join("\n");
+  assert.match(glued, /abc-4 \(t\/a\.md:12\) uses prefix abc, which is not capital letters only/);
+  const eol = checkRepo(repo({ ...good, "t/a.md": good["t/a.md"] + "\n**XYZ-1.\n" }), { trackedFiles: [] }).problems.join("\n");
+  assert.match(eol, /XYZ-1 .* does not register/);
+});
+
+test("a three-column table elsewhere in DOCTRINES.md is not read as a registry row", () => {
+  const other = "\n| Level | Meaning | Where |\n| --- | --- | --- |\n| Tested | covered | `t/missing.md` |\n";
+  const before = "| Level | Meaning | Where |\n| --- | --- | --- |\n| Tested | covered | `t/missing.md` |\n\n";
+  const doctrines = before + good["DOCTRINES.md"] + other;
+  assert.deepEqual(checkRepo(repo({ ...good, "DOCTRINES.md": doctrines }), { trackedFiles: [] }).problems, []);
+});
+
 test("fails on a lowercase registry prefix, and on an illegal prefix inside a multi-prefix cell", () => {
-  const lower = checkRepo(repo({ ...good, "DOCTRINES.md": good["DOCTRINES.md"] + "| abc | `t` | `t/a.md` |\n" }), { trackedFiles: [] }).problems.join("\n");
-  assert.match(lower, /DOCTRINES\.md:7 registers prefix abc, which is not letters only/);
+  const lower = checkRepo(repo({ ...good, "DOCTRINES.md": withRegistryRow("| abc | `t` | `t/a.md` |") }), { trackedFiles: [] }).problems.join("\n");
+  assert.match(lower, /DOCTRINES\.md:5 registers prefix abc, which is not letters only/);
   const multi = good["DOCTRINES.md"].replace("| W, R |", "| W, R, r2 |");
   const { problems } = checkRepo(repo({ ...good, "DOCTRINES.md": multi }), { trackedFiles: [] });
   assert.deepEqual(problems, ["DOCTRINES.md:3 registers prefix r2, which is not letters only."]);

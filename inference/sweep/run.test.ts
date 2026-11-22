@@ -38,6 +38,10 @@ describe("per-run scratch dir (row 4)", () => {
   test("the scan allows exactly that directory", () => {
     const ctx = scanCtx("/w/r1", "/w/r1/tree", { depsDir: null, forbidden: [] });
     expect(ctx.tmp).toBe("/w/r1/tmp");
+    expect(ctx.legacyTmp).toBe(false);
+  });
+  test("a legacy row (recorded without perRunTmp) allows bare /tmp", () => {
+    expect(scanCtx("/w/r1", "/w/r1/tree", { depsDir: null, forbidden: [] }, true).legacyTmp).toBe(true);
   });
 });
 

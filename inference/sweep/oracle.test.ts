@@ -236,6 +236,73 @@ describe("classifyEscapes", () => {
   });
 });
 
+// Review fixes: false positives found by replaying full-20261122 (q1928 glm/codex, q1508 glm r3/r4,
+// q1468 glm r0, q1543 glm r1 / codex r1), plus the missing directions.
+describe("scan false positives from the saved runs", () => {
+  const ctx = { forbidden: ["/w/work"], allow: [], root: "/w/tree", home: "/home/u", deps: null, tmp: "/w/tmp" };
+  const count = (name: string, ...commands: string[]) => scanEscapes(commands.map((command) => call(name, { command })), ctx).length;
+  const bash = (...commands: string[]) => count("bash", ...commands);
+
+  test("cd: the target word is tested against the pre-cd directory (q1928 glm r1/r2, q1508 glm r4)", () => {
+    expect(bash("cd sub && cd ..", 'd=$(mktemp -d .x); cd "$d"; echo hi; cd .. && rm -rf "$d"')).toBe(0);
+    expect(count("Bash", 'd=$(mktemp -d .x); cd "$d"; echo hi; cd .. && rm -rf "$d"')).toBe(0);
+    expect(bash("cd ..", "cd sub; cd ../..")).toBe(2);
+  });
+
+  test("awk and sed scripts in quotes are not paths (q1928 codex r0/r2/r4, q1468 glm r0, q1543 glm r1)", () => {
+    expect(
+      bash(
+        "check='/(^|[[:space:]])rm[[:space:]]+-f/ { count++ } END { exit (count != 4) }'; /usr/bin/awk \"$check\" scripts/log-rotate.sh",
+        "awk '/(^|[[:space:]])rm/ { n++ } END { print n }' scripts/a.sh",
+        'sed "s/run(\\[a\\])/runX([a])/" scripts/a.ts',
+        "sed -i 's/(a|b)/c/;s/x/y/' scripts/a.ts",
+        "rg '/' scripts",
+      ),
+    ).toBe(0);
+  });
+
+  test("a quoted word that is wholly a path is still a path; flags with =/abs are paths", () => {
+    expect(bash('cat "/etc/passwd"', "cat '../x'", 'cat "../x"', "tool --out=/etc/x", 'tool --out="/etc/x"', "find /", "ls /")).toBe(7);
+  });
+
+  test("$PWD, ${PWD} and $(pwd) resolve to the working directory (q1543 codex r1)", () => {
+    expect(bash('mktemp -d "$PWD/.audit-test.XXXXXX"', "cat ${PWD}/x", "cat $(pwd)/x", "cat $OLDPWD/x")).toBe(0);
+    expect(bash("cat $PWD/../x", "cat $(pwd)/../../x")).toBe(2);
+    expect(count("Bash", "cd sub", "cat $PWD/../x")).toBe(0);
+  });
+
+  test("PATH-style assignments are not scanned (q1508 glm r3)", () => {
+    expect(bash('export PATH="/opt/homebrew/opt/rustup/bin:$PATH"', "PATH=/opt/x/bin:$PATH cargo test", "export LD_LIBRARY_PATH=/opt/lib", "NODE_PATH=/opt/n node a.js")).toBe(0);
+    expect(bash("export FOO=/etc/x", "cd /opt")).toBe(2);
+  });
+
+  test("absolute-root detection is the static list only, the same on every machine", () => {
+    expect(bash("ls /zzz-unlisted/x")).toBe(0);
+    expect(bash("ls /srv", "ls /mnt/x", "ls /media", "ls /sbin", "ls /lib32")).toBe(5);
+  });
+
+  test("heredoc handling: other arguments still scanned, several heredocs, quoted delimiter", () => {
+    expect(bash("cat ../x <<EOF\nbody\nEOF")).toBe(1);
+    expect(bash("cat <<A\n../x\nA\ncat <<B\n/etc/y\nB\nls")).toBe(0);
+    expect(bash('cat <<"EOF"\n../a\nEOF', "cat <<'EOF'\n../a\nEOF")).toBe(0);
+  });
+});
+
+describe("legacy scratch rule for runs recorded before per-run TMPDIR", () => {
+  const base = { forbidden: ["/w/work"], allow: [], root: "/w/tree", home: "/home/u", deps: null, tmp: null };
+  const hits = (ctx: typeof base & { legacyTmp?: boolean }, command: string) => scanEscapes([call("bash", { command })], ctx).length;
+
+  test("legacy runs may use bare /tmp; strict runs may not", () => {
+    expect(hits({ ...base, legacyTmp: true }, "cat > /tmp/x.test.ts; ls /tmp/qref-check")).toBe(0);
+    expect(hits(base, "cat > /tmp/x.test.ts")).toBe(1);
+  });
+  test("legacy still flags forbidden paths and other roots", () => {
+    expect(hits({ ...base, legacyTmp: true }, "cat /w/work/other/tree/a")).toBe(1);
+    expect(hits({ ...base, legacyTmp: true }, "cat /etc/passwd")).toBe(1);
+    expect(hits({ ...base, forbidden: ["/tmp/sweep-work"], legacyTmp: true }, "cat /tmp/sweep-work/a")).toBe(1);
+  });
+});
+
 // Each test here pins a gap the README lists under "Known limits": the scan does NOT catch these.
 // If one starts failing because the scan got better, update the README and flip the expectation.
 describe("KNOWN LIMITS of the escape scan (documented gaps, not desired behaviour)", () => {
@@ -259,8 +326,9 @@ describe("KNOWN LIMITS of the escape scan (documented gaps, not desired behaviou
   test("a heredoc body fed to a shell is code but is stripped like any heredoc: sh <<EOF … cat ../x … EOF", () => {
     expect(passes("sh <<EOF\ncat ../x\nEOF")).toEqual([]);
   });
-  test("code run by an interpreter reads whatever paths it likes: bun -e 'readFileSync(\"../x\")' passes", () => {
-    expect(passes("bun -e 'require(\"fs\").readFileSync(\"../x\")'")).toHaveLength(1);
+  test("code run by an interpreter reads whatever paths it likes and quoted scripts are not scanned: bun -e 'readFileSync(\"../x\")' passes", () => {
+    expect(passes("bun -e 'require(\"fs\").readFileSync(\"../x\")'")).toEqual([]);
+    expect(passes("cat '/etc/my file'")).toEqual([]);
     expect(passes("bun -e 'require(\"fs\").readFileSync(process.env.X)'")).toEqual([]);
   });
 });

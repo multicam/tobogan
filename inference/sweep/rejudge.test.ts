@@ -13,7 +13,8 @@ const piLine = (command: string, id: string, isError: boolean) => [
   JSON.stringify({ t: 2, line: JSON.stringify({ type: "turn_end", toolResults: [{ role: "toolResult", toolCallId: id, isError }] }) }),
 ];
 
-const row = (runId: string, outcome: string) => ({ runId, task: "t", cell: "glm", rep: 0, outcome });
+// perRunTmp marks rows recorded with a private TMPDIR; rows without it are legacy (bare /tmp allowed).
+const row = (runId: string, outcome: string, perRunTmp = true) => ({ runId, task: "t", cell: "glm", rep: 0, outcome, ...(perRunTmp ? { perRunTmp } : {}) });
 
 // A results dir with three runs: one old escape_attempt that is clean now, one old pass that the
 // stricter scan now flags, one old pass that stays clean.
@@ -58,8 +59,8 @@ describe("dryRunSweep", () => {
     const { root, sweep } = fixture();
     try {
       const lines = dryRunSweep(sweep, opts);
-      expect(lines.find((l) => l.startsWith("r-old-flag"))).toBe("r-old-flag old=escape_attempt new=invalid_escape CHANGED");
-      expect(lines.find((l) => l.startsWith("r-new-flag"))).toBe("r-new-flag old=pass new=invalid_escape CHANGED");
+      expect(lines.find((l) => l.startsWith("r-old-flag"))).toBe('r-old-flag old=escape_attempt new=invalid_escape CHANGED | bash {"command":"cat /tmp/x.test.ts"}');
+      expect(lines.find((l) => l.startsWith("r-new-flag"))).toBe('r-new-flag old=pass new=invalid_escape CHANGED | bash {"command":"ls /"}');
       expect(lines.find((l) => l.startsWith("r-clean"))).toBe("r-clean old=pass new=clean");
       expect(lines.at(-1)).toBe("3 runs, 2 changed");
     } finally {
@@ -73,6 +74,24 @@ describe("dryRunSweep", () => {
       const before = snapshot(root);
       dryRunSweep(sweep, opts);
       expect(snapshot(root)).toBe(before);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  test("legacy rows (no perRunTmp) may use bare /tmp; the same call in a new row is flagged", () => {
+    const { root, sweep } = fixture();
+    try {
+      const legacy = { ...row("r-legacy", "pass", false) };
+      const strict = { ...row("r-strict", "pass", true) };
+      writeFileSync(join(sweep, "runs.jsonl"), [legacy, strict].map((r) => JSON.stringify(r)).join("\n") + "\n");
+      for (const id of ["r-legacy", "r-strict"]) {
+        mkdirSync(join(sweep, "runs", id), { recursive: true });
+        writeFileSync(join(sweep, "runs", id, "transcript.jsonl"), piLine("cat > /tmp/x.test.ts", "z", false).join("\n") + "\n");
+      }
+      const lines = dryRunSweep(sweep, opts);
+      expect(lines.find((l) => l.startsWith("r-legacy"))).toBe("r-legacy old=pass new=clean");
+      expect(lines.find((l) => l.startsWith("r-strict"))).toContain("r-strict old=pass new=invalid_escape CHANGED | ");
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

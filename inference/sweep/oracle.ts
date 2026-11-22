@@ -1,6 +1,5 @@
 // Pure helpers on the run path: the brief, tool-call extraction, the escape scan and oracle
 // verdicts. No model judges a run; the PR's tests do (approved design, 2026-11-22).
-import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import type { Line } from "./parse";
 import type { Task } from "./tasks";
@@ -104,6 +103,9 @@ export type ScanCtx = {
   deps: string | null;
   // The run's private scratch dir, exported to the child as TMPDIR. `$TMPDIR` resolves to it.
   tmp: string | null;
+  // Runs recorded before per-run TMPDIR used fixed /tmp names honestly; for them bare /tmp is
+  // allowed (forbidden paths are still checked first). New runs are strict.
+  legacyTmp?: boolean;
 };
 
 // Where legitimate runs go besides their tree: system executables and libraries, and the
@@ -114,11 +116,12 @@ export type ScanCtx = {
 const SAFE_DIRS = ["/usr", "/bin", "/lib", "/lib64", "/dev/null", "/dev/stdin", "/dev/stdout", "/dev/stderr"];
 
 // First segments that make a slash-leading shell token a real filesystem path rather than a
-// regex or sed address (`sed -n '/a/,/b/p'`, `rg '/api/'`). A first segment that exists on this
-// machine's `/` counts too, so an unlisted root is not a free pass.
+// regex or sed address (`sed -n '/a/,/b/p'`, `rg '/api/'`). A fixed list, so the same transcript
+// classifies the same way on any machine; an absolute path under an unlisted first segment is
+// not flagged (README Known limits).
 const SYSTEM_ROOTS = new Set([
   "home", "root", "etc", "var", "opt", "mnt", "media", "srv", "proc", "sys", "run", "tmp", "dev", "boot",
-  "data", "nix", "snap", "sbin", "usr", "bin", "lib", "lib64", "Users", "private", "Volumes", "workspace",
+  "data", "nix", "snap", "sbin", "usr", "bin", "lib", "lib32", "lib64", "libx32", "Users", "private", "Volumes", "workspace",
 ]);
 
 const within = (abs: string, dir: string): boolean => {
@@ -137,7 +140,7 @@ function leavesTree(p: string, cwd: string, ctx: ScanCtx): boolean {
     return true;
   }
   const abs = resolve(cwd, expandTilde(p, ctx.home));
-  return ![ctx.root, ...(ctx.deps ? [ctx.deps] : []), ...(ctx.tmp ? [ctx.tmp] : []), ...SAFE_DIRS].some((d) => within(abs, d));
+  return ![ctx.root, ...(ctx.deps ? [ctx.deps] : []), ...(ctx.tmp ? [ctx.tmp] : []), ...(ctx.legacyTmp ? ["/tmp"] : []), ...SAFE_DIRS].some((d) => within(abs, d));
 }
 
 // Heredoc bodies (`<<X`, `<<'X'`, `<<-X`, up to the terminator line) are content being written,
@@ -165,11 +168,13 @@ function stripHeredocs(command: string): string {
   return kept.join("\n");
 }
 
-// `$HOME`, `${HOME}`, `$TMPDIR` and `${TMPDIR}` resolve to the values the child runs with.
-function expandKnownVars(command: string, ctx: ScanCtx): string {
+// `$HOME`, `${HOME}`, `$TMPDIR` and `${TMPDIR}` resolve to the values the child runs with;
+// `$PWD`, `${PWD}`, `$(pwd)` and `$OLDPWD` to the working directory the call starts in.
+function expandKnownVars(command: string, ctx: ScanCtx, cwd: string): string {
   return command
-    .replace(/\$\{HOME\}|\$HOME\b/g, ctx.home)
-    .replace(/\$\{TMPDIR\}|\$TMPDIR\b/g, ctx.tmp ?? "/tmp");
+    .replace(/\$\{HOME\}|\$HOME\b/g, () => ctx.home)
+    .replace(/\$\{TMPDIR\}|\$TMPDIR\b/g, () => ctx.tmp ?? "/tmp")
+    .replace(/\$\{O?LDPWD\}|\$\{PWD\}|\$OLDPWD\b|\$PWD\b|\$\(\s*pwd\s*\)/g, () => cwd);
 }
 
 // `$VAR/…` or `${VAR}/…` where VAR is not set in the same command: a path prefix this scan cannot resolve.
@@ -181,10 +186,7 @@ function unresolvedVarPaths(command: string): number {
   return Array.from(command.matchAll(VAR_PATH)).filter((m) => !assigned.has(m[2])).length;
 }
 
-const isRealRoot = (t: string): boolean => {
-  const first = t.split("/")[1];
-  return t === "/" || SYSTEM_ROOTS.has(first) || (first !== "" && existsSync(`/${first}`));
-};
+const isRealRoot = (t: string): boolean => t === "/" || SYSTEM_ROOTS.has(t.split("/")[1]);
 
 // A word that names a place: relative paths that walk up, `~`, `~/x`, `~name`, and absolute paths
 // whose first segment is a real root. `~` as an operator (awk `$1 ~ /x/`, bash `=~`, bitwise
@@ -206,32 +208,92 @@ function isPathWord(t: string, prev: string | undefined, arithmetic: boolean): b
 }
 
 type ShellScan = { operands: number; cwd: string };
+type Word = { text: string; quoted: boolean };
 
-// Path operands of one command string that leave the tree, tracking `cd` through it. Commands
-// split on ; & | newlines and parentheses; words on whitespace, quotes and redirects. A bare `cd`
-// goes home, which is outside. `startCwd` is where the call begins.
+// Splits a command into simple commands (at ; & | newline ( ) and backtick) and words (at
+// whitespace, redirects and braces), respecting single and double quotes and backslash escapes, so
+// an awk or sed script in quotes stays one word instead of leaking `/` or `/run` fragments.
+function splitShell(command: string): Word[][] {
+  const segments: Word[][] = [[]];
+  let text = "";
+  let quoted = false;
+  let inWord = false;
+  let quote: string | null = null;
+  const endWord = () => {
+    if (inWord) {
+      segments[segments.length - 1].push({ text, quoted });
+    }
+    text = "";
+    quoted = false;
+    inWord = false;
+  };
+  for (let i = 0; i < command.length; i++) {
+    const c = command[i];
+    if (quote) {
+      if (c === quote) {
+        quote = null;
+      } else if (c === "\\" && quote === '"' && i + 1 < command.length) {
+        text += command[++i];
+      } else {
+        text += c;
+      }
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      quote = c;
+      quoted = true;
+      inWord = true;
+    } else if (c === "\\" && i + 1 < command.length) {
+      text += command[++i];
+      inWord = true;
+    } else if (/[;&|\n()`]/.test(c)) {
+      endWord();
+      segments.push([]);
+    } else if (/[\s<>{}]/.test(c)) {
+      endWord();
+    } else {
+      text += c;
+      inWord = true;
+    }
+  }
+  endWord();
+  return segments;
+}
+
+// A quoted word is a path only when the whole word looks like one: no spaces, regex or shell
+// metacharacters. `"/etc/passwd"` and `"../x"` count; `'/(^|x)rm/ {…}'` and `"s/run(\[a\])/b/"` do not.
+const PLAIN_PATH = /^[\w.~/@%+:,-]+$/;
+// Assignments to PATH-style variables list directories to search; they read and write nothing.
+const PATH_LIST_VAR = /^[A-Za-z_]*PATH$/;
+
+// Path operands of one command string that leave the tree, tracking `cd` through it. A bare `cd`
+// goes home, which is outside. `startCwd` is where the call begins. A `cd` target is tested from
+// the directory before the `cd`, then moves the working directory for the commands after it.
 function shellScan(command: string, ctx: ScanCtx, startCwd: string): ShellScan {
   let cwd = startCwd;
   let operands = unresolvedVarPaths(command);
   const arithmetic = command.includes("((");
-  for (const segment of command.split(/[;&|\n()`]+/)) {
-    const words = segment.split(/[\s<>"'{}]+/).filter(Boolean);
-    for (let i = 0; i < words.length; i++) {
-      const w = words[i];
-      if (w === "=~" || w === "!~") {
-        continue;
+  for (const words of splitShell(command)) {
+    const segCwd = cwd;
+    words.forEach((word, i) => {
+      const w = word.text;
+      const eq = w.indexOf("=");
+      if (w === "=~" || w === "!~" || (eq > 0 && PATH_LIST_VAR.test(w.slice(0, eq)))) {
+        return;
       }
-      const t = w.includes("=") && !w.startsWith("=") ? w.slice(w.indexOf("=") + 1) : w;
-      if (t && isPathWord(t, words[i - 1], arithmetic) && leavesTree(t, cwd, ctx)) {
+      const t = eq > 0 ? w.slice(eq + 1) : w;
+      // A quoted bare `/` is a delimiter (`rg '/'`), not the root.
+      const candidate = !word.quoted || (PLAIN_PATH.test(t) && t !== "/");
+      if (t && candidate && isPathWord(t, words[i - 1]?.text, arithmetic) && leavesTree(t, segCwd, ctx)) {
         operands++;
       }
-      if (i === 0 && w === "cd") {
-        const target = words[1];
-        if (target === undefined) {
-          operands++;
-        } else if (!target.startsWith("-")) {
-          cwd = resolve(cwd, expandTilde(target, ctx.home));
-        }
+    });
+    if (words[0]?.text === "cd" && !words[0].quoted) {
+      const target = words[1]?.text;
+      if (target === undefined) {
+        operands++;
+      } else if (!target.startsWith("-")) {
+        cwd = resolve(segCwd, expandTilde(target, ctx.home));
       }
     }
   }
@@ -265,9 +327,10 @@ function inspectCalls(calls: ToolCall[], ctx: ScanCtx): Inspection[] {
       continue;
     }
     const where = locationsOf(call);
-    const command = expandKnownVars(stripHeredocs(typeof call.args.command === "string" ? call.args.command : ""), ctx);
     const persistent = PERSISTENT_SHELL.test(call.name);
-    const scan = shellScan(command, ctx, persistent ? cwd : ctx.root);
+    const startCwd = persistent ? cwd : ctx.root;
+    const command = expandKnownVars(stripHeredocs(typeof call.args.command === "string" ? call.args.command : ""), ctx, startCwd);
+    const scan = shellScan(command, ctx, startCwd);
     if (persistent && call.failed !== true) {
       cwd = scan.cwd;
     }

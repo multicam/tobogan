@@ -49,8 +49,8 @@ export async function runAgent(cell: Cell, brief: string, base: SpawnOpts, spawn
 
 // Escape-scan context for one run: its tree is the only inside; its work dir and the deps copy
 // are stripped from the forbidden-substring check.
-export function scanCtx(work: string, tree: string, opts: Pick<RunOpts, "depsDir" | "forbidden">): ScanCtx {
-  return { forbidden: opts.forbidden, allow: [`${work}/`, ...(opts.depsDir ? [opts.depsDir] : [])], root: tree, home: homedir(), deps: opts.depsDir, tmp: runTmp(work) };
+export function scanCtx(work: string, tree: string, opts: Pick<RunOpts, "depsDir" | "forbidden">, legacyTmp = false): ScanCtx {
+  return { forbidden: opts.forbidden, allow: [`${work}/`, ...(opts.depsDir ? [opts.depsDir] : [])], root: tree, home: homedir(), deps: opts.depsDir, tmp: runTmp(work), legacyTmp };
 }
 
 // Each run's private scratch dir, so no run reads another's (or another session's) files in /tmp.
@@ -163,6 +163,7 @@ export async function runOne(item: PlanItem, opts: RunOpts): Promise<RunRecord> 
     permissionDenials: s.permissionDenials,
     diffBytes: diff.length,
     escapes,
+    perRunTmp: true,
     oracleExit,
     startedAt,
     concurrency: opts.concurrency,

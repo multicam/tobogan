@@ -79,6 +79,35 @@ test("fails on a registry row whose prefix is not letters only", () => {
   assert.match(text, /DOCTRINES\.md:7 registers prefix V2MAIL, which is not letters only/);
 });
 
+test("fails on hyphen and underscore prefixes, ending the ID at the last -digits, and they end the previous block", () => {
+  const doc = "# ABC\n\n**ABC-1. No basis.**\nText.\n**V2-MAIL-1. Hyphen.**\n- Basis: Decision\n\n**A_B-1. Underscore.**\n- Basis: Decision\n";
+  const text = checkRepo(repo({ ...good, "t/a.md": doc }), { trackedFiles: [] }).problems.join("\n");
+  assert.match(text, /V2-MAIL-1 \(t\/a\.md:5\) uses prefix V2-MAIL, which is not capital letters only/);
+  assert.match(text, /A_B-1 \(t\/a\.md:8\) uses prefix A_B, which is not capital letters only/);
+  assert.match(text, /ABC-1 .* has no "- Basis:" line/);
+});
+
+test("an illegal prefix yields exactly one problem for that definition", () => {
+  const doc = good["t/a.md"] + "\n**V2MAIL-1. Digit prefix.**\n- Basis: Decision\n";
+  const { problems } = checkRepo(repo({ ...good, "t/a.md": doc }), { trackedFiles: [] });
+  assert.equal(problems.length, 1);
+});
+
+test("fails on a lowercase registry prefix, and on an illegal prefix inside a multi-prefix cell", () => {
+  const lower = checkRepo(repo({ ...good, "DOCTRINES.md": good["DOCTRINES.md"] + "| abc | `t` | `t/a.md` |\n" }), { trackedFiles: [] }).problems.join("\n");
+  assert.match(lower, /DOCTRINES\.md:7 registers prefix abc, which is not letters only/);
+  const multi = good["DOCTRINES.md"].replace("| W, R |", "| W, R, r2 |");
+  const { problems } = checkRepo(repo({ ...good, "DOCTRINES.md": multi }), { trackedFiles: [] });
+  assert.deepEqual(problems, ["DOCTRINES.md:3 registers prefix r2, which is not letters only."]);
+});
+
+test("prose-like bold lines that look like definitions fail loud", () => {
+  const step = checkRepo(repo({ ...good, "t/a.md": good["t/a.md"] + "\n**Step-1. Do this.**\n" }), { trackedFiles: [] }).problems.join("\n");
+  assert.match(step, /Step-1 \(t\/a\.md:12\) uses prefix Step, which is not capital letters only/);
+  const iso = checkRepo(repo({ ...good, "t/a.md": good["t/a.md"] + "\n**ISO-8601. A standard.**\n" }), { trackedFiles: [] }).problems.join("\n");
+  assert.match(iso, /ISO-8601 .* uses prefix ISO, which DOCTRINES.md does not register/);
+});
+
 test("accepts a withdrawn doctrine without a Basis line", () => {
   const doc = good["t/a.md"] + "\n**ABC-3. Withdrawn.**\nReplaced by ABC-2.\n";
   assert.deepEqual(checkRepo(repo({ ...good, "t/a.md": doc }), { trackedFiles: [] }).problems, []);

@@ -15,7 +15,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 // Any bold line shaped like a definition; a prefix that is not capital letters is reported, never skipped.
-const DEFINITION = /^\*\*([A-Za-z0-9]+-\d+)\.\s/;
+const DEFINITION = /^\*\*([A-Za-z0-9_-]+-\d+)\.\s/;
 const LEGAL_PREFIX = /^[A-Z]+$/;
 const REFERENCE = /\b([A-Z]{2,}-\d+)\b/g;
 const SECRET_FILE = /(^|\/)(\.env(\.[^/]*)?|.*\.pem|.*\.pfx|id_rsa[^/]*|credentials\.json)$/;
@@ -65,11 +65,14 @@ export function checkRepo(root, { trackedFiles } = {}) {
       const def = line.match(DEFINITION);
       if (def) {
         const id = def[1];
-        const prefix = id.split("-")[0];
-        if (!LEGAL_PREFIX.test(prefix)) problems.push(`${id} (${file}:${i + 1}) uses prefix ${prefix}, which is not capital letters only.`);
+        const prefix = id.replace(/-\d+$/, "");
+        const legal = LEGAL_PREFIX.test(prefix);
+        if (!legal) problems.push(`${id} (${file}:${i + 1}) uses prefix ${prefix}, which is not capital letters only.`);
         if (defined.has(id)) problems.push(`${id} is defined twice: ${defined.get(id)} and ${file}:${i + 1}.`);
         defined.set(id, `${file}:${i + 1}`);
-        if (!registry.has(prefix)) problems.push(`${id} (${file}:${i + 1}) uses prefix ${prefix}, which DOCTRINES.md does not register.`);
+        if (!legal) {
+          // Already reported as an illegal prefix; no second message.
+        } else if (!registry.has(prefix)) problems.push(`${id} (${file}:${i + 1}) uses prefix ${prefix}, which DOCTRINES.md does not register.`);
         else if (registry.get(prefix) !== file) problems.push(`${id} is defined in ${file}, but ${prefix} is registered to ${registry.get(prefix)}.`);
         // A doctrine block runs until the next blank line followed by a heading or definition.
         const block = [];

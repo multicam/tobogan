@@ -45,4 +45,46 @@ describe("renderSummary", () => {
     expect(markdown).toContain("| cell |");
     expect(markdown).toMatch(/\| glm \| 3\/3 /);
   });
+  test("says that cost per pass charges failed attempts to the passes", () => {
+    expect(markdown).toMatch(/\/ pass .*failed attempts included/i);
+  });
+  test("the failure log tells an escape attempt from a leak", () => {
+    const r = renderSummary("s4", [row("glm", "invalid_escape", 10, "Read leaked"), row("codex", "escape_attempt", 20, "Read failed")]);
+    expect(r.markdown).toContain("invalid_escape — Read leaked");
+    expect(r.markdown).toContain("escape_attempt — Read failed");
+  });
+});
+
+describe("renderSummary figures from raw data", () => {
+  const at = (task: string, cell: string, rep: number, tokens: number, outcome: RunRecord["outcome"] = "pass"): RunRecord => ({ ...row(cell, outcome, tokens), runId: `${task}__${cell}__r${rep}`, task, rep });
+  const events = [
+    { at: "2026-11-21T23:49:40Z", kind: "park", surface: "claude", runId: "q1__haiku__r0", concurrency: 3, reason: "five_hour 0.98 >= 0.98" },
+    { at: "2026-11-21T23:55:00Z", kind: "rate_limited", surface: "glm", runId: "q1__glm__r1", concurrency: 2, reason: "429" },
+  ];
+  const rows = [
+    at("q1", "glm", 0, 3000),
+    at("q1", "glm", 1, 1000),
+    at("q1", "glm", 2, 2000),
+    at("q1", "glm", 3, 9999, "fail"), // not a pass: left out
+    at("q1", "glm", 1, 1500), // same run id again: the later row wins over the 1000 above
+    at("q1", "codex", 0, 400),
+    at("q2", "codex", 0, 800),
+  ];
+  const { markdown } = renderSummary("s5", rows, [], events);
+
+  test("per task and cell, min, median and max tokens of passing runs, deduped by run id with the latest row winning", () => {
+    expect(markdown).toContain("## Additional figures from raw data");
+    expect(markdown).toContain("| q1 | glm | 3 | 1,500 | 2,000 | 3,000 |");
+    expect(markdown).toContain("| q1 | codex | 1 | 400 | 400 | 400 |");
+    expect(markdown).toContain("| q2 | codex | 1 | 800 | 800 | 800 |");
+    expect(markdown).not.toContain("9,999");
+  });
+  test("lists park and rate-limit events from the manifest", () => {
+    expect(markdown).toContain("park claude at 2026-11-21T23:49:40Z");
+    expect(markdown).toContain("concurrency 3");
+    expect(markdown).toContain("rate_limited glm at 2026-11-21T23:55:00Z");
+  });
+  test("says so when there are no events", () => {
+    expect(renderSummary("s6", rows).markdown).toContain("No park or rate-limit events.");
+  });
 });

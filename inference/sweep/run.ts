@@ -4,9 +4,10 @@
 //   work/<runId>/judge    clean parent export + diff + pristine tests (deleted after)
 //   results/<sweep>/runs/<runId>/{transcript.jsonl,stderr.txt,diff.patch,oracle.txt}
 import { mkdirSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
 import { join } from "node:path";
 import { CELLS, buildArgv, childEnv, routeProblem, type Cell } from "./cells";
-import { buildBrief, extractToolCalls, scanEscapes, type TestsMode } from "./oracle";
+import { buildBrief, classifyEscapes, extractToolCalls, type ScanCtx, type TestsMode } from "./oracle";
 import { cacheHitRate, classifyError, meteredInit, parseClaudeStream, parsePiStream } from "./parse";
 import type { PlanItem } from "./plan";
 import type { Outcome, RunRecord } from "./record";
@@ -46,6 +47,46 @@ export async function runAgent(cell: Cell, brief: string, base: SpawnOpts, spawn
   return { res, s, route };
 }
 
+// Escape-scan context for one run: its tree is the only inside; its work dir and the deps copy
+// are stripped from the forbidden-substring check.
+export function scanCtx(work: string, tree: string, opts: Pick<RunOpts, "depsDir" | "forbidden">): ScanCtx {
+  return { forbidden: opts.forbidden, allow: [`${work}/`, ...(opts.depsDir ? [opts.depsDir] : [])], root: tree, home: homedir(), deps: opts.depsDir };
+}
+
+// Outcome precedence: wrong route, refusal by quota, timeout, CLI error, escape; null when the
+// run finished cleanly and the oracle decides. Only a flagged call that succeeded (or has no
+// result) is an invalid_escape; flagged calls that all failed are an escape_attempt. Both are
+// excluded from pass counts (record.ts).
+export function decideOutcome(i: {
+  res: Pick<SpawnResult, "timedOut" | "exitCode" | "signal">;
+  s: { rateLimitEvents: unknown[]; errorText: string | null; turns: number };
+  route: string | null;
+  timeoutMs: number;
+  attempts: string[];
+  leaks: string[];
+}): { outcome: Outcome | null; reason: string } {
+  const refused = i.s.rateLimitEvents.some((e: any) => e?.status === REFUSED);
+  if (i.route) {
+    return { outcome: "route_error", reason: i.route };
+  }
+  if (refused || (i.s.errorText && classifyError(i.s.errorText) === "rate_limited")) {
+    return { outcome: "rate_limited", reason: i.s.errorText ?? "rate_limit_event rejected" };
+  }
+  if (i.res.timedOut) {
+    return { outcome: "timeout", reason: `killed after ${i.timeoutMs} ms` };
+  }
+  if (i.res.exitCode !== 0 || i.s.errorText || i.s.turns === 0) {
+    return { outcome: "run_error", reason: i.s.errorText ?? `exit ${i.res.exitCode} ${i.res.signal ?? ""}`.trim() };
+  }
+  if (i.leaks.length > 0) {
+    return { outcome: "invalid_escape", reason: i.leaks.slice(0, 3).join(" | ").slice(0, 300) };
+  }
+  if (i.attempts.length > 0) {
+    return { outcome: "escape_attempt", reason: `all flagged calls failed: ${i.attempts.slice(0, 3).join(" | ").slice(0, 300)}` };
+  }
+  return { outcome: null, reason: "" };
+}
+
 export async function runOne(item: PlanItem, opts: RunOpts): Promise<RunRecord> {
   const task = taskById(item.task)!;
   const cell = CELLS.find((c) => c.id === item.cell)!;
@@ -59,30 +100,17 @@ export async function runOne(item: PlanItem, opts: RunOpts): Promise<RunRecord> 
 
   const { res, s, route } = await runAgent(cell, buildBrief(task, opts.tests), {
     cwd: tree,
-    env: childEnv(process.env),
+    env: childEnv(process.env, cell.surface),
     timeoutMs: opts.timeoutMs,
     transcriptPath: join(art, "transcript.jsonl"),
     stderrPath: join(art, "stderr.txt"),
   });
   const diff = await captureDiff(task, tree);
   writeFileSync(join(art, "diff.patch"), diff);
-  const escapes = scanEscapes(extractToolCalls(res.lines), opts.forbidden, [`${work}/`, ...(opts.depsDir ? [opts.depsDir] : [])]);
+  const { attempts, leaks } = classifyEscapes(extractToolCalls(res.lines), scanCtx(work, tree, opts));
+  const escapes = [...leaks, ...attempts];
 
-  // Outcome precedence: wrong route, refusal by quota, CLI error, escape, then the model's result.
-  let outcome: Outcome | null = null;
-  let reason = "";
-  const refused = s.rateLimitEvents.some((e: any) => e?.status === REFUSED);
-  if (route) {
-    [outcome, reason] = ["route_error", route];
-  } else if (refused || (s.errorText && classifyError(s.errorText) === "rate_limited")) {
-    [outcome, reason] = ["rate_limited", s.errorText ?? "rate_limit_event rejected"];
-  } else if (res.timedOut) {
-    [outcome, reason] = ["timeout", `killed after ${opts.timeoutMs} ms`];
-  } else if (res.exitCode !== 0 || s.errorText || s.turns === 0) {
-    [outcome, reason] = ["run_error", s.errorText ?? `exit ${res.exitCode} ${res.signal ?? ""}`.trim()];
-  } else if (escapes.length > 0) {
-    [outcome, reason] = ["invalid_escape", escapes.slice(0, 3).join(" | ").slice(0, 300)];
-  }
+  let { outcome, reason } = decideOutcome({ res, s, route, timeoutMs: opts.timeoutMs, attempts, leaks });
 
   // Sanity gate, then the oracle (only for runs that finished cleanly).
   let oracleExit: number | null = null;

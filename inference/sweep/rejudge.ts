@@ -3,7 +3,8 @@
 // is appended to runs.jsonl; latestRuns() lets it supersede the original.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { extractToolCalls, scanEscapes } from "./oracle";
+import { classifyEscapes, extractToolCalls } from "./oracle";
+import { scanCtx } from "./run";
 import type { Line } from "./parse";
 import type { RunRecord } from "./record";
 import { taskById } from "./tasks";
@@ -19,10 +20,14 @@ export async function rejudge(row: RunRecord, opts: RejudgeOpts): Promise<RunRec
     .filter(Boolean)
     .map((l) => JSON.parse(l) as Line);
   const work = join(opts.workDir, row.runId);
-  const escapes = scanEscapes(extractToolCalls(lines), opts.forbidden, [`${work}/`, ...(opts.depsDir ? [opts.depsDir] : [])]);
+  const { attempts, leaks } = classifyEscapes(extractToolCalls(lines), scanCtx(work, join(work, "tree"), opts));
+  const escapes = [...leaks, ...attempts];
   const base = { ...row, escapes, reason: undefined as string | undefined };
-  if (escapes.length > 0) {
-    return { ...base, outcome: "invalid_escape", reason: `rejudged offline, still an escape: ${escapes.slice(0, 3).join(" | ").slice(0, 300)}` };
+  if (leaks.length > 0) {
+    return { ...base, outcome: "invalid_escape", reason: `rejudged offline, still an escape: ${leaks.slice(0, 3).join(" | ").slice(0, 300)}` };
+  }
+  if (attempts.length > 0) {
+    return { ...base, outcome: "escape_attempt", reason: `rejudged offline, all flagged calls failed: ${attempts.slice(0, 3).join(" | ").slice(0, 300)}` };
   }
 
   const diffPath = join(art, "diff.patch");

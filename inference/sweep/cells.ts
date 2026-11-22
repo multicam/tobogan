@@ -40,10 +40,22 @@ const DROP_EXACT = new Set(["ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHRO
 const KEEP_EXACT = new Set(["CLAUDE_CODE_OAUTH_TOKEN"]);
 const DROP_PREFIX = /^(CLAUDE_CODE_|ANTHROPIC_(FOUNDRY|BEDROCK|VERTEX)_)/;
 
-export function childEnv(base: Record<string, string | undefined>): Record<string, string> {
+// Claude cells get an allowlist: identity, locale, terminal, XDG dirs, network proxy/CA settings
+// and the subscription OAuth token. Everything else (AWS_*, GOOGLE_*, model overrides, other
+// providers' keys) stays out, so no stray variable can re-route a run off the subscription.
+const CLAUDE_KEEP = /^(PATH|HOME|USER|LOGNAME|SHELL|TERM|TMPDIR|TZ|LANG|LC_[A-Z_]+|XDG_[A-Z_]+|(HTTPS?|NO|ALL)_PROXY|(https?|no|all)_proxy|SSL_CERT_(FILE|DIR)|NODE_EXTRA_CA_CERTS|CLAUDE_CODE_OAUTH_TOKEN)$/;
+
+// pi cells keep the denylist: they need their own provider credentials (ZAI_API_KEY and the like).
+export function childEnv(base: Record<string, string | undefined>, surface: Surface = "pi"): Record<string, string> {
   const out: Record<string, string> = {};
   for (const [k, v] of Object.entries(base)) {
     if (v === undefined || DROP_EXACT.has(k)) {
+      continue;
+    }
+    if (surface === "claude") {
+      if (CLAUDE_KEEP.test(k)) {
+        out[k] = v;
+      }
       continue;
     }
     if (DROP_PREFIX.test(k) && !KEEP_EXACT.has(k)) {

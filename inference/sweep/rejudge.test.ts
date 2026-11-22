@@ -55,11 +55,22 @@ function snapshot(dir: string): string {
 }
 
 describe("rejudgeTargets", () => {
-  test("targets excluded rows and counted rows the current scan now flags; leaves clean and transcript-less rows", () => {
+  test("targets exactly the rows whose verdict changed; leaves unchanged and transcript-less rows", () => {
     const { root, sweep } = fixture();
     try {
       rmSync(join(sweep, "runs", "r-clean"), { recursive: true });
       expect(rejudgeTargets(sweep, opts).map((r) => r.runId)).toEqual(["r-old-flag", "r-new-flag"]);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+  test("an excluded row the scan still excludes the same way is not a target", () => {
+    const { root, sweep } = fixture();
+    try {
+      writeFileSync(join(sweep, "runs.jsonl"), JSON.stringify(row("r-same", "escape_attempt")) + "\n");
+      mkdirSync(join(sweep, "runs", "r-same"), { recursive: true });
+      writeFileSync(join(sweep, "runs", "r-same", "transcript.jsonl"), piLine("cat ../x", "s", true).join("\n") + "\n");
+      expect(rejudgeTargets(sweep, opts)).toEqual([]);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

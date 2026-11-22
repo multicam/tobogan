@@ -20,7 +20,6 @@ const readTranscript = (art: string): Line[] =>
     .map((l) => JSON.parse(l) as Line);
 
 const escapeKind = (o: string): string => (o === "invalid_escape" || o === "escape_attempt" ? o : "clean");
-const isExcludedEscape = (o: string): boolean => o === "invalid_escape" || o === "escape_attempt";
 
 type ReplayOpts = Pick<RejudgeOpts, "workDir" | "depsDir" | "forbidden">;
 type Replay = { row: RunRecord; now: string; first?: string };
@@ -66,12 +65,13 @@ export function dryRunSweep(sweepDir: string, opts: ReplayOpts): string[] {
   return [...out, `${replays.length} runs, ${changed} changed`];
 }
 
-// The rows a real `rejudge` appends a corrected row for: every row already excluded as an escape
-// (the scan may now clear it), plus every counted row the current scan flags (a pass the stricter
-// scan rejects). Rows that stay clean are left alone, so their oracle is not re-run.
+// The rows a real `rejudge` appends a corrected row for: exactly the rows `--dry-run` marks
+// CHANGED, whether an excluded escape the scan now clears or a counted row it now flags (a pass
+// the stricter scan rejects). Rows whose verdict is unchanged are left alone, so no oracle is
+// re-run and no row is appended for them.
 export function rejudgeTargets(sweepDir: string, opts: ReplayOpts): RunRecord[] {
   return replaySweep(sweepDir, opts)
-    .filter((r) => isExcludedEscape(r.row.outcome) || r.now === "invalid_escape" || r.now === "escape_attempt")
+    .filter((r) => r.now !== "no-transcript" && r.now !== escapeKind(r.row.outcome))
     .map((r) => r.row);
 }
 

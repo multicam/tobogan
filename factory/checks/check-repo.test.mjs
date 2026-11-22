@@ -49,6 +49,11 @@ test("fails on a duplicate definition, a missing Basis and an unregistered prefi
   assert.match(text, /prefix XYZ, which DOCTRINES.md does not register/);
 });
 
+test("does not walk .claude (agent worktrees there hold copies of the repository)", () => {
+  const { problems } = checkRepo(repo({ ...good, ".claude/worktrees/x/t/a.md": good["t/a.md"], ".claude/worktrees/x/DOCTRINES.md": good["DOCTRINES.md"] }), { trackedFiles: [] });
+  assert.deepEqual(problems, []);
+});
+
 test("ignores IDs inside code fences", () => {
   const doc = good["t/a.md"] + "\n```\n**ABC-7. In a code sample.**\nABC-8\n```\n";
   assert.deepEqual(checkRepo(repo({ ...good, "t/a.md": doc }), { trackedFiles: [] }).problems, []);

@@ -14,7 +14,9 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
-const DEFINITION = /^\*\*([A-Z]+-\d+)\.\s/;
+// Any bold line shaped like a definition; a prefix that is not capital letters is reported, never skipped.
+const DEFINITION = /^\*\*([A-Za-z0-9]+-\d+)\.\s/;
+const LEGAL_PREFIX = /^[A-Z]+$/;
 const REFERENCE = /\b([A-Z]{2,}-\d+)\b/g;
 const SECRET_FILE = /(^|\/)(\.env(\.[^/]*)?|.*\.pem|.*\.pfx|id_rsa[^/]*|credentials\.json)$/;
 const ALLOWED_SECRET_LIKE = /(^|\/)\.env\.example$/;
@@ -38,11 +40,14 @@ export function checkRepo(root, { trackedFiles } = {}) {
   const registry = new Map();
   if (!existsSync(join(root, "DOCTRINES.md"))) problems.push("DOCTRINES.md is missing.");
   else {
-    for (const line of read("DOCTRINES.md").split("\n")) {
-      const m = line.match(/^\|\s*([A-Z, ]+?)\s*\|\s*[^|]*\|\s*`([^`]+)`\s*\|$/);
-      if (!m) continue;
-      for (const prefix of m[1].split(",").map((p) => p.trim()).filter(Boolean)) registry.set(prefix, m[2]);
-    }
+    read("DOCTRINES.md").split("\n").forEach((line, i) => {
+      const m = line.match(/^\|\s*([^|`]+?)\s*\|\s*[^|]*\|\s*`([^`]+)`\s*\|$/);
+      if (!m) return;
+      for (const prefix of m[1].split(",").map((p) => p.trim()).filter(Boolean)) {
+        if (!LEGAL_PREFIX.test(prefix)) problems.push(`DOCTRINES.md:${i + 1} registers prefix ${prefix}, which is not letters only.`);
+        else registry.set(prefix, m[2]);
+      }
+    });
   }
   for (const [prefix, doc] of registry) {
     if (!existsSync(join(root, doc))) problems.push(`Prefix ${prefix} is registered to ${doc}, which does not exist.`);
@@ -61,6 +66,7 @@ export function checkRepo(root, { trackedFiles } = {}) {
       if (def) {
         const id = def[1];
         const prefix = id.split("-")[0];
+        if (!LEGAL_PREFIX.test(prefix)) problems.push(`${id} (${file}:${i + 1}) uses prefix ${prefix}, which is not capital letters only.`);
         if (defined.has(id)) problems.push(`${id} is defined twice: ${defined.get(id)} and ${file}:${i + 1}.`);
         defined.set(id, `${file}:${i + 1}`);
         if (!registry.has(prefix)) problems.push(`${id} (${file}:${i + 1}) uses prefix ${prefix}, which DOCTRINES.md does not register.`);
@@ -69,7 +75,7 @@ export function checkRepo(root, { trackedFiles } = {}) {
         const block = [];
         for (let j = i + 1; j < lines.length && !DEFINITION.test(lines[j]) && !lines[j].startsWith("#"); j++) block.push(lines[j]);
         // Repository rules and withdrawn doctrines (DOCTRINES.md, "Doctrine IDs") carry no Basis.
-        const withdrawn = /\*\*[A-Z]+-\d+\. Withdrawn\.\*\*/.test(line);
+        const withdrawn = line.startsWith(`**${id}. Withdrawn.**`);
         const needsBasis = prefix !== "W" && prefix !== "R" && !withdrawn;
         if (needsBasis && !block.some((l) => l.startsWith("- Basis:"))) problems.push(`${id} (${file}:${i + 1}) has no "- Basis:" line.`);
       }

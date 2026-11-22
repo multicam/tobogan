@@ -60,6 +60,25 @@ test("fails when a secret-bearing file is tracked, but allows .env.example", () 
   assert.deepEqual(problems.map((p) => p.split(" ")[0]), ["app/.env.local", "key.pem"]);
 });
 
+test("fails on a doctrine definition whose prefix has a digit or lowercase letters, naming ID, file and line", () => {
+  const doc = good["t/a.md"] + "\n**V2MAIL-1. Digit prefix.**\n- Basis: Decision\n\n**abc-4. Lowercase prefix.**\n- Basis: Decision\n";
+  const text = checkRepo(repo({ ...good, "t/a.md": doc }), { trackedFiles: [] }).problems.join("\n");
+  assert.match(text, /V2MAIL-1 \(t\/a\.md:12\) uses prefix V2MAIL, which is not capital letters only/);
+  assert.match(text, /abc-4 \(t\/a\.md:15\) uses prefix abc, which is not capital letters only/);
+});
+
+test("an illegal definition still ends the previous doctrine's block", () => {
+  const doc = "# ABC\n\n**ABC-1. No basis.**\nText.\n**V2MAIL-1. Next.**\n- Basis: Decision\n";
+  const text = checkRepo(repo({ ...good, "t/a.md": doc }), { trackedFiles: [] }).problems.join("\n");
+  assert.match(text, /ABC-1 .* has no "- Basis:" line/);
+});
+
+test("fails on a registry row whose prefix is not letters only", () => {
+  const doctrines = good["DOCTRINES.md"] + "| V2MAIL | `t` | `t/a.md` |\n";
+  const text = checkRepo(repo({ ...good, "DOCTRINES.md": doctrines }), { trackedFiles: [] }).problems.join("\n");
+  assert.match(text, /DOCTRINES\.md:7 registers prefix V2MAIL, which is not letters only/);
+});
+
 test("accepts a withdrawn doctrine without a Basis line", () => {
   const doc = good["t/a.md"] + "\n**ABC-3. Withdrawn.**\nReplaced by ABC-2.\n";
   assert.deepEqual(checkRepo(repo({ ...good, "t/a.md": doc }), { trackedFiles: [] }).problems, []);

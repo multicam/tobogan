@@ -92,4 +92,4 @@ A doctrine can carry more than one level, for example "Verified, Tested".
 | PROMPT | `prompt` | `prompt/team-architect.md` |
 | BOARD | `board` | `board/vercel-board.md` |
 
-A new document registers its prefix here. Numbers are never reused: a withdrawn doctrine keeps its number and is marked **Withdrawn**, with the reason.
+A new document registers its prefix here. A prefix is capital letters only (A to Z, no digits); the checker fails on any other bold doctrine definition. Numbers are never reused: a withdrawn doctrine keeps its number and is marked **Withdrawn**, with the reason.

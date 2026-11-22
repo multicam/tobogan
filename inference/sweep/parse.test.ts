@@ -2,7 +2,7 @@
 // Fixtures are trimmed copies of real `pi -p --mode json` output (2026-11-22) and the
 // documented `claude -p --output-format stream-json` event shapes.
 import { describe, expect, test } from "bun:test";
-import { cacheHitRate, classifyError, parseClaudeStream, parsePiStream, type Line } from "./parse";
+import { cacheHitRate, classifyError, meteredInit, parseClaudeStream, parsePiStream, type Line } from "./parse";
 
 const stamp = (objs: unknown[], step = 100): Line[] => objs.map((o, i) => ({ t: (i + 1) * step, line: JSON.stringify(o) }));
 
@@ -104,6 +104,19 @@ describe("parseClaudeStream", () => {
     );
     expect(s.errorText).toContain("usage limit");
     expect(s.rateLimitEvents).toHaveLength(1);
+  });
+});
+
+describe("meteredInit", () => {
+  const init = (apiKeySource: string) => JSON.stringify({ type: "system", subtype: "init", apiKeySource, model: "claude-haiku-5-5" });
+  test("is true for an init event whose apiKeySource is not none", () => {
+    expect(meteredInit(init("ANTHROPIC_API_KEY"))).toBe(true);
+    expect(meteredInit(init("none"))).toBe(false);
+  });
+  test("ignores other events, non-JSON lines and an init without apiKeySource", () => {
+    expect(meteredInit(JSON.stringify({ type: "assistant", apiKeySource: "x" }))).toBe(false);
+    expect(meteredInit("not json")).toBe(false);
+    expect(meteredInit(JSON.stringify({ type: "system", subtype: "init" }))).toBe(false);
   });
 });
 

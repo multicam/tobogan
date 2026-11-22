@@ -5,7 +5,7 @@ A one-off measurement harness: how often each lighter hosted model's first attem
 ## Design
 
 - **Cells, five routes** (`cells.ts`):
-  - `haiku`, `sonnet` and `opus` run through `claude -p` on the subscription. The child environment has `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN`, `ANTHROPIC_BASE_URL` and the inherited `CLAUDE_CODE_*` variables removed. `--bare` is never used, because it forces API-key auth. Every run checks that the init event reports `apiKeySource: none`; a run that does not is a `route_error`.
+  - `haiku`, `sonnet` and `opus` run through `claude -p` on the subscription. The child environment has `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN`, `ANTHROPIC_BASE_URL` the inherited `CLAUDE_CODE_*` variables and the `ANTHROPIC_FOUNDRY_*`, `ANTHROPIC_BEDROCK_*` and `ANTHROPIC_VERTEX_*` variables removed. `--bare` is never used, because it forces API-key auth. Every run checks that the init event reports `apiKeySource: none`; a run that does not is killed as soon as that event arrives and recorded as a `route_error`.
   - `glm` runs through `pi -p --provider zai --model glm-5.3-flash`, on the Z.AI Coding Plan endpoint. This is the route Qara's pi skill approves.
   - `codex` runs through `pi -p` with no provider or model flag, which takes pi's default route (`openai-codex`).
   - The resolved provider and model are read from the stream, never from the flags. Effort or thinking is `medium` in every cell.
@@ -25,6 +25,7 @@ A one-off measurement harness: how often each lighter hosted model's first attem
   - **Sanity gate:** the diff must be non-empty and must apply.
   - **Escape scan:** checks only where each tool call goes, never what it writes. That means file-tool path fields and the shell command.
     - Flagged, as `invalid_escape`: paths in the source repo or its worktrees, `~/.claude/projects`, the results dir, or another run's tree; `gh`, `git fetch/pull/clone`, `curl` or `wget` in command position; web tools.
+    - The scan is a denylist (forbidden paths, network commands, web tools). It does not prove confinement: relative or tilde paths can pass.
     - Not flagged: `git log` and `git show` inside the tree, because the tree holds a single commit and has no history to leak.
   - **Oracle:** the model's diff, minus the test files, is applied to a second clean parent export that holds the pristine PR tests. `bun test` then decides; no model judges.
   - **Recorded:** tokens (input, output, cache read, cache write) from the usage fields, time to first streamed output (spawn overhead), wall time, cache-hit rate, the list-price estimate the CLI reports, and quota-window readings where visible.

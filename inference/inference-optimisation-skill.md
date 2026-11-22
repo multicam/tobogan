@@ -89,7 +89,7 @@ The analogy breaks in one place. Speculative decoding is lossless: the target mo
 - **Keep it warm:** Anthropic's default cache lives 5 minutes, refreshed on each hit. OpenAI keeps entries for at least 30 minutes on GPT-5.6 and later.
 - Why: this is the hosted twin of the skill's first lever, persisting JIT and graph caches across restarts (`SKILL.md:116`, `references/levers.md:12-14`). It is cheap to try.
 - Evidence (the caching pages were read through a fetch tool's summary, so the page claims below are paraphrases):
-  - Sweep, 2026-11-22 (`inference/sweep-results-full-20261122.md`): median cache-read share of tokens was 0.93 for GLM and 0.83 for Codex, both through pi. These are measured on those two routes only; Claude cells have 1 to 2 runs and are not claimed.
+  - Sweep, 2026-11-22 (`inference/sweep-results-full-20261122.md`): median cache-read share of prompt-side tokens (input + cache read + cache write, not output) was 0.93 for GLM and 0.83 for Codex, both through pi. These are measured on those two routes only; Claude cells have 1 to 2 runs and are not claimed.
   - Anthropic prompt caching: a 5-minute default lifetime, refreshed free on each use. Segments must be 100% identical. For concurrent requests, a cache entry becomes available only after the first response starts. The minimum is 512 tokens on Haiku 5.5, Sonnet 5.5 and Opus 5.5.
   - Anthropic rate limits: cache reads do not count toward ITPM or ramp limits.
   - OpenAI prompt caching: on by default, and the whole rendered prefix must match. The page advises about 15 requests a minute per `prompt_cache_key`, above which traffic can overflow to other machines. On GPT-5.6 and later the key is optional.
@@ -121,7 +121,7 @@ The skill warns that the advertised capacity is often not the binding one: for h
   - Quotas: the GLM Coding Plan is metered in plan credits and quotas (`qara/decisions/2026-09-30-zai-coding-plan-subscription.md:16`). glm-5.3-flash costs 0.4× off-peak and 1.2× at peak (`qara/.claude/context/model-policy.md:69`). That makes bulk GLM work cheaper off-peak.
   - Rate-limit handling today is recovery, not prevention. Qara's StopFailure hook saves a checkpoint and logs the failure (`qara/hooks-rs/src/hooks/stop_failure.rs:1-3`; a `rate_limit` stop is tested in `stop_failure_tests.rs:20`, `:84`). csf's pi login preflight treats a 429 as a transit failure (`csf-build/src/runner/pi-login-preflight.ts:36`). Weekly Codex rate-limit peaks are reported by `codex-token-audit.ts`.
   - Anthropic ramp limits and cache-aware ITPM: the Rate limits page (metered API).
-  - Sweep, 2026-11-22: the binding limit was the Claude five-hour window, which reached 0.98, not any provider rate limit; the quota guard parked Claude after one run per cell and no pi run (GLM, Codex) was rate-limited (excluded count 0 in `inference/sweep-results-full-20261122.md`).
+  - Sweep, 2026-11-22: the binding limit was the Claude five-hour window, which reached 0.98, not any provider rate limit; the quota guard parked Claude after one to two runs per cell (haiku 2, sonnet 2 with one run excluded as an escape, opus 1) and no pi run (GLM, Codex) was rate-limited (excluded count 0 in `inference/sweep-results-full-20261122.md`).
 - Basis: Verified (Qara and csf source); Verified (paraphrase) (Anthropic's metered API page); Verified (the Claude window as the binding cap, read in the committed results file's park event); Unverified (the subscription quota windows for Claude, Codex and Gemini)
 - Code: Gap: no quota-aware scheduling in csf, and no measure of drain throughput per wall-clock hour.
 
@@ -194,7 +194,7 @@ Rulings by the owner in the tobogan session, 2026-11-22, each Basis Decision:
 - **Ruled: draft acceptance per rung** (INFER-4, Q3). Measure first-attempt acceptance once, with no permanent logging. Basis: Decision.
 - **Ruled: sweep shape** (Q4). Five cells (Claude Haiku, Sonnet and Opus on subscription, GLM `glm-5.3-flash` on the Coding Plan, Codex `gpt-6.2-sol` via pi) on 5 tasks at n=5. Basis: Decision.
 - **Ruled: drain metrics** (INFER-7, INFER-8, Q5). Suggest them to the Orchestrator. The Orchestrator adopted measure-first but deferred it to a low-priority csf-build debt row behind cub WO-212. Basis: Decision.
-- **Ruled: run timing** (Q6). Run now. The Claude quota guard parked Claude after one run per cell. 70 runs (sonnet 23, opus 24, haiku 23) are deferred until JM approves after the Thu 26 Nov 11:00Z reset. Basis: Decision.
+- **Ruled: run timing** (Q6). Run now. The Claude quota guard parked Claude after one to two runs per cell (haiku 2, sonnet 2 with one run excluded as an escape, opus 1). 70 runs (sonnet 23, opus 24, haiku 23) are deferred until JM approves after the Thu 26 Nov 11:00Z reset. Basis: Decision.
 
 Answered, relayed:
 

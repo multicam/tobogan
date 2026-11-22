@@ -38,7 +38,7 @@ const CLAUDE_TOOLS = "Bash Read Edit Write Glob Grep";
 // it is nested in this session. CLAUDE_CODE_OAUTH_TOKEN is subscription auth and is kept.
 const DROP_EXACT = new Set(["ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "CLAUDECODE", "QARA_TDD_AGENT_ID"]);
 const KEEP_EXACT = new Set(["CLAUDE_CODE_OAUTH_TOKEN"]);
-const DROP_PREFIX = /^CLAUDE_CODE_/;
+const DROP_PREFIX = /^(CLAUDE_CODE_|ANTHROPIC_(FOUNDRY|BEDROCK|VERTEX)_)/;
 
 export function childEnv(base: Record<string, string | undefined>): Record<string, string> {
   const out: Record<string, string> = {};

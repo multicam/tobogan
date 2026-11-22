@@ -5,7 +5,7 @@ Tokens are provider usage summed over the run (input + output + cache read + cac
 - Tests mode: hidden. The model never saw the PR tests; this differs from Qara's 2026-11-12 sweep, which handed them over.
 - Profile: effort/thinking medium everywhere; Claude with no settings sources (no hooks), pi on its defaults. Claude cost here runs lower than a real Claude Code subagent carrying Qara's hooks.
 
-**Ceiling:** every attempted run in every cell passed, so pass rate does not discriminate between models here; compare cost, startup and wall time instead.
+**Ceiling:** every attempted run in every cell passed (this excludes the 1 run excluded as an escape, q1862__sonnet__r0), so pass rate does not discriminate between models here; compare cost, startup and wall time instead.
 For a discriminating wave, use harder tasks: larger multi-file PRs, cross-module refactors, specs that need a design decision, or tasks whose tests check behaviour the brief only implies. Add gate checks (typecheck, lint, the repo's line cap) to the oracle.
 
 Deferred (parked by the Claude quota guard, resumed by a later run): 70 (sonnet 23, opus 24, haiku 23).

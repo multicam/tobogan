@@ -6,7 +6,7 @@ import { createWriteStream } from "node:fs";
 import { createInterface } from "node:readline";
 import type { Line } from "./parse";
 
-export type SpawnResult = { lines: Line[]; exitCode: number | null; signal: string | null; timedOut: boolean; wallMs: number; droppedPartials: number };
+export type SpawnResult = { lines: Line[]; exitCode: number | null; signal: string | null; timedOut: boolean; wallMs: number; droppedPartials: number; killedEarly: boolean };
 
 // Streaming deltas (pi message_update, claude stream_event) are only needed for the first-output
 // stamp; keeping all of them would make transcripts tens of MB. Keep the first one and count the rest.
@@ -17,13 +17,31 @@ const KILL_GRACE_MS = 5000;
 
 export async function spawnStreaming(
   argv: string[],
-  opts: { cwd: string; env: Record<string, string>; timeoutMs: number; transcriptPath: string; stderrPath: string },
+  opts: {
+    cwd: string;
+    env: Record<string, string>;
+    timeoutMs: number;
+    transcriptPath: string;
+    stderrPath: string;
+    // Kill the group as soon as a stdout line satisfies this (e.g. an init line on the wrong auth).
+    killOn?: (line: string) => boolean;
+  },
 ): Promise<SpawnResult> {
   const t0 = performance.now();
   const child = spawn(argv[0], argv.slice(1), { cwd: opts.cwd, env: opts.env, detached: true, stdio: ["ignore", "pipe", "pipe"] });
   const transcript = createWriteStream(opts.transcriptPath);
   const stderr = createWriteStream(opts.stderrPath);
   child.stderr!.pipe(stderr);
+
+  // killGroup is a function declaration so the line handler below can call it.
+  let killedEarly = false;
+  function killGroup(sig: NodeJS.Signals) {
+    try {
+      process.kill(-child.pid!, sig);
+    } catch {
+      // Group already gone.
+    }
+  }
 
   const lines: Line[] = [];
   let droppedPartials = 0;
@@ -40,17 +58,14 @@ export async function spawnStreaming(
     }
     lines.push({ t, line });
     transcript.write(JSON.stringify({ t, line }) + "\n");
+    if (!killedEarly && opts.killOn?.(line)) {
+      killedEarly = true;
+      killGroup("SIGKILL");
+    }
   });
 
   // Timeout: TERM the group, then KILL it after a grace period.
   let timedOut = false;
-  const killGroup = (sig: NodeJS.Signals) => {
-    try {
-      process.kill(-child.pid!, sig);
-    } catch {
-      // Group already gone.
-    }
-  };
   const timer = setTimeout(() => {
     timedOut = true;
     killGroup("SIGTERM");
@@ -66,5 +81,5 @@ export async function spawnStreaming(
   killGroup("SIGKILL");
   await new Promise<void>((r) => transcript.end(r));
   await new Promise<void>((r) => stderr.end(r));
-  return { lines, exitCode, signal, timedOut, wallMs: Math.round(performance.now() - t0), droppedPartials };
+  return { lines, exitCode, signal, timedOut, wallMs: Math.round(performance.now() - t0), droppedPartials, killedEarly };
 }

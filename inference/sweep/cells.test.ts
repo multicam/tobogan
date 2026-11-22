@@ -21,6 +21,10 @@ describe("childEnv", () => {
       CLAUDE_CODE_SUBAGENT_MODEL_FORCE: "1",
       CLAUDE_CODE_USE_BEDROCK: "1",
       QARA_TDD_AGENT_ID: "a1",
+      ANTHROPIC_FOUNDRY_API_KEY: "placeholder",
+      ANTHROPIC_FOUNDRY_RESOURCE: "placeholder",
+      ANTHROPIC_BEDROCK_BASE_URL: "http://elsewhere",
+      ANTHROPIC_VERTEX_PROJECT_ID: "placeholder",
       CLAUDE_CODE_OAUTH_TOKEN: "subscription-token",
       UNSET: undefined,
     });

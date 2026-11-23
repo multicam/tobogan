@@ -7,19 +7,20 @@
 ## Doctrines
 
 **PLAN-1. Nothing counts as working until it has run on a test tenant; tenant tests come first.**
-Environment: the owner's staging setup (EC2, AWS Secrets Manager, Redis on the instance), which the owner will connect to a session. Each test runs as a converging loop with a budget of 3 attempts (LADDER-6); irreversible steps follow LADDER-5. Run these, in order:
-1. Sign-in, token refresh after expiry, sign-out (AUTH-1 to AUTH-3).
+Environment: first runs went against the `cub-staging` registration in the dev tenant (2026-11-23, `probe/RESULTS.md`); the owner's staging setup (EC2, AWS Secrets Manager, Redis on the instance) is still to be connected. Each test runs as a converging loop with a budget of 3 attempts (LADDER-6); irreversible steps follow LADDER-5. Run these, in order:
+1. Sign-in, token refresh after expiry, sign-out (AUTH-1 to AUTH-3) — sign-in measured 2026-11-23; refresh and sign-out have no recorded result yet.
 2. What restricting a matter folder leaves behind, and whether it works at all on folders (MATTER-3, MATTER-6).
 3. App-only `invite` with `Sites.Selected` (MATTER-7).
 4. Preview framing from the app's origin (FILES-6).
 5. Upload of a file over 100 MB through the streaming route (FILES-3, NEXT-2).
-6. Sharing per link scope under the firm's tenant policy (SHARE-2, SHARE-7).
-7. Mail: inline images, attachment `$select`, filing an attachment into a matter (MAIL-4).
+6. Sharing per link scope under the firm's tenant policy (SHARE-2, SHARE-7) — measured 2026-11-23: organization link created, listed, revoked; anonymous link refused by the tenant; invite by email not run (needs a recipient named by the owner).
+7. Mail: inline images, attachment `$select`, filing an attachment into a matter (MAIL-4) — delegated send with attachment, arrival and save-to-drive measured 2026-11-23; the three named parts are not yet.
 8. App-only: the site grant, then matter creation, columns, team changes and closing as the app (AUTH-5, MATTER-7 to MATTER-9).
 9. Token store against a real Redis, including restart and a second instance (AUTH-7).
 10. Change notifications: create a drive and an inbox subscription, receive a notification, run the delta (GRAPH-8).
 11. Template copy and its monitor URL (FILES-7).
-- Why: everything so far is checked against documentation and a simulated Graph only. Items 2 and 3 decide the matter provisioning design.
+- Why: items 2 and 3 decide the matter provisioning design. The rest is order and budget.
+- Evidence: first tenant run 2026-11-23 on `cub-staging` (dev tenant): read-only 5 of 5; app-only writes 9 of 10 (one test-pattern bug, fixed, not rerun); delegated mail and files 9 of 9; organization link round trip OK, anonymous link refused by the tenant; invite by email not run. Prerequisites found: two delegated mail permissions (`Mail.ReadWrite`, `Mail.Send`), an Exchange license, site membership (`probe/RESULTS.md`).
 - Basis: Decision
 
 **PLAN-2. Port the Graph layer, not the spike app.**
@@ -46,12 +47,12 @@ Copy `spike/lib/m365/` (without `server.ts` and `config.ts`) into the existing a
 
 | Area | Confidence | What would raise it |
 | --- | --- | --- |
-| Graph client (retry, paging, token safety) | High | Nothing needed before porting |
+| Graph client (retry, paging, token safety) | High; tenant-tested (read-only 5 of 5, app writes 9 of 10) | Nothing needed before porting |
 | Token storage and refresh | High for the logic; Redis adapter untested against a server | PLAN-1 item 9 |
-| Upload | High for the protocol | PLAN-1 item 5 |
-| Preview | Medium | PLAN-1 item 4 |
-| Sharing | Medium | PLAN-1 item 6 |
-| Mail read and attachment filing | Medium-high | PLAN-1 item 7 |
+| Upload | High; tenant-tested (small and chunked uploads passed) | PLAN-1 item 5 |
+| Preview | Medium-high; the app-only preview URL passed on the tenant | PLAN-1 item 4 (iframe from the app origin) |
+| Sharing | Medium-high; measured on the tenant (organization link round trip OK, anonymous refused) | PLAN-1 item 6 (invite by email) |
+| Mail read and attachment filing | Medium-high; delegated send, arrival and save-to-drive measured | PLAN-1 item 7 |
 | Matter restriction | Low until tested | PLAN-1 items 2, 3 and 8 |
 | App-only provisioning, lead column, closing | Medium: built and unit-tested on documented calls | PLAN-1 item 8 |
 | Change tracking | Medium: delta and webhook built; no queue or renewal timer | PLAN-1 item 10 |
@@ -60,5 +61,5 @@ Copy `spike/lib/m365/` (without `server.ts` and `config.ts`) into the existing a
 
 ## Open
 
-- PLAN-1 waits for the owner to connect the staging setup.
+- PLAN-1 has started on `cub-staging` (dev tenant, 2026-11-23): items 1, 6 and 7 are partly measured; the registration's broad delegated SharePoint permissions (`Sites.FullControl.All`, `Sites.ReadWrite.All`, `AllSites.FullControl`) await the removal decision.
 - PLAN-3 waits for access to the cub repository.

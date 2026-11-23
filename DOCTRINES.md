@@ -85,7 +85,6 @@ A doctrine can carry more than one level, for example "Verified, Tested".
 | MATTER | `matters` | `matters/roles-and-matter-folders.md` |
 | POLICY | `matters` | `matters/policy.md` |
 | WALL | `matters` | `matters/v2-folder-walls.md` |
-| INFER | `inference` | `inference/inference-optimisation-skill.md` |
 | NSKILL | `noodle` | `noodle/skills.md` |
 | NSCHED | `noodle` | `noodle/scheduling.md` |
 | NBRAIN | `noodle` | `noodle/brain.md` |

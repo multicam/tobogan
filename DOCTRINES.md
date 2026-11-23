@@ -99,6 +99,7 @@ A doctrine can carry more than one level, for example "Verified, Tested".
 | PLEARN | `pstack` | `pstack/learning-and-explaining.md` |
 | PWRITE | `pstack` | `pstack/writing-and-code-craft.md` |
 | PPACK | `pstack` | `pstack/packaging-and-automations.md` |
+| PSKILL | `pstack` | `pstack/skills-map.md` |
 | HUMANS | `factory` | `factory/humans-md.md` |
 | LADDER | `factory` | `factory/harness-loops-graphs.md` |
 | FLEET | `factory` | `factory/loops-and-graphs.md` |

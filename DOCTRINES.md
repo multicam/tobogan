@@ -85,12 +85,6 @@ A doctrine can carry more than one level, for example "Verified, Tested".
 | MATTER | `matters` | `matters/roles-and-matter-folders.md` |
 | POLICY | `matters` | `matters/policy.md` |
 | WALL | `matters` | `matters/v2-folder-walls.md` |
-| NSKILL | `noodle` | `noodle/skills.md` |
-| NSCHED | `noodle` | `noodle/scheduling.md` |
-| NBRAIN | `noodle` | `noodle/brain.md` |
-| NMODE | `noodle` | `noodle/modes.md` |
-| NADAPT | `noodle` | `noodle/adapters-events-runtimes.md` |
-| NVIEW | `noodle` | `noodle/cli-config-observability.md` |
 | PMODE | `pstack` | `pstack/poteto-mode.md` |
 | PPRIN | `pstack` | `pstack/principles.md` |
 | PPAR | `pstack` | `pstack/parallel-and-autonomous.md` |

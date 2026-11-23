@@ -7,7 +7,7 @@
 ## Doctrines
 
 **PLAN-1. Nothing counts as working until it has run on a test tenant; tenant tests come first.**
-Environment: first runs went against the `cub-staging` registration in the dev tenant (2026-11-23, `probe/RESULTS.md`); the owner's staging setup (EC2, AWS Secrets Manager, Redis on the instance) is still to be connected. Each test runs as a converging loop with a budget of 3 attempts (LADDER-6); irreversible steps follow LADDER-5. Run these, in order:
+Environment: first runs went against the `cub-staging` registration in the dev tenant (2026-11-23, `probe/RESULTS.md`); the owner's staging setup (EC2, AWS Secrets Manager, Redis on the instance) is still to be connected. Each test runs as a converging loop with a budget of 3 attempts (LADDER-6 in csf-research, `tracks/factory`); irreversible steps follow LADDER-5 there. Run these, in order:
 1. Sign-in, token refresh after expiry, sign-out (AUTH-1 to AUTH-3) — sign-in measured 2026-11-23; refresh and sign-out have no recorded result yet.
 2. What restricting a matter folder leaves behind, and whether it works at all on folders (MATTER-3, MATTER-6).
 3. App-only `invite` with `Sites.Selected` (MATTER-7).

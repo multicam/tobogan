@@ -25,9 +25,9 @@ For example: "`m365`, FILES-4" or "MATTER-3".
 
 **R-4. Code shared between tracks lives in one track's code directory;** the other track's README points to it.
 
-**R-5. Secrets never enter git.** Commit an `.env.example` with empty values; real values go in `.env.local`. Enforced by `factory/checks` (LADDER-2).
+**R-5. Secrets never enter git.** Commit an `.env.example` with empty values; real values go in `.env.local`. Enforced by `factory/checks` (LADDER-2 in csf-research, `tracks/factory/harness-loops-graphs.md`).
 
-**R-6. Green means the checks pass.** Before a commit is pushed, `bun factory/checks/check-repo.mjs .` and the checks of every code directory touched must pass (LADDER-1). CI runs them again on every push.
+**R-6. Green means the checks pass.** Before a commit is pushed, `bun factory/checks/check-repo.mjs .` and the checks of every code directory touched must pass (LADDER-1 in csf-research, `tracks/factory/harness-loops-graphs.md`). CI runs them again on every push.
 
 ## Document format
 
@@ -85,9 +85,8 @@ A doctrine can carry more than one level, for example "Verified, Tested".
 | MATTER | `matters` | `matters/roles-and-matter-folders.md` |
 | POLICY | `matters` | `matters/policy.md` |
 | WALL | `matters` | `matters/v2-folder-walls.md` |
-| HUMANS | `factory` | `factory/humans-md.md` |
-| LADDER | `factory` | `factory/harness-loops-graphs.md` |
-| FLEET | `factory` | `factory/loops-and-graphs.md` |
 | PROMPT | `prompt` | `prompt/team-architect.md` |
 
 A new document registers its prefix here. A prefix is capital letters only (A to Z, no digits); the checker fails on any bold line shaped like a doctrine definition (starting `**PREFIX-N. `) whose prefix is not capital letters only. Numbers are never reused: a withdrawn doctrine keeps its number and is marked **Withdrawn**, with the reason.
+
+The board, inference, noodle, pstack and factory-research doctrines moved to csf-research on 2026-11-24: their prefixes (BOARD, INFER, NSKILL, NSCHED, NBRAIN, NMODE, NADAPT, NVIEW, PMODE, PPRIN, PPAR, PPROOF, PLEARN, PWRITE, PPACK, PSKILL, HUMANS, LADDER, FLEET) are registered in that repository's `DOCTRINES.md`, and the move is recorded in `tracks/consolidation.md` there (TRACKS-1..4).

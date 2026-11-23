@@ -53,7 +53,7 @@ Inside the firm means an address in `FIRM_EMAIL_DOMAINS`, or a link scoped to th
 
 **POLICY-10. All sharing goes through the app; SharePoint's own share button is turned off for members.**
 On the matters site, turn off "Allow members to share the site and individual files and folders", so only owners (the app's credential and site owners) can share.
-- Why: the policy (POLICY-4, POLICY-9) binds only paths through the app. With members allowed to share in SharePoint, anyone with edit access could share a matter outside the firm directly. This turns a wish into a wall (LADDER-2).
+- Why: the policy (POLICY-4, POLICY-9) binds only paths through the app. With members allowed to share in SharePoint, anyone with edit access could share a matter outside the firm directly. This turns a wish into a wall (LADDER-2 in csf-research, `tracks/factory`).
 - Basis: Decision (recommended), needs a site setting by a SharePoint admin
 - Code: none; a site setting.
 

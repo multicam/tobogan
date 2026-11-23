@@ -146,3 +146,10 @@ test("accepts a withdrawn doctrine without a Basis line", () => {
   const doc = good["t/a.md"] + "\n**ABC-3. Withdrawn.**\nReplaced by ABC-2.\n";
   assert.deepEqual(checkRepo(repo({ ...good, "t/a.md": doc }), { trackedFiles: [] }).problems, []);
 });
+
+test("a root-README row whose directory cell is not a `name/` backtick directory is not a track (a code-only directory needs no README)", () => {
+  const readme = good["README.md"] + "| `code` | code only | repository checker |\n";
+  const { problems, stats } = checkRepo(repo({ ...good, "README.md": readme }), { trackedFiles: [] });
+  assert.deepEqual(problems, []);
+  assert.equal(stats.tracks, 1);
+});

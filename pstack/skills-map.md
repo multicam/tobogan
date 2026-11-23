@@ -29,6 +29,7 @@
   - Original proposal; superseded by PSKILL-22: `typescript-best-practices` is a no (G3: no new skills). Only `recall` stays with PLEARN.
 - Eleven pstack instructions conflict with JM's standing rules or with Qara's measured results and are excluded from every proposal (PSKILL-20). The sharpest: a failing-test-only commit is blocked by Qara's pre-commit gate, and reordering commits on a pushed branch needs a force push and voids a blind `MERGE` at the exact head.
 - The owner's rulings of 2026-11-23 on the borrow lists of the seven sibling documents are recorded in PSKILL-23.
+- The owner's rulings of 2026-11-23 on the review of Qara's own skills are recorded in PSKILL-24.
 
 **Before acting on any cut.** Every cut in this document is a proposal. Pin claims were swept on 2026-11-23 against test files and scripts, and the sweep is in Reference section D. But two blind review rounds each found a pinned string the first pass had missed, so more may remain. Before any cut, the implementer runs the host file's own contract test (`show-me/skill-contract.test.ts`, `prompting/skill-contract.test.ts`, `hook-authoring/SKILL.test.ts`, `triage-issue/skill-contract.test.ts`, `retro/SKILL.test.ts`, `scripts/check-command-contract.test.ts` and the others in section D) and searches for other readers of the file. Where this document says "not checked", it means that. A search that reports no hit proves only that the search was narrow.
 
@@ -460,6 +461,29 @@ Standing rules. They bind every ruling below.
 - Evidence: the owner's answers, quoted in the table, given on 2026-11-23 in a second grill over the seven documents' borrow lists. Ruling 27 was not asked: it restates PSKILL-22 ruling 17.
 - Basis: Decision (owner: JM).
 - Code: Gap: nothing is applied yet in Qara or csf. Rulings 16, 17 and 30 are csf-side; ruling 33 is for the Orchestrator.
+
+**PSKILL-24. Follow the owner's rulings of 2026-11-23 on the review of Qara's skills.**
+The owner ran a third grill on 2026-11-23, over a review of Qara's own skills (91 skill directories, no dead links). Where a ruling below and a review proposal disagree, the ruling wins. The standing rules of PSKILL-23 apply unchanged: every edit cuts at least as many lines as it adds from the same file; the per-PR count of lines added and cut is stated in the PR body; the host file's contract tests are read before a cut; a deletion needs the five-step caller trace. Ruling numbers continue from PSKILL-23, which ended at 34.
+
+| # | Question | What was decided | Owner's answer |
+| --- | --- | --- | --- |
+| 35 | Qara `humaniser`, from the unslop review | Cut catalog sections 16, 18 and 21 and the duplicate sentence at `catalog:5-6` (about 40 lines); update the count at `catalog:3` and `edit-article/SKILL.md:94`; trim the description to three phrases and `routing-cheatsheet.md:116`; collapse Process to five steps with one done-when line. Not taken: the frozen-scenarios cut (pinned by `SKILL.test.ts:155-167`), any new rule, a dash ban, a merge into `edit-article`. Status: merged as qara #1998, master `a65250783`. | "q58 yes" (accepting the recommendation with its stated exception) |
+| 36 | The three nightly commands (`nightly-trim-round`, `nightly-compact-records`, `nightly-standing-audits`) and the two disabled op rows in `config/nightly-ops.json` | Retire them, after reading `scripts/lib/nightly-ops-config.test.ts`. | "A" |
+| 37 | `tune` and `finish` | Merge both into `enhance` as modes, after reading the three contract tests and the routes to the two names. | "A" |
+| 38 | `hook-test`, `knowledge-state`, `thoughts-consolidate` | Merge `hook-test` into `hook-authoring`, `knowledge-state` into `introspect`, `thoughts-consolidate` into `hygiene` (plus the `hygiene` trim), each after its tests are read. `hygiene`'s irreversible-delete text stays as pinned. Append `hook-authoring` rules and renumber nothing. | "yes" |
+| 39 | `corsica-mail-ingestion` | Move the skill to the Corsica repo. A mac codex session is performing the move now; the Qara side, after that merge, is to check the skill registries and catalog gates for the old name. | "A -> a mac codex session is performing this right now (we wait for its merge)" |
+| 40 | `archify` | Keep until the csf-docs work, then run the five-step caller trace and decide. | "not sure, it might re-become useful after we do our csf-docs work" |
+| 41 | `sofa` | Shrink the skill to a short pointer, delete the client and tests, note the API and registration; the smoke test is skipped. The brief for the shrink is separate and already sent. Recorded finding: the client's "no key" message cannot tell a symlink, a bad mode, a missing line or a read error apart. The second answer was typed in the Orchestrator's session. | "q60 -> C -- smoke test sofa with a bunch of hard questions lingering"; then "sofa -> skip" |
+| 42 | `choose-implementations` | Shrink to the offline ladder as a paragraph, delete the code and tests, after the caller trace of its eight Markdown references and the topology rows. | "C" |
+| 43 | Zero-use rule | A skill with zero use for four consecutive ledger windows gets a retire proposal with its callers traced. `tailwind-hygiene`, `interactive-form` and `qara-view` stay until then. The rule is one line in `introspect` or the retire workflow, against a matching cut. | "yes B" |
+| 44 | Six text trims, each after its contract tests are read | `explainers`: cut the legacy Mermaid shell and history, keep the Archify paragraph and the two-asset rule. `typesafe-ai`: cut the link lists to a 3-line pointer, only if the file is Qara-owned. `pi` and `improve-loop`: cut history and incident prose inside their merges, keep the commit-body block `pass-metrics.ts` parses. `cruise-fork` and `drive-fork`: cut the duplicate "Spawning gates under Codex" block. `grill-me`: cut the attribution and the anecdote. `address-all-in-subs`: cut the Pi-mode paragraphs that restate `pi-subagents.md`. | "yes" |
+
+Findings of the same review, recorded as facts and not as rulings: the ledger shows `restart` at 8 uses and `pilot-me` at 4 uses, so the review's proposed merges of those two skills are not taken; the review found 91 skill directories and no dead links.
+
+- Why: the owner decides what changes in Qara. A review proposal the owner has refused would mislead the next reader if it stayed live, and a ruling with no record would be re-litigated.
+- Evidence: the owner's answers, quoted in the table, given on 2026-11-23 in the review of Qara's skills. Ruling 35 had already been applied upstream (qara #1998) before this doctrine was written; the rest are recorded decisions for the Qara implementer.
+- Basis: Decision (owner: JM).
+- Code: Gap: nothing further is applied yet in Qara. Ruling 35 is merged (qara #1998); ruling 39 waits on the mac codex session's merge.
 
 ## Reference
 

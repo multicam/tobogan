@@ -21,3 +21,7 @@ Run on 2026-11-23 against the `cub-staging` registration in the dev tenant, site
 - The attachment size Graph reports includes encoding overhead.
 - Nothing was run for matter restriction, change subscriptions (needs a public HTTPS endpoint), calendar, the Redis token store or the preview iframe.
 - Run from `m365/spike`: `bun probe/<name>.ts`. Variable names used: `SP_TENANT_ID`, `SP_APP_CLIENT_ID`, `SP_DRIVE_ID`, the certificate variable, `QA_AGENT_SMITH_UPN`, `QA_AGENT_SMITH_PASSWORD`, `QA_AGENT_SMITH_TOTP_SECRET`, `PROBE_SCRATCH`.
+
+## Alignment with cub
+
+From the research in `m365/` read against csf-research's cub evidence (not from a probe run): cub is aligned with the spike only on SharePoint sync. Mail, calendar, per-user tokens, change notifications and sharing are absent in cub.

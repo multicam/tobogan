@@ -16,8 +16,7 @@ E50 today bundles three readings of "email access" (read a matter's mail, compos
   - Trim R1 ("v1 mints no delegated Graph token") stays true for v1. A v2 record must say it is superseded for the named workloads only.
   - `factory/work-orders/WO-214.md` "Out of scope" lists mail and calendar by E50 and R2; its M12 check ("a reference search over `src/` for `/messages`, `mailFolders`, `/events`, `calendarView` and `sendMail` finds zero") must be retired or narrowed when the first Graph mail call lands.
 - Why: a single deferred row cannot carry three permission models. The firm has not said which reading it means (09 §23 revival trigger).
-- Evidence: cub files above, read at `9aee5f63`. The revival triggers are "drafter's suggestion, not ruled" (09 §23).
-- Evidence: measured 2026-11-23 on the `cub-staging` registration (dev tenant): the E50 test account needed `Mail.ReadWrite` and `Mail.Send` delegated on the registration, an Exchange license on the user (it had no mailbox), and membership of the SharePoint site (`m365/spike/probe/RESULTS.md`).
+- Evidence: cub files above, read at `9aee5f63`. The revival triggers are "drafter's suggestion, not ruled" (09 §23). Measured 2026-11-23 on the `cub-staging` registration (dev tenant): the E50 test account needed `Mail.ReadWrite` and `Mail.Send` delegated on the registration, an Exchange license on the user (it had no mailbox), and membership of the SharePoint site (`m365/spike/probe/RESULTS.md`).
 - Basis: Decision (owner: JM)
 - Code: cub v1 has no Graph mail or calendar call (trim R2 evidence; WO-214 M12). Gap: nothing in cub; tobogan has `spike/lib/m365/mail.ts` for mail only.
 

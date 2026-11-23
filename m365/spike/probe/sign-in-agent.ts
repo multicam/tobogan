@@ -9,7 +9,7 @@ import { need } from "./app-token";
 
 const url = process.argv[2];
 if (!url?.startsWith("https://login.microsoftonline.com/")) throw new Error("pass the authorize URL");
-const USER = process.env.QA_AGENT_SMITH_UPN ?? "agent.smith@clfdev.com";
+const USER = need("QA_AGENT_SMITH_UPN");
 
 function totp(secretBase32: string, now = Date.now()): string {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";

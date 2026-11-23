@@ -85,14 +85,6 @@ A doctrine can carry more than one level, for example "Verified, Tested".
 | MATTER | `matters` | `matters/roles-and-matter-folders.md` |
 | POLICY | `matters` | `matters/policy.md` |
 | WALL | `matters` | `matters/v2-folder-walls.md` |
-| PMODE | `pstack` | `pstack/poteto-mode.md` |
-| PPRIN | `pstack` | `pstack/principles.md` |
-| PPAR | `pstack` | `pstack/parallel-and-autonomous.md` |
-| PPROOF | `pstack` | `pstack/verification.md` |
-| PLEARN | `pstack` | `pstack/learning-and-explaining.md` |
-| PWRITE | `pstack` | `pstack/writing-and-code-craft.md` |
-| PPACK | `pstack` | `pstack/packaging-and-automations.md` |
-| PSKILL | `pstack` | `pstack/skills-map.md` |
 | HUMANS | `factory` | `factory/humans-md.md` |
 | LADDER | `factory` | `factory/harness-loops-graphs.md` |
 | FLEET | `factory` | `factory/loops-and-graphs.md` |

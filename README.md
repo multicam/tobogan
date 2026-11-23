@@ -15,7 +15,7 @@ Each track is a top-level directory. Use the short name to refer to it.
 | `board` | moved | Moved to csf-research `tracks/board`: see `tracks/README.md` there | Moved 2026-11-24 |
 | `inference` | moved | Moved to csf-research `tracks/inference`: see `tracks/README.md` there | Moved 2026-11-24 |
 | `noodle` | moved | Moved to csf-research `tracks/noodle`: see `tracks/README.md` there | Moved 2026-11-24 |
-| `pstack` | `pstack/` | pstack (`cursor/plugins`), feature by feature: the mode skill and playbooks, principles, parallel and unattended work, verification, learning, writing and code craft, packaging; what to borrow and which Qara or csf code a written workflow could replace | Eight research documents, 2026-11-23, read from source without running anything. Skill-level borrow and removal decisions made by the owner 2026-11-23, recorded in `pstack/skills-map.md` (borrow-list rulings of 2026-11-23 recorded in PSKILL-23; skills-review rulings of 2026-11-23 recorded in PSKILL-24; goal-tool, spike-env, board-Redis and open-question rulings of 2026-11-23 recorded in PSKILL-25); nothing yet applied in Qara or csf |
+| `pstack` | moved | Moved to csf-research `tracks/pstack`: see `tracks/README.md` there | Moved 2026-11-24 |
 | `archive` | `archive/` | Frozen earlier work, not a live track | Closed |
 
 ## How this repository works

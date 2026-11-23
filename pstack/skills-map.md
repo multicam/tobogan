@@ -22,8 +22,11 @@
 - The second removal is the `system-create-skill` cluster: four step-by-step workflows of 709 lines that each begin with the same "Read Canonical Architecture" step and end with a score-card or report template, against pstack's 12-line authoring playbook. About 270 lines can go (PSKILL-2).
 - Three smaller cuts come with real borrows: `prompting` loses 66 lines of context-engineering generalities and takes pstack's four-question `sharpen` (net -57); `show-me` loses its 27-line change log and takes `teach`'s build-up rule for diagrams (net -21); `hook-authoring` and `handoff` each shed history narrative while taking one rule from pstack (net -4 and -6).
 - On content, pstack is stronger than Qara in eleven narrow places and Qara is stronger or level elsewhere (master table). The eleven are worth about 30 added lines in total, spread over `critic`, `reviewer`, `performance-goal`, `worker-common`, `triage-issue`, `/sm`, `testing-guide`, `refactoring-signals`, `acts.md`, `retro` and `code-style`. None needs a new skill, hook or check.
+  - Original proposal; superseded by PSKILL-22: the "about 30 added" is now an upper bound. Every edit must cut at least as many lines as it adds from the same file (budget rule), and an edit with no matching cut is dropped. `acts.md` (PSKILL-15) is withdrawn and `code-style` rule 10 (PSKILL-16) is still undecided.
 - Net: about 1,260 text lines removed against about 30 added. No Qara code has to change; about 20 to 30 lines of validator code (`scanActivationTriggers`) become optional to remove afterwards.
+  - Original proposal; superseded by PSKILL-22: the 270-line trim of `system-create-skill` is now a merge of the four workflows (ruling 9). `scanActivationTriggers` is removed or retuned in the same change as the description rule (G5, G6), not an optional later step. Net totals are an upper bound on additions.
 - No new Qara skill is recommended. Twelve pstack skills have no Qara counterpart (table in PSKILL-17); for ten the answer is no, one (`typescript-best-practices`) is an owner question, one (`recall`) stays with PLEARN.
+  - Original proposal; superseded by PSKILL-22: `typescript-best-practices` is a no (G3: no new skills). Only `recall` stays with PLEARN.
 - Eleven pstack instructions conflict with JM's standing rules or with Qara's measured results and are excluded from every proposal (PSKILL-20). The sharpest: a failing-test-only commit is blocked by Qara's pre-commit gate, and reordering commits on a pushed branch needs a force push and voids a blind `MERGE` at the exact head.
 
 ## Doctrines
@@ -36,13 +39,14 @@ pstack skills carry a one-sentence description and no activation section (`pstac
   - The validator reads the description, not the body: `tools/skill-validator/skill-validator-lib.ts:173-192` (`scanActivationTriggers`, severity `warning`, "need ≥5" of 8 categories) called from `.claude/skills/system-create-skill/scripts/validate-skill.ts:123` on `description` plus `whenToUse`. `rg --hidden "When to Activate This Skill"` over `*.ts`, `*.json`, `*.sh` finds the heading in thirteen test files and no other file type (re-run with the shorter "When to Activate", all globs except `*.md`): `.claude/skills/{knowledge-state,iterative-review,flows,research,system-create-cli,tune,improve-repo-architecture,devtools-mcp,tdd-qa,humaniser}/SKILL.test.ts`, `.claude/skills/thoughts-consolidate/thoughts-consolidate.test.ts`, `.claude/tests/validate-skill.test.ts` (fixtures at `:213`, `:240`) and `.claude/tests/archify-contract.test.ts`; `flows` and `research` assert its order after Workflow Routing (`flows/SKILL.test.ts:15`, `research/SKILL.test.ts:19`).
   - Count: `rg -c "^## When to Activate This Skill" --glob SKILL.md` over `.claude/skills` matches 62 files. Sampled sizes (heading to next heading, from file reads): `show-me` 45-57 (13), `design-it-twice` 12-23 (12), `triage-issue` 22-35 (14), `performance-goal` 20-36 (17), `retro` 14-25 (12), `pi-loop` 79-114 (36), `compound` 15-32 (18), `grill-me` 15-25 (11), `prompting` 29-36 (8), `hook-authoring` 24-29 (6). Mean 14.7, so about 910 lines over 62 files.
   - A recent example of the duplication: `retro/SKILL.md:14-25` lists eight categories whose entries ("retro", "run a retro on", "post-mortem of the session") restate the description's `USE WHEN` at `:10`.
-- Take: nothing from pstack's text; the evidence is its shape. Edit three prose files (`skill-structure.md`: drop item 3 at `:33`, the pattern at `:145-156` becomes one sentence "cover the main phrasings in `USE WHEN`", the checklist row at `:173`; `quality-checklist.md:21-22`, `:65`; `system-create-skill/SKILL.md:53`), then delete the 62 blocks and fix the thirteen tests.
+- Take: nothing from pstack's text; the evidence is its shape. Edit the prose files that carry the rule (three named here; the PSKILL-1 check at the end of this doctrine lists the others) (`skill-structure.md`: drop item 3 at `:33`, the pattern at `:145-156` becomes one sentence "cover the main phrasings in `USE WHEN`", the checklist row at `:173`; `quality-checklist.md:21-22`, `:65`; `system-create-skill/SKILL.md:53`), then delete the 62 blocks and fix the thirteen tests.
 - Cut: about 910 lines of skill text; the three prose rules (about 25 lines).
 - Size: +2 lines added (the one-sentence rule), about -935 removed. Optional second step, only after this lands: drop `scanActivationTriggers` and its seed list (about 20 lines at `skill-validator-lib.ts:173-192` plus the seeds, unseen) with its tests in `skill-validator-lib.test.ts`.
 - Risk: the description must then carry routing alone; the `weak-activation-triggers` warning is the only thing pushing authors to write enough phrasings, so keep it until a month of routing shows no misses. `keyword-routes.json` routes are unaffected. Thirteen tests need editing (the search that found them covered every non-markdown file, so no code reads the heading).
 - Basis: Verified for the counts, the pins and the validator behaviour; Unverified for the sampled mean (10 of 62 files) and for the claim that no model-side benefit is lost.
 - Code: Gap: text change across 62 skills and 3 rule files; no code required.
 - Owner ruling 2026-11-23: a description is one sentence on the situation plus at most three example phrases, and the eight-category rule is dropped (G5, G6). So the `scanActivationTriggers` scan (`tools/skill-validator/skill-validator-lib.ts:173-192`), which warns below 5 of 8 categories on the description, would flag every compliant description. Remove or retune it in the same change. Do not keep it for a month, as the Risk line above proposes. The +2/-935 figure does not count rewriting the 62 descriptions to the new form.
+- Files other than `SKILL.md` that carry "When to Activate", found by `rg --hidden -l "When to Activate" --glob '*.md' --glob '!**/SKILL.md'` over Qara on 2026-11-23, excluding `thoughts/` and `decisions/`: `.claude/skills/system-create-skill/references/{skill-patterns-reference,archetype-templates,quality-checklist}.md`, `.claude/skills/system-create-skill/workflows/{validate-skill,canonicalize-skill,create-skill,update-skill}.md`, `.claude/skills/core/skill-structure.md`, `.claude/skills/research/workflows/{web-scraping,youtube-extraction}.md`. So the rule is carried by ten files, not three. The first six `system-create-skill` files go with the merge (ruling 9); the others need their own edit.
 
 **PSKILL-2. Shrink the `system-create-skill` workflows toward pstack's 12-line authoring playbook, and add its delete rule to the checklist.**
 `pstack/skills/poteto-mode/playbooks/authoring-a-skill.md:1-12` does the whole job in four steps and one paragraph. Qara's skill-authoring surface is `system-create-skill/SKILL.md` (112), four step-numbered workflows (166, 165, 170, 208), `deep-improve-skill.md` (54), the checklist (76) and `skill-structure.md` (183).
@@ -109,13 +113,14 @@ pstack skills carry a one-sentence description and no activation section (`pstac
 - Evidence:
   - Take, `pstack/skills/poteto-mode/playbooks/session-pickup.md:11`: "**Reply:** where the prior agent stopped, what you inherited vs redid (ideally nothing redone), the resume point, and the outcome."
   - Place: `handoff/SKILL.md:12` ("... Receiving a handoff does not request a new restart."); append one sentence asking the receiver to report where the prior agent stopped, what it took as given and what it redid.
-  - Cut: `handoff/SKILL.md:41-52` to about 5 lines: keep "create the destination with `mktemp -d` and a template ending `XXXXXX` under a durable or session-scoped home, never a bare `mktemp -d` (the D676 shape, `delegation-guide.md`), never `mktemp -t` (BSD reads it as a prefix)", and the verify-then-return step; drop the worked `mkdir -p` example and the BSD explanation, which `check-command-contract.test.ts:65` already guards by comment.
+  - Pins: `scripts/check-command-contract.test.ts` pins the handoff skill text: `:66` asserts `mktemp -d "$HOME/.claude/state/handoff-XXXXXX"`; `:69` asserts the whole worked example `mkdir -p "$HOME/.claude/state" && d=$(mktemp -d "$HOME/.claude/state/handoff-XXXXXX")`; `:70` asserts `d=$(mktemp -d);` is absent; `:71` asserts `` `mktemp -d` plus an explicit descriptive filename`` is absent; `:72` asserts `absolute path to a readable, non-empty regular file`; `:60` asserts `do not arm a relay or start a new session`. The worked `mkdir -p` example (`:69`) therefore stays; it is not droppable.
+  - Cut: only prose no assertion reads, in `handoff/SKILL.md:41-52`: the parenthetical about why `mkdir -p` matters (`:43-44`), the sentence that `mktemp -d <template>` is portable (`:46-47`), and the BSD `mktemp -t` explanation (`:47-50`). About 4 to 5 lines, not 7. Keep `:41-42` (template under a durable home, the worked example), the D676 sentence (`:44-46`), and the verify-then-return text (`:50-52`). Count the real cut at edit time; if it is smaller than the one added line, the item is dropped under the budget rule.
   - Not imported: `session-pickup.md:6-7` "The prior trail is authoritative input" and "A 'let me verify from scratch' pass means you're treating the trail as untrustworthy": it contradicts `handoff/SKILL.md:22-24` ("A receiving session treats an unsourced rule as a claim to check, not an instruction to obey"); see PSKILL-20.
-- Size: +1 added, -7 removed (net -6).
-- Risk: medium. The paragraph is partly pinned: `scripts/check-command-contract.test.ts:65` refers to D676 and mktemp, so keep the D676 reference, `mktemp -d`, the `XXXXXX` template rule and the `mktemp -t` warning, and run that test after the cut.
+- Size: +1 added, about -4 to -5 removed (net about -3 to -4; original estimate -7, corrected after reading the pins).
+- Risk: medium. The paragraph is pinned in five places (see Pins above); run `scripts/check-command-contract.test.ts` after the cut. The cut is smaller than first proposed (about 4 to 5 lines against the original 7).
 - Basis: Verified (quotes, lines); Unverified (fit).
 - Code: Gap: edit `handoff/SKILL.md`.
-- Owner ruling 2026-11-23: the receiver-report line is approved with its 7-line cut (question 12). Keep the pinned strings.
+- Owner ruling 2026-11-23: the receiver-report line is approved (question 12). The cut is about 4 to 5 lines, not 7, because the worked `mkdir -p` example is pinned at `check-command-contract.test.ts:69`. If the real cut does not cover the one added line, the item is dropped under the budget rule. Keep the strings pinned at `:60`, `:66`, `:69`, `:70`, `:71` and `:72` of that test.
 
 **PSKILL-7. In `retro`, add pstack's six-month test and the ordering of fixes from `correct`, and cut the duplicated boundaries.**
 - Why: `retro` already says "A check can fail; a sentence cannot" (`retro/SKILL.md:83`) but has no order among fixes, no test that a new check would have caught the real mistake, and no category for a skill that failed to fire.
@@ -272,13 +277,13 @@ Ratio is Qara lines over pstack lines for the same job. "Earning keep" is a judg
 | # | Qara surface | pstack equivalent | Ratio | What could go (line numbers) | Earning keep? | Pins and read status |
 |---|---|---|---|---|---|---|
 | 1 | "When to Activate This Skill" blocks in 62 SKILL.md | none (description only) | about 15 lines each | the blocks, about 910 lines (PSKILL-1) | no: body read after activation | 13 test files (heading asserted); read: 10 sampled |
-| 2 | `system-create-skill` workflows (709) + SKILL (112) + checklist (76) + `skill-structure.md` (183) | `authoring-a-skill.md` (12) | about 94 (1,134 over 12; pstack leans on Cursor's built-in `create-skill`) | `create-skill.md:20-31,134-147,162-166`; `update-skill.md:20-31,142-153,164-170`; `canonicalize-skill.md:27-38,123-143,144-158,159-165`; `validate-skill.md:31-41,53-148,149-178,179-186,202-208`; about 270 | mostly no; the validator script and the edit-boundary step do | no hit in `*.ts`, `*.json`, `*.sh` for the workflow file names; headings only |
+| 2 | `system-create-skill` workflows (709) + SKILL (112) + checklist (76) + `skill-structure.md` (183) | `authoring-a-skill.md` (12) | about 94 (1,134 over 12; pstack leans on Cursor's built-in `create-skill`) | `create-skill.md:20-31,134-147,162-166`; `update-skill.md:20-31,142-153,164-170`; `canonicalize-skill.md:27-38,123-143,144-158,159-165`; `validate-skill.md:31-41,53-148,149-178,179-186,202-208`; about 270 (now a merge of the four workflows, ruling 9) | mostly no; the validator script and the edit-boundary step do | no hit in `*.ts`, `*.json`, `*.sh` for the workflow file names; headings only |
 | 3 | `prompting/SKILL.md` (112) | `sharpen` (16) | 7 | `:38-103`, 66 lines (PSKILL-3) | no | no hit in `*.ts`, `*.json`, `*.sh`; read in full |
 | 4 | `show-me/SKILL.md` (283) | `how` 21 + `why` 9 + `teach` 21 + `bro` 7 = 58 | 4.9 | `:257-283`, 24 lines kept 3 (PSKILL-4); the four diff variants `:148-197` (50) are a Qara-chosen menu (PR Summary, `:146`), keep | the views earn it; the log does not | contract test does not pin provenance; read in full |
 | 5 | `historical-why.md` (138) | `why` (9) | 15 | the report template `:110-133` (about 22 lines) could be replaced by "answer, cite, label, list unknowns, list sources" which `:99-104` already says | mostly yes: its evidence-status vocabulary (`:76-83`) matches `research`; the template duplicates `:99-104` | no hit for "What We Don't Know" in `*.test.ts`, `*.json`, `*.sh` (`rg --hidden`); read in full |
 | 6 | `tdd-qa/SKILL.md` (129) | `tdd` (42) | 3.1 (7.7 with `tdd-cycle.md` 193) | `:107-120` "Composing Workflows" (14 lines) repeats `:66-73` Usage Modes and `:79-85` Minimum Complete Cycle | the routing and the "advisory, not proof authority" note earn it | no hit for "Composing Workflows" or "Canonical Sequences" in `*.test.ts`, `*.json`; `tdd-qa/SKILL.test.ts` asserts the "When to Activate" heading (PSKILL-1), not these; `tdd-cycle.md` unread |
 | 7 | `triage-issue/SKILL.md` (162) | `bug-fix` 15 + `fix-root-causes` 14 + `tdd` 42 = 71 | 2.3 | Step 7 `:138-154` (17 lines) restates `:43-45`; shrink to about 9 | the CLI contract earns most of it | `triage-issue/skill-contract.test.ts:17,19` pin `external-handoff:` and `blocked-by-external:`; keep those strings |
-| 8 | `handoff/SKILL.md` (56) | `session-pickup` 11 + `pause-safely` 10 = 21 | 2.7 | `:41-52` to 5 lines (PSKILL-6) | durable-adapter and FACT/THEORY text earn it | partly pinned: `scripts/check-command-contract.test.ts:65` refers to D676 and mktemp, so keep the D676 shape and the `mktemp -d`/`XXXXXX` strings; read in full |
+| 8 | `handoff/SKILL.md` (56) | `session-pickup` 11 + `pause-safely` 10 = 21 | 2.7 | about 4 to 5 unpinned lines in `:41-52` (PSKILL-6; was 7) | durable-adapter and FACT/THEORY text earn it | pinned at `scripts/check-command-contract.test.ts:60,66,69,70,71,72`, including the worked `mkdir -p` example; read in full |
 | 9 | `hook-authoring/SKILL.md` (219) | none | n/a | Rule 11 narrative `:193-198` (PSKILL-5); about 7 lines | the other twelve rules are incident-driven | no hit in `*.ts`, `*.json`, `*.sh`; read in full |
 | 10 | `performance-goal` goal-tool branch | none | n/a | `measure-and-improve.md:101-117` (17) and `SKILL.md:44-45,49-51` (5): Codex-only, "Normal performance work makes zero goal-tool calls" | unclear (Codex-only) | pinned: `performance-goal-contract.test.ts:71`; not pstack-driven; owner question |
 
@@ -332,7 +337,8 @@ JM requires confirmation before outward-facing or hard-to-reverse acts, one ques
 **PSKILL-21. Judge that about 1,260 lines of Qara text can be deleted for about 30 added, no Qara code must change, and nothing enforced should be replaced by a paragraph.**
 - Why: the owner asked for fewer lines; pstack's useful content is small and its main lesson is brevity. Prose is a request, not a guarantee: `pstack/skills/principle-encode-lessons-in-structure` and `correct` themselves say a structural fix beats a sentence, and the Noodle research found prose gates with nothing behind them.
 - Evidence: net lines from PSKILL-1 to 16: removed about 910 + 268 + 57 + 21 + 4 + 6 = 1,266, plus 3 from `retro`; added about 30 across PSKILL-7 to 16. Optional code: about 20 lines of `scanActivationTriggers` plus its seeds and test after PSKILL-1. Must stay as code: every gate in the master table's "ours stronger" rows, the `critic` and `reviewer` verdict parsers, the `# contract:verifier` block (`verifier.md:25-51`), the model-id citation marker (`turbo/SKILL.md:167`), the `skill-contract` tests. The sibling documents' larger removals (TDD state about 2,715 lines, `dream` about 6,400) are PPROOF's and PLEARN's, not repeated here.
-- Basis: Verified for the arithmetic over the figures above; Unverified for the figures that are estimates (PSKILL-1's 910 and PSKILL-2's 270).
+- Basis: Unverified. The sum mixes gross removals (PSKILL-1, 2) with net figures (PSKILL-3 to 6), and two inputs (910, 270) are estimates. It also includes the withdrawn PSKILL-15 line and the PSKILL-6 figure before it was corrected. Treat it as an order of magnitude only.
+- Original proposal; superseded by PSKILL-22: "about 30 added, 0 removed" is replaced by the budget rule (each edit cuts at least what it adds in the same file); the `scanActivationTriggers` removal is part of PSKILL-1, not optional; the `acts.md` line (PSKILL-15) is withdrawn.
 - Code: none; Gap: the edits above.
 
 **PSKILL-22. Follow the owner's rulings of 2026-11-23 where they differ from the proposals above.**
@@ -372,7 +378,7 @@ Preconditions before any Qara edit:
 - Run the five-step caller trace in `pstack/README.md` before any deletion.
 - Read in full the four skill-creation workflows and the two `prompting` workflows before cutting.
 - Check the `critic` fixture and the `check:agents` lint.
-- Keep the pinned strings in `handoff` and `triage-issue`.
+- Keep the pinned strings: in `handoff`, those asserted at `scripts/check-command-contract.test.ts:60,66,69,70,71,72` (including the worked `mkdir -p ... && d=$(mktemp -d "$HOME/.claude/state/handoff-XXXXXX")` example); in `triage-issue`, `external-handoff:` and `blocked-by-external:` (`skill-contract.test.ts:17,19`).
 
 Rulings 19 to 22 concern rows in other documents of this track: `pstack/learning-and-explaining.md`, `pstack/verification.md`, `pstack/parallel-and-autonomous.md`, `pstack/packaging-and-automations.md` and `pstack/principles.md`. Go there for the rows.
 - Why: the owner decides what changes in Qara and csf. A research document that keeps proposing what the owner has refused would mislead the next reader.
@@ -394,7 +400,7 @@ Lines are `wc -l` of the pstack SKILL.md and of the Qara file (Verified). Verdic
 | 4 | `benchmark-checklist` (39) | Seven questions to vet a performance number | `skills/performance-goal/workflows/measure-and-improve.md` (117) | theirs stronger on 4 of 7; ours stronger on statistics | enhance ours: PSKILL-10 |
 | 5 | `blast-radius` (50) | Find the one fact a change is safe because of; prove it by running; rate how sure | `agents/critic.md` (59), check 4 | theirs stronger | enhance ours: PSKILL-8 |
 | 6 | `bro` (7) | Restate the last message plainly | none | no counterpart | nothing |
-| 7 | `correct` (32) | Group repeated mistakes; fix at the highest level; prove the check; keep a rule table | `skills/retro` (93), `improve-repo/workflows/lens-guardrail-ladder.md` (68), `context/acts.md` (32) | level; theirs stronger on order and proof | enhance ours: PSKILL-7, PSKILL-15 |
+| 7 | `correct` (32) | Group repeated mistakes; fix at the highest level; prove the check; keep a rule table | `skills/retro` (93), `improve-repo/workflows/lens-guardrail-ladder.md` (68), `context/acts.md` (32) | level; theirs stronger on order and proof | enhance ours: PSKILL-7 (four filters only; PSKILL-15 withdrawn; fix order rejected) |
 | 8 | `create-formal-verification-skill` (43, fm) | Generate a project-local formal-verification skill | none | no counterpart | nothing (PPROOF) |
 | 9 | `create-verification-skill` (44, fm) | Generate a project-local skill that drives the app | `skills/devtools-mcp` (68), `tdd-qa/workflows/e2e-verify.md` (112) | level | nothing |
 | 10 | `figure-it-out` (52) | Design a playbook when none fits: frame, design, loop, trail, verify | `commands/create_plan.md` (151), `skills/cruise` (214, unread) | ours stronger (gates) | nothing |
@@ -420,7 +426,7 @@ Lines are `wc -l` of the pstack SKILL.md and of the Qara file (Verified). Verdic
 | 30 | `tdd` (42) | Failing test first for a bug with a cheap test path | `skills/tdd-qa` (129), `tdd-qa/workflows/tdd-cycle.md` (193) | ours stronger | nothing; trim PSKILL-18 row 6 |
 | 31 | `teach` (21) | Explain what, how and why plainly; diagram series | `skills/show-me` (283) | level; theirs has the build-up rule | enhance ours and cut: PSKILL-4 |
 | 32 | `technical-writing` (70, fm) | Diátaxis, Google style, STE rules | `skills/edit-article` (115), `skills/humaniser` (79) | level | nothing (PWRITE) |
-| 33 | `typescript-best-practices` (31) | 16-row TypeScript rule table; `paths:` glob | none (`code-style` is language-neutral; `rust-style` 64 for Rust) | no counterpart | owner question (PSKILL-17) |
+| 33 | `typescript-best-practices` (31) | 16-row TypeScript rule table; `paths:` glob | none (`code-style` is language-neutral; `rust-style` 64 for Rust) | no counterpart | no (owner ruling, G3: no new skills) |
 | 34 | `unslop` (40) | 33 numbered AI-tell rules | `skills/humaniser` (79) | level; ours adds a fidelity gate | nothing |
 | 35 | `why` (9) | Answer from the commit and PR record, label inference | `skills/show-me/workflows/historical-why.md` (138) | ours stronger | trim: PSKILL-18 row 5 |
 
@@ -463,37 +469,55 @@ Lines are `wc -l` of the pstack SKILL.md and of the Qara file (Verified). Verdic
 | 6 | PSKILL-5 | `principle-make-operations-idempotent:13,15` | `hook-authoring/SKILL.md` | 3 | 7 | -4 |
 | 7 | PSKILL-12 | `ketchup/SKILL.md:17,19` | `commands/sm.md` | 3 | 1 | +2 |
 | 8 | PSKILL-8 | `blast-radius/SKILL.md:19-27,34,43` | `agents/critic.md` | 3 | 1 | +2 |
-| 9 | PSKILL-7 | `reflect:13`, `correct:19-22,26` | `skills/retro` | 6 | 3 | +3 |
+| 9 | PSKILL-7 | `reflect:13`, `correct:15` (the twice rule; `correct:19-22` fix order rejected) | `skills/retro` | 6 | 3 | +3 |
 | 10 | PSKILL-9 | `interrogate:19,23` | `agents/reviewer.md` | 2 | 0 | +2 |
 | 11 | PSKILL-13 | `principle-test-behavior-not-implementation:13,16` | `core/testing-guide.md` | 3 | 0 | +3 |
 | 12 | PSKILL-14 | `refactoring.md:7,8,13` | `refactoring-signals.md` | 4 | 0 | +4 |
 | 13 | PSKILL-11 | `principle-fix-root-causes:12`, `principle-attack-the-premise:11-15` | `worker-common.md`, `triage-issue` | 4 | 0 | +4 |
 | 14 | PSKILL-10 | `benchmark-checklist:21-27` | `measure-and-improve.md` | 8 | 0 | +8 |
-| 15 | PSKILL-15 | `correct:30` | `context/acts.md` | 1 | 0 | +1 |
+| 15 | PSKILL-15 | `correct:30` | `context/acts.md` | 1 | 0 | +1 (withdrawn by the owner; do not apply) |
 | 16 | PSKILL-16 | `no-comments:23` | `code-style/SKILL.md` | 1 | 0 | +1 (owner decision) |
 
-Ranking rule: edits that delete text first (ranks 1 to 9; 7 to 9 delete 1 to 3 lines but add more), then add-only edits by value, not by size (PSKILL-10 and PSKILL-11 lead them, then 13, 14, 15, 16). The top 12 are therefore PSKILL-1, 2, 3, 4, 6, 5, 12, 8, 7, 9, 10, 11. They are ordered by net lines, then by value; PSKILL-10 and 8 carry the most value among the adds.
+Ranking rule: edits that delete text first (ranks 1 to 9; 7 to 9 delete 1 to 3 lines but add more), then add-only edits by value, not by size. The table above is in that order, so the first twelve rows are PSKILL-1, 2, 3, 4, 6, 5, 12, 8, 7, 9, 13, 14. Rows 13 and 14 (PSKILL-11, PSKILL-10) carry the most value among the add-only edits but sit below the size order. Rank 15 (PSKILL-15) is withdrawn.
+
+Original proposal; superseded by PSKILL-22: the Added and Removed columns predate the budget rule and the PSKILL-2 merge. Under the budget rule every "0 removed" row needs a matching cut in its file, or the item is dropped. PSKILL-2 is a merge of four workflows, so its figures are rough.
 
 ## Open
 
 Each question can be asked alone. Removals first; each names the Qara skill it changes.
 
 1. Delete the "When to Activate This Skill" blocks from the 62 SKILL.md files (about 910 lines, estimated) and the three prose rules that require them (`skill-structure.md`, `quality-checklist.md`, `system-create-skill/SKILL.md`), editing the thirteen tests that assert the heading? Recommendation: yes, in one pull request, keeping `USE WHEN` in each description and the `weak-activation-triggers` warning for now. Changes: every skill, headed by `system-create-skill`.
+   - SETTLED 2026-11-23. Settled by G5, G6 and ruling 23 (contract first). The `weak-activation-triggers` scan is removed or retuned in the same change, not kept for a month.
 2. Cut the four `system-create-skill` workflows by about 270 lines (the repeated "Read Canonical Architecture" step, the score cards, the report templates, the success-criteria and related-workflow tails) and add the four-line delete rule to the checklist? Recommendation: yes, after question 1, and after reading the four workflows in full. Changes: `system-create-skill`.
+   - SETTLED 2026-11-23. Settled by ruling 9 ("B"): a merge of the four workflows, not a 270-line trim.
 3. Replace `prompting/SKILL.md:38-103` (66 lines) with the four `sharpen` questions placed in `optimize-prompt.md` (net -57)? Recommendation: yes, after reading both workflows. Changes: `prompting`.
+   - SETTLED 2026-11-23. Settled by ruling 10 ("A").
 4. Cut `show-me/SKILL.md:257-283` to three lines and add the build-up rule for diagrams (net -21)? Recommendation: yes. Changes: `show-me`.
+   - SETTLED 2026-11-23. Settled by ruling 11 ("A"), limited to explaining a system the reader is new to.
 5. Add the restart test as Critical Rule 14 and cut Rule 11's history narrative (net -4)? Recommendation: yes. Changes: `hook-authoring`.
+   - SETTLED 2026-11-23. Settled by ruling 12, with its 7-line cut.
 6. Shrink the `mktemp` paragraph and add the reply shape for a received handoff (net -6)? Recommendation: yes. Changes: `handoff`.
+   - SETTLED 2026-11-23. Settled by ruling 12, with a smaller cut (about 4 to 5 lines) because the worked example is pinned; dropped if the cut does not cover the added line.
 7. Add the "one fact it is safe because of" and a how-sure marker to `critic`, replacing the importer-count verdict (+3, -1)? Recommendation: yes, after checking `.claude/agents/fixtures/critic-citation-example.md` and the `check:agents` lint. Changes: `critic`.
+   - SETTLED 2026-11-23. Settled by ruling 13 ("A"): four rungs only.
 8. Add "show the run, or say unproven" to `reviewer` (+2)? Recommendation: yes. Changes: `reviewer`.
+   - SETTLED 2026-11-23. Settled by ruling 15 ("A"), only if a matching cut is found in `reviewer.md`.
 9. Add four benchmark questions to `performance-goal` (+8)? Recommendation: yes. Changes: `performance-goal`.
+   - SETTLED 2026-11-23. Settled by ruling 8 (explain the number), against a matching cut in the same file.
 10. Add the guard-legitimacy test and shared-premise step to `worker-common` and `triage-issue` (+4)? Recommendation: yes, in those two files and not in `CLAUDE.md`. Changes: `worker-common`, `triage-issue`.
+   - SETTLED 2026-11-23. Settled by ruling 8, in `worker-common.md` and `triage-issue`, each with a matching cut.
 11. Take `ketchup`'s action-item definition into `/sm` (+3, -1)? Recommendation: yes. Changes: `/sm`.
+   - SETTLED 2026-11-23. Settled by ruling 14 ("A"), with one more line cut from `sm.md`.
 12. Add the assertion rules to `testing-guide` (+3), pin-first to `refactoring-signals` (+4), the repeat line to `acts.md` (+1), and the six-month test and fix order to `retro` (+3 net)? Recommendation: yes to each, as four small edits that can be asked separately.
+   - SETTLED 2026-11-23. Settled: assertion rules by ruling 8 and pin-first by ruling 17 (each against a matching cut); the `acts.md` line is withdrawn; `retro` by ruling 16 (four filters, fix order rejected).
 13. Add one sentence to `code-style` rule 10 (a constraint comment becomes a check), exempting it from the promotion ladder? Recommendation: ask; low value and it costs tokens on every engineer spawn. Changes: `code-style`.
+   - STILL OPEN: no ruling covers `code-style` rule 10.
 14. Add a 25-line `typescript-style` skill for the engineers to preload? Recommendation: no, unless a reviewer miss of a TypeScript-specific kind is on record. Changes: `engineer`, `engineer-high` preload.
+   - SETTLED 2026-11-23. Settled: no (G3, no new skills).
 15. After question 1 lands and a month of routing shows no miss, remove `scanActivationTriggers` and its seed list (about 20 lines plus a test)? Recommendation: decide then. Changes: `system-create-skill/scripts/validate-skill.ts`.
+   - SETTLED 2026-11-23. Settled: the scan is removed or retuned in the same change as the description rule (G5, G6), not decided later.
 16. Remove the Codex goal-tool branch from `performance-goal` (22 lines)? Recommendation: ask whether Codex goal tracking is used; it is pinned by `performance-goal-contract.test.ts:71`, and pstack gives no reason either way.
+   - STILL OPEN: no ruling covers the Codex goal-tool branch.
 
 Facts still unknown:
 - The real size of the 62 "When to Activate" blocks (10 sampled, not counted) and whether any non-`.ts` check reads them.

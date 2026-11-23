@@ -43,6 +43,13 @@ Copy `spike/lib/m365/` (without `server.ts` and `config.ts`) into the existing a
 `learn.microsoft.com`, `authjs.dev` and `nextjs.org` are blocked from the research environment, so facts were checked against the Markdown sources those sites are built from (`microsoftgraph/microsoft-graph-docs-contrib`, `MicrosoftDocs/entra-docs`, `SharePoint/sp-dev-docs`, `nextauthjs/next-auth`, `vercel/next.js`) and the npm registry, on 2026-11-19. Anything resting on search summaries is marked Unverified.
 - Basis: Decision
 
+**PLAN-5. Adopt no m365-specific dependency: keep cub's own OIDC code, adopt the thin Graph client, and adopt no Graph SDK and no auth library.**
+The reliable dependency for m365 is no dependency at all: Graph REST v1.0 and the Entra OAuth endpoints are the stable contract, and they outlive any wrapper. cub keeps its own OIDC sign-in code and adopts the thin Graph client (PLAN-2); no Graph SDK and no auth library; next-auth stays in the spike only as a test harness. The Redis token store against a real server stays untested (PLAN-1 item 9).
+- Why: the objective for this track is a reliable dependency for future-proofing cub. A wrapper that needs a Node 22 bump and a fetch polyfill to keep working, or an auth framework with no stable release, is the opposite of reliable; the REST surface and the OAuth endpoints are Microsoft's long-term contract.
+- Evidence: GRAPH-1 in `m365/graph-client.md` (`@microsoft/microsoft-graph-client` 3.1.0 needs Node 22 and a fetch polyfill import; its successor `@microsoft/msgraph-sdk` is still pre-release); AUTH-6 and the Open "Auth library" item in `m365/auth.md` (no stable next-auth v5; the Auth.js README recommends Better Auth); `m365/spike/probe/RESULTS.md` (the probes signed in with plain OAuth PKCE plus a certificate, and next-auth appears in no probe; every call ran through the thin client, per the probe sources in `m365/spike/probe/`); MAILCAL-4 in `m365/v2-mail-calendar.md` (cub signs in with its own direct Entra OIDC code, `src/lib/session/entra-oidc.ts`).
+- Basis: Recommendation (Toboggan), not yet ruled by the owner
+- Code: none; this records a verdict and changes no code.
+
 ## Confidence
 
 | Area | Confidence | What would raise it |
@@ -57,7 +64,7 @@ Copy `spike/lib/m365/` (without `server.ts` and `config.ts`) into the existing a
 | App-only provisioning, lead column, closing | Medium: built and unit-tested on documented calls | PLAN-1 item 8 |
 | Change tracking | Medium: delta and webhook built; no queue or renewal timer | PLAN-1 item 10 |
 | Blank document creation | Medium: template copy with monitor polling | PLAN-1 item 11 |
-| Auth library choice | Open | AUTH Open |
+| Auth library choice | Open; recommended by PLAN-5, pending the owner's ruling | AUTH Open |
 
 ## Open
 

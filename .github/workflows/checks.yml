@@ -1,4 +1,4 @@
-# Green, as defined by LADDER-1. Runs on every push and pull request.
+# Green, as defined by R-6. Runs on every push and pull request.
 name: checks
 
 on:

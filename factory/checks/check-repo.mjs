@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Repository check (LADDER-1, LADDER-2). Exits 1 with a list of problems, 0 when green.
+ * Repository check (LADDER-1, LADDER-2; those doctrines live in csf-research, tracks/factory/harness-loops-graphs.md). Exits 1 with a list of problems, 0 when green.
  *
  * Checks:
  *  1. Every doctrine is defined once, has a Basis line, and uses a prefix registered in DOCTRINES.md.

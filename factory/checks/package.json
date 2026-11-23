@@ -2,7 +2,7 @@
   "name": "factory-checks",
   "private": true,
   "type": "module",
-  "description": "Repository checks that can fail (LADDER-1): doctrine references, lookup tables, secrets.",
+  "description": "Repository checks that can fail (LADDER-1 in csf-research, tracks/factory/harness-loops-graphs.md): doctrine references, lookup tables, secrets.",
   "scripts": {
     "check": "bun check-repo.mjs ../..",
     "test": "bun test"

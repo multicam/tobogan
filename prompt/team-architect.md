@@ -28,20 +28,20 @@ A single prompt that turns the model into a "team architect" for a beginner's fi
 Strong for a first team:
 - It asks before it plans, and waits for a go.
 - One owner per job, explicit "never does", one team lead as the single contact: clean lanes.
-- The `rules` block closes the irreversible lane (publish, send, delete, spend, permanent) and never asks for secrets. That matches FLEET-6 and LADDER-5.
+- The `rules` block closes the irreversible lane (publish, send, delete, spend, permanent) and never asks for secrets. That matches FLEET-6 and LADDER-5 in csf-research, `tracks/factory`.
 - It asks for one number that shows the team helps: a measurable outcome.
 
 Weak against this repository's doctrines:
 
 | Gap | Doctrine it misses |
 | --- | --- |
-| "What done well looks like" is prose; review is by the team lead, another model: "two optimists agreeing" | LADDER-1, FLEET-1 (a check a program can evaluate) |
-| Handoffs are a chain ("who it hands work to next"); nothing asks which steps can run in parallel | FLEET-2 (name the value that crosses each edge) |
-| Every node is an agent; no code nodes for merging, sorting, deduplicating | LADDER-9 |
-| "What loops back for fixes" has no return packet, no attempt cap, no escalation | FLEET-4, LADDER-6 |
-| No learning edge: nothing makes run two smarter than run one | FLEET-5, LADDER-8 |
-| Approval is listed per action, but the owner is also the team lead's only contact for everything: the human sits in the middle of the graph | FLEET-7 |
-| Up to 5 questions at once | The owner's profile: one question per message, with a recommended answer (W-1, HUMANS-6) |
+| "What done well looks like" is prose; review is by the team lead, another model: "two optimists agreeing" | csf-research `tracks/factory`: LADDER-1, FLEET-1 (a check a program can evaluate) |
+| Handoffs are a chain ("who it hands work to next"); nothing asks which steps can run in parallel | csf-research `tracks/factory`: FLEET-2 (name the value that crosses each edge) |
+| Every node is an agent; no code nodes for merging, sorting, deduplicating | csf-research `tracks/factory`: LADDER-9 |
+| "What loops back for fixes" has no return packet, no attempt cap, no escalation | csf-research `tracks/factory`: FLEET-4, LADDER-6 |
+| No learning edge: nothing makes run two smarter than run one | csf-research `tracks/factory`: FLEET-5, LADDER-8 |
+| Approval is listed per action, but the owner is also the team lead's only contact for everything: the human sits in the middle of the graph | csf-research `tracks/factory`: FLEET-7 |
+| Up to 5 questions at once | The owner's profile: one question per message, with a recommended answer (W-1; HUMANS-6 in csf-research, `tracks/factory`) |
 | A generic tool stack; it does not ask what the owner already runs | This owner already has Microsoft 365 (SharePoint, Outlook, Teams, Lists) and AWS |
 | Hard-codes a model name, which will age | Keep the model a placeholder |
 
@@ -60,7 +60,7 @@ Weak against this repository's doctrines:
 
 **PROMPT-4. Intake follows the reader's profile.**
 For this owner: one question per message, multiple choice, a recommended answer each time.
-- Basis: Decision (from HUMANS-6)
+- Basis: Decision (from HUMANS-6 in csf-research, `tracks/factory`)
 
 **PROMPT-5. The tool stack starts from what the owner already runs.**
 - Why: a new docs tool, task manager and channel each add setup and a place for work to get lost; this owner already has Microsoft 365 and AWS.

@@ -104,6 +104,5 @@ A doctrine can carry more than one level, for example "Verified, Tested".
 | LADDER | `factory` | `factory/harness-loops-graphs.md` |
 | FLEET | `factory` | `factory/loops-and-graphs.md` |
 | PROMPT | `prompt` | `prompt/team-architect.md` |
-| BOARD | `board` | `board/vercel-board.md` |
 
 A new document registers its prefix here. A prefix is capital letters only (A to Z, no digits); the checker fails on any bold line shaped like a doctrine definition (starting `**PREFIX-N. `) whose prefix is not capital letters only. Numbers are never reused: a withdrawn doctrine keeps its number and is marked **Withdrawn**, with the reason.

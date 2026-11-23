@@ -57,9 +57,15 @@ TSX pages and components are not measured.
 - Unit tests, coverage thresholds, strict typecheck and `next build` pass.
 - Signed out, the built app shows the sign-in button and the upload route returns 401.
 
-## Not verified
+## Live probes (measured 2026-11-23, `cub-staging`, dev tenant)
 
-- Nothing has run against a real tenant beyond the sign-in redirect (checked against a public tenant's discovery document): every Graph call, the preview iframe, Redis and webhooks are untested end to end. The order to test them in is PLAN-1.
+Rerun from `m365/spike` with `bun probe/<name>.ts`; the full record is `probe/RESULTS.md`, the variable names are in `.env.example`. Every probe needs `SP_TENANT_ID`, `SP_APP_CLIENT_ID`, `SP_APP_CERT_THUMBPRINT` and `SP_APP_CERT_KEY`; `live-readonly.ts` adds `SP_SITE_ID`, the other three add `SP_DRIVE_ID`. The two Agent.Smith probes sign in by themselves (headless Chrome, TOTP, port 3000 free) and add `QA_AGENT_SMITH_UPN`, `QA_AGENT_SMITH_PASSWORD`, `QA_AGENT_SMITH_TOTP_SECRET`, with `PROBE_SCRATCH` the browser profile's parent.
+
+- `live-readonly.ts` (app, certificate): 5 of 5 steps passed.
+- `live-writes.ts` (app, certificate): 9 of 10 passed; the tenth failed on a test-pattern bug (fixed; the step was not rerun).
+- `live-delegated.ts` (Agent.Smith, delegated): 9 of 9 passed — sign-in, `/me`, list drive, scratch folder, inbox read, send with attachment to self, arrival, save the attachment to the drive, cleanup.
+- `live-sharing.ts` (Agent.Smith): organization link created, listed, revoked; anonymous link refused by the tenant; invite by email not run (needs a recipient named by the owner).
+- Still not run: matter restriction, change subscriptions (they need a public HTTPS endpoint), calendar, the Redis token store and the preview iframe.
 
 ## Configuration
 

@@ -30,6 +30,7 @@
 - Eleven pstack instructions conflict with JM's standing rules or with Qara's measured results and are excluded from every proposal (PSKILL-20). The sharpest: a failing-test-only commit is blocked by Qara's pre-commit gate, and reordering commits on a pushed branch needs a force push and voids a blind `MERGE` at the exact head.
 - The owner's rulings of 2026-11-23 on the borrow lists of the seven sibling documents are recorded in PSKILL-23.
 - The owner's rulings of 2026-11-23 on the review of Qara's own skills are recorded in PSKILL-24.
+- The owner's rulings of 2026-11-23 on the goal-tool branch, the spike env symlink, the board Redis stages and the open questions are recorded in PSKILL-25.
 
 **Before acting on any cut.** Every cut in this document is a proposal. Pin claims were swept on 2026-11-23 against test files and scripts, and the sweep is in Reference section D. But two blind review rounds each found a pinned string the first pass had missed, so more may remain. Before any cut, the implementer runs the host file's own contract test (`show-me/skill-contract.test.ts`, `prompting/skill-contract.test.ts`, `hook-authoring/SKILL.test.ts`, `triage-issue/skill-contract.test.ts`, `retro/SKILL.test.ts`, `scripts/check-command-contract.test.ts` and the others in section D) and searches for other readers of the file. Where this document says "not checked", it means that. A search that reports no hit proves only that the search was narrow.
 
@@ -484,6 +485,23 @@ Findings of the same review, recorded as facts and not as rulings: the ledger sh
 - Evidence: the owner's answers, quoted in the table, given on 2026-11-23 in the review of Qara's skills. Ruling 35 had already been applied upstream (qara #1998) before this doctrine was written; the rest are recorded decisions for the Qara implementer.
 - Basis: Decision (owner: JM).
 - Code: Gap: nothing further is applied yet in Qara. Ruling 35 is merged (qara #1998); ruling 39 waits on the mac codex session's merge.
+
+**PSKILL-25. Follow the owner's rulings of 2026-11-23 on the goal-tool branch, the spike env symlink, the board Redis stages and the open questions.**
+The owner answered questions Q68 and Q69 and three items he raised himself, on 2026-11-23. Where a ruling below and an earlier doctrine disagree, the ruling wins. Ruling numbers continue from PSKILL-24, which ended at 44. The standing rules of PSKILL-23 apply unchanged.
+
+| # | Question | What was decided | Owner's answer |
+| --- | --- | --- | --- |
+| 45 | Q68: retire the Codex goal-tool branch in qara's `performance-goal`? | Retire it (`measure-and-improve.md:101-117` and `SKILL.md:44-45,49-51`). The pinned `.claude/tests/performance-goal-contract.test.ts:69-77` is edited with JM's approval. About -22 lines. The cut counts toward PSKILL-23 ruling 12's forensics recipe, which adds about 40, so about 18 more lines still have to be found in `measure-and-improve.md` or `references/hosted-parallel-models.md` (both read in full first); else the recipe is dropped, as ruling 12 says. | "yes A" |
+| 46 | The earlier "yes to keep" in the Orchestrator's session, typed in answer to a question that said there was no earlier ruling | Withdrawn: the later "yes retire" re-confirmed Q68 (ruling 45). This row is the Orchestrator's reading, not JM's. | "yes to keep", then "yes retire" |
+| 47 | Q69: the `m365/spike/.env` symlink to cub's `.env` | Kept; no change. JM linked it on purpose, so agents can run the spike's live tests. | "B" |
+| 48 | The two sudo stages of the board's Redis | JM ran both stages himself: webdis disabled and port 7379 closed; a separate board Redis on 127.0.0.1:6380. NO URL and NO password are recorded anywhere, as the ruling demands. | JM ran the stages himself. |
+| 49 | Open questions 13 and 16 of this document | Both closed: question 13 (`code-style` rule 10) by PSKILL-23 rulings 23 to 25; question 16 (the Codex goal-tool branch) by Q68, ruling 45 above. | closed |
+| 50 | The cub certificate rotation (staging) | Ignore; the certificate was not rotated. The answer is quoted verbatim with JM's own spelling. | "cub roataion -> ignore (staging)" |
+
+- Why: the owner decides what changes in Qara. A ruling with no record would be re-litigated, and a withdrawn answer left standing would contradict the ruling that superseded it.
+- Evidence: the owner's answers, quoted in the table, given on 2026-11-23. Ruling 12 in row 45 is PSKILL-23 ruling 12.
+- Basis: Decision (owner: JM), except row 46, which is the Orchestrator's reading, not JM's.
+- Code: Gap: nothing is applied yet in Qara. Ruling 45 is a recorded decision for the Qara implementer, with the test edit approved; ruling 48 records infra JM ran himself, with no URL and no password on record.
 
 ## Reference
 

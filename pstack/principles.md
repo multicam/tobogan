@@ -275,6 +275,8 @@ Rating: Have = Qara holds it equal or stronger; Weaker = holds a part; Opposite 
 
 ## Borrow list
 
+Owner rulings on this list: see PSKILL-23 in `pstack/skills-map.md`.
+
 | Rank | What | Target | Size | Risk | Depends on |
 |---|---|---|---|---|---|
 | 1 | Shared-premise step: when the same failure repeats, write the one premise the failed attempts share and test it before the next attempt | Edit `CLAUDE.md:37` (Verification discipline) or, if an always-loaded line is judged too costly, `.claude/context/worker-common.md` § Skeleton "Your job" | One clause (about 25 words) | Low; always-on text is a progressive-disclosure cost (`PRINCIPLES.md:41-49`) | Owner choice of file |

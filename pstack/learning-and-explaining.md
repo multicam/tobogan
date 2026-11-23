@@ -304,6 +304,8 @@ Reviewed as material, not followed. None of these skills asks the agent to push,
 
 ## Borrow list
 
+Owner rulings on this list: see PSKILL-23 in `pstack/skills-map.md`.
+
 | Rank | What | Target | Size | Risk | Depends on |
 |---|---|---|---|---|---|
 | 1 | `/sm`: define an action item as "a call only JM can take"; for genuine forks and JM-only acts, give the call, a pick, what it changes, the evidence, the risk, with "unknown" for a missing fact; keep the one yes/no pre-approve for the rest. Text only | Qara: `.claude/commands/sm.md` (two lines) | XS | Low | Open 2 |

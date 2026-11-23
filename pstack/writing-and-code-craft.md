@@ -379,6 +379,8 @@ No instruction here asks for secrets, webhooks, installs or permission bypass.
 
 ## Borrow list
 
+Owner rulings on this list: see PSKILL-23 in `pstack/skills-map.md`.
+
 | Rank | What | Target | Size | Risk | Depends on |
 | --- | --- | --- | --- | --- | --- |
 | 1 | **Removes code (only if the owner agrees).** Drop the advisory repo mode of `check-doc-frontmatter.ts` (68 lines, 216 with test; always exits 0 in that mode), keep strict staged. `check-doc-terms.ts` is not on this list: it is live and stays | Qara `scripts/check-doc-frontmatter.ts` and its test | up to -216 lines | Low | Open 1 |

@@ -412,6 +412,8 @@ The owner's steer of 2026-11-23: remove code and replace it with workflows and d
 
 ## Borrow list
 
+Owner rulings on this list: see PSKILL-23 in `pstack/skills-map.md`.
+
 Order after the steer: text-only borrows first (ranks 1 to 6, 9, 10); ranks 7 and 8 are tests of product behaviour; no rank adds tooling. Treat 9 and 10 as ahead of 7 and 8 in effort.
 
 | Rank | What | Target | Size | Risk | Depends on |

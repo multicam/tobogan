@@ -331,6 +331,8 @@ Reading private history:
 
 ## Borrow list
 
+Owner rulings on this list: see PSKILL-23 in `pstack/skills-map.md`.
+
 | Rank | What | Target | Size | Risk | Depends on |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Text only. Four rules from benny's repro and triage into the intake and triage text: verify an existing fix before authoring (baseline and patched, twice each); a repro counts only if the symptom appears twice from a reset state through the real interface; stop when a person has claimed the fix; compensate and verify a record created by a run whose next step failed | `.claude/skills/triage-issue/SKILL.md` and `triage-resolution` workflow (Qara); the csf work-order admission or triage guidance in cub's factory docs (csf) | about 15 to 25 lines of text | low: text only; the "twice" rule costs one extra run per repro | PPAR and PPROOF on the same rules; owner decision |

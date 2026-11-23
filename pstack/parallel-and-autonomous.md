@@ -345,6 +345,8 @@ Rows 8, 9, 14 and 18 are the ones with the widest practical effect. Rows 20, 21,
 
 ## Borrow list
 
+Owner rulings on this list: see PSKILL-23 in `pstack/skills-map.md`.
+
 | Rank | What | Target | Size | Risk | Depends on |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Proof-or-drop adjudication: when a second-vendor or adversarial pass raises findings, the controller reruns each finding's command and keeps only those whose output shows the failure and breaks the intent; report dropped counts per source | `turbo/SKILL.md` § 5 Verify (GLM sniff step) and `delegation-guide.md` § Adjudicating Delegated Work (one numbered rule) | S: about 6 lines | Low; stays on the controller side, so `delegation-guide.md:175` ("never names finding-classes to exclude") is not touched | none |

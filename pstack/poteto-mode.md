@@ -431,6 +431,8 @@ Totals: replaceable about 500 lines (100 + about 120 + about 250 + tombstones; t
 
 ## Borrow list
 
+Owner rulings on this list: see PSKILL-23 in `pstack/skills-map.md`.
+
 All text only: each is a paragraph or a row added to an existing file; none adds a skill, hook, script or router ("adds code": none, so no text-only alternative is needed). Ranked by value over size.
 
 | Rank | What | Target | Size | Risk | Depends on |

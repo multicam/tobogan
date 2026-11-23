@@ -28,6 +28,7 @@
 - No new Qara skill is recommended. Twelve pstack skills have no Qara counterpart (table in PSKILL-17); for ten the answer is no, one (`typescript-best-practices`) is an owner question, one (`recall`) stays with PLEARN.
   - Original proposal; superseded by PSKILL-22: `typescript-best-practices` is a no (G3: no new skills). Only `recall` stays with PLEARN.
 - Eleven pstack instructions conflict with JM's standing rules or with Qara's measured results and are excluded from every proposal (PSKILL-20). The sharpest: a failing-test-only commit is blocked by Qara's pre-commit gate, and reordering commits on a pushed branch needs a force push and voids a blind `MERGE` at the exact head.
+- The owner's rulings of 2026-11-23 on the borrow lists of the seven sibling documents are recorded in PSKILL-23.
 
 **Before acting on any cut.** Every cut in this document is a proposal. Pin claims were swept on 2026-11-23 against test files and scripts, and the sweep is in Reference section D. But two blind review rounds each found a pinned string the first pass had missed, so more may remain. Before any cut, the implementer runs the host file's own contract test (`show-me/skill-contract.test.ts`, `prompting/skill-contract.test.ts`, `hook-authoring/SKILL.test.ts`, `triage-issue/skill-contract.test.ts`, `retro/SKILL.test.ts`, `scripts/check-command-contract.test.ts` and the others in section D) and searches for other readers of the file. Where this document says "not checked", it means that. A search that reports no hit proves only that the search was narrow.
 
@@ -109,6 +110,7 @@ pstack skills carry a one-sentence description and no activation section (`pstac
 - Basis: Verified (quotes, lines); Unverified (fit).
 - Code: Gap: edit `hook-authoring/SKILL.md`.
 - Owner ruling 2026-11-23: approved as Rule 14 with its 7-line cut (question 12).
+- Owner ruling 2026-11-23 (borrow grill): one more line is approved, that a new hook names the incident it would have caught, against a matching cut (the Rule 11 history cut is already approved). See PSKILL-23, ruling 20.
 
 **PSKILL-6. In `handoff`, take pstack's reply shape for a received handoff and shrink the `mktemp` paragraph.**
 - Why: `session-pickup.md:11` names what a receiver should report; `handoff/SKILL.md:41-52` spends 12 lines on `mktemp` portability.
@@ -169,6 +171,7 @@ pstack skills carry a one-sentence description and no activation section (`pstac
 - Basis: Verified (quotes, lines); Unverified (fit).
 - Code: Gap: edit `.claude/agents/reviewer.md`.
 - Owner ruling 2026-11-23: option A (question 15): label a runtime finding with its run or "unproven", only if a matching cut is found in `reviewer.md`. Never drop a finding. The "Cut: nothing" above is superseded by the budget rule (PSKILL-22).
+- Owner ruling 2026-11-23 (borrow grill): the proof-or-drop pass for second-vendor or adversarial findings is option B, not a drop of unproven findings. The controller reruns a finding's command where one exists and keeps the rest labelled "unproven". It goes in against a matching cut in `turbo/SKILL.md` section 5 or the delegation guide, not in `reviewer.md`. See PSKILL-23, ruling 1.
 
 **PSKILL-10. In `performance-goal`, add four of `benchmark-checklist`'s seven questions that Qara's workflow does not ask.**
 Qara's workflow is stronger on statistics (A/A runs, a known perturbation, circuits, `measure-and-improve.md:33-43`); it is silent on limiter, tuning, arithmetic limits and "did the work happen".
@@ -184,6 +187,7 @@ Qara's workflow is stronger on statistics (A/A runs, a known perturbation, circu
 - Basis: Verified (quotes, lines); Unverified (fit).
 - Code: Gap: edit `performance-goal/workflows/measure-and-improve.md`.
 - Owner ruling 2026-11-23: "explain the number" goes into `performance-goal` (question 8), paired with a cut in the same file. The "Cut: nothing" above is superseded by the budget rule (PSKILL-22).
+- Owner ruling 2026-11-23 (borrow grill): two more `performance-goal` items are taken, each against a matching cut. One is a sentence at `measure-and-improve.md:30`, so each attempt row also records kept or reverted, and why. The other is a captured-artifact forensics recipe of about 40 lines in `performance-goal/references/`, dropped if no matching cut of about 40 lines exists. See PSKILL-23, rulings 12 and 15.
 
 **PSKILL-11. In `worker-common` and `triage-issue`, add the guard-legitimacy test and the shared-premise step.**
 - Why: Qara tells a worker to treat plausible root causes as hypotheses (`worker-common.md:69-70`) but has no rule against a guard that hides the bug, and `CLAUDE.md:37` ("after the third failure on one subtask, stop") has no step for a premise shared by the failed attempts.
@@ -198,6 +202,7 @@ Qara's workflow is stronger on statistics (A/A runs, a known perturbation, circu
 - Basis: Verified (quotes, lines); Unverified (fit).
 - Code: Gap: edit `worker-common.md` and `triage-issue/SKILL.md`.
 - Owner ruling 2026-11-23: placement is `worker-common.md` and `triage-issue`, not the always-loaded `CLAUDE.md` (question 8). Each edit needs a matching cut in the same file; the "Cut: nothing" above is superseded by the budget rule (PSKILL-22). Keep the pinned strings in `triage-issue`.
+- Owner ruling 2026-11-23 (borrow grill): the merged `triage` skill also takes one sentence, "ship only the lines the evidence supports; revert a change whose hypothesis is later refuted", merged with the premise step, and two rules from the Benny triage list (verify an existing fix before writing one; a repro counts only if the symptom appears twice from a reset state through the real interface). See PSKILL-23, rulings 9 and 29.
 
 **PSKILL-12. In `/sm`, take `ketchup`'s definition of an action item.**
 - Why: `sm.md:13` says "what is waiting on JM" and nothing more; `ketchup/SKILL.md:17` says what counts.
@@ -225,6 +230,7 @@ Qara's workflow is stronger on statistics (A/A runs, a known perturbation, circu
 - Basis: Verified (quotes, lines); Unverified (fit).
 - Code: Gap: edit `core/testing-guide.md`.
 - Owner ruling 2026-11-23: the three assertion rules go into `testing-guide.md` (question 8), each paired with a cut in the same file. The "Cut: nothing" above is superseded by the budget rule (PSKILL-22).
+- Owner ruling 2026-11-23 (borrow grill): one more sentence is taken into `testing-guide.md`, against a matching cut: do not regenerate a snapshot or image baseline to make a diff pass. See PSKILL-23, ruling 13.
 
 **PSKILL-14. In `refactoring-signals`, add pin-first and the keep-only-if-it-lowers-reader-load test.**
 - Why: `refactoring-signals.md:3` says "Use after tests are green" and has no rule for code with no tests.
@@ -238,6 +244,7 @@ Qara's workflow is stronger on statistics (A/A runs, a known perturbation, circu
 - Basis: Verified (quotes, lines); Unverified (fit).
 - Code: Gap: edit `core/references/refactoring-signals.md`.
 - Owner ruling 2026-11-23 (question 17): take pin-first and the reader-load test, each against a matching cut. Reject the one-wave migration and the rebase. The "Cut: nothing" above is superseded by the budget rule (PSKILL-22).
+- Owner ruling 2026-11-23 (borrow grill): one more line is taken into `refactoring-signals.md`, "write the caller's usage first", but in `core/references/interface-design.md`, against a one-line cut; the reader-load test is the one already taken here. See PSKILL-23, rulings 26 and 27.
 
 **PSKILL-15. In `acts.md`, add one line: a `prose` act that JM corrects again is promoted to a script or hook.**
 - Why: `acts.md:4` already has an `enforced by` column; nothing says what a repeat does.
@@ -247,6 +254,7 @@ Qara's workflow is stronger on statistics (A/A runs, a known perturbation, circu
 - Basis: Verified (quote, lines); Unverified (fit).
 - Code: Gap: edit `.claude/context/acts.md`.
 - Owner ruling 2026-11-23: withdrawn by the owner in the earlier Noodle re-grill. Do not add this line.
+- Owner ruling 2026-11-23 (borrow grill): this withdrawal stands. A different `acts.md` row is approved, on loosening a gate, against a one-line cut. See PSKILL-23, ruling 4.
 
 **PSKILL-16. In `code-style`, add one sentence to rule 10, and only if the owner exempts a research-backed edit from the promotion ladder.**
 - Why: `code-style/SKILL.md:44-47` has rule 8 ("A short *what/why* comment on each new block you author") and rule 10 ("Comments state constraints and why, never narrated history"); pstack's `no-comments` goes further and turns a constraint comment into a check.
@@ -257,6 +265,7 @@ Qara's workflow is stronger on statistics (A/A runs, a known perturbation, circu
 - Risk: `code-style/SKILL.md:49-52` ("Do not add a rule on a first correction") makes this an owner decision (PWRITE Open 4); it is also preloaded into both engineers' prompts, so the line costs tokens on every spawn.
 - Basis: Verified (quotes, lines); Unverified (fit).
 - Code: Gap: edit `code-style/SKILL.md`, if approved.
+- Owner ruling 2026-11-23 (borrow grill): the edit moves to rule 8. Rule 8 is replaced by the constraint-and-why wording plus the encoding sentence, and the string `rule 8` and the rule 10 phrases stay pinned. One Structural rule is also added (no `as` on unvalidated data; `unknown` at the parse boundary), each against a matching cut. See PSKILL-23, rulings 23 and 25.
 
 **PSKILL-17. Recommend no new Qara skill from pstack; the one owner question (`typescript-best-practices`) is now ruled no, and the rest are a line in an existing file or nothing.**
 Twelve pstack skills have no Qara counterpart (master table). For each candidate the feature documents raised:
@@ -281,6 +290,7 @@ Twelve pstack skills have no Qara counterpart (master table). For each candidate
 - Basis: Verified for the existence checks (searches by job, not by pstack's names); Unverified for "would use".
 - Code: none.
 - Owner ruling 2026-11-23: no new skills (G3, option B). The `typescript-best-practices` skill is a no. pstack ideas land as steps in existing skills.
+- Owner ruling 2026-11-23 (borrow grill): `recall` is not built (`handoff` and the memory index cover it); the runtime and trace forensics recipe is taken after all, as a reference file in `performance-goal/references/` against a matching cut; the `eval` blinding checklist is dropped; `typescript-best-practices` becomes two clauses in `code-style`; `interrogate`, `arena` and `swarm` stay without a skill, and the same-brief race recipe is dropped. See PSKILL-23, rulings 7, 10, 12, 19 and 23.
 
 **PSKILL-18. Ten Qara surfaces are much longer than the pstack skill doing the same job; the first two carry nearly all of the removable text.**
 Ratio is Qara lines over pstack lines for the same job. "Earning keep" is a judgement: enforcement, safety text or incident evidence. Pins are `rg --hidden` over `*.ts`, `*.json`, `*.sh` or `*.test.ts`.
@@ -296,7 +306,7 @@ Ratio is Qara lines over pstack lines for the same job. "Earning keep" is a judg
 | 7 | `triage-issue/SKILL.md` (162) | `bug-fix` 15 + `fix-root-causes` 14 + `tdd` 42 = 71 | 2.3 | Step 7 `:138-154` (17 lines) restates `:43-45`; shrink to about 9 | the CLI contract earns most of it | `triage-issue/skill-contract.test.ts:12-36` pins about 15 conditions; in step 7 only `external-handoff:` (`:146`) and `blocked-by-external:` (`:150`) are asserted; the cut is safe only while `:43-44` keep "External tracker status never drives Finding" |
 | 8 | `handoff/SKILL.md` (56) | `session-pickup` 11 + `pause-safely` 10 = 21 | 2.7 | about 4 to 5 unpinned lines in `:41-52` (PSKILL-6; was 7) | durable-adapter and FACT/THEORY text earn it | pinned at `scripts/check-command-contract.test.ts:60,66,69,70,71,72`, including the worked `mkdir -p` example; read in full |
 | 9 | `hook-authoring/SKILL.md` (219) | none | n/a | Rule 11 narrative `:193-198` (PSKILL-5); about 7 lines | the other twelve rules are incident-driven | `hook-authoring/SKILL.test.ts` exists; none of its asserted strings is in Rule 11 or Rule 13 (Rule 11's `hooks-guide.md` pointer stays); `scripts/check-hook-conformance.ts:5-15` cites rules by number, so append Rule 14 and renumber nothing; read in full |
-| 10 | `performance-goal` goal-tool branch | none | n/a | `measure-and-improve.md:101-117` (17) and `SKILL.md:44-45,49-51` (5): Codex-only, "Normal performance work makes zero goal-tool calls" | unclear (Codex-only) | pinned: `performance-goal-contract.test.ts:69-77` asserts goal-tool strings in both files (for example `Normal use makes zero goal-tool calls`, `Call `get_goal` first`, `three consecutive goal turns`), all inside the proposed cut; not pstack-driven; owner question |
+| 10 | `performance-goal` goal-tool branch | none | n/a | `measure-and-improve.md:101-117` (17) and `SKILL.md:44-45,49-51` (5): Codex-only, "Normal performance work makes zero goal-tool calls" | unclear (Codex-only) | pinned: `performance-goal-contract.test.ts:69-77` asserts goal-tool strings in both files (for example `Normal use makes zero goal-tool calls`, `Call `get_goal` first`, `three consecutive goal turns`), all inside the proposed cut; not pstack-driven; owner question. Owner ruling 2026-11-23 (borrow grill): this branch is one candidate cut for the forensics recipe, but it stays pinned by the test (PSKILL-23, ruling 12) |
 
 Also checked and left alone: `turbo/SKILL.md` (187) against `swarm` (41), ratio 4.6: its extra text is enforcement (handoff schema, authority envelope, worktree isolation `:84,:104`) and the GLM sniff line `:167` carries a `<!-- model-id-citation -->` marker read by `scripts/domains/models-domain.ts`, so cut nothing there. `humaniser` (79) against `unslop` (40): the extra is a fidelity gate (`:37-41`) that `unslop` lacks and the protected-regions rule (`:43-47`); keep. `performance-goal` against `benchmark-checklist` and the hillclimb and perf playbooks: Qara is ahead on statistics; keep.
 - Why: the owner wants Qara simpler; these are the places pstack's shape argues for deletion.
@@ -397,6 +407,59 @@ Rulings 19 to 22 concern rows in other documents of this track: `pstack/learning
 - Evidence: the owner's answers, quoted in the table, given on 2026-11-23.
 - Basis: Decision (owner: JM).
 - Code: Gap: nothing is applied yet in Qara or csf.
+
+**PSKILL-23. Follow the owner's rulings of 2026-11-23 on the seven documents' borrow lists.**
+The owner ran a second grill over the borrow lists of `pstack/poteto-mode.md`, `principles.md`, `parallel-and-autonomous.md`, `verification.md`, `learning-and-explaining.md`, `writing-and-code-craft.md` and `packaging-and-automations.md`. Where a ruling below and a borrow list disagree, the ruling wins. The research text stays. Rulings already settled by the first grill (PSKILL-22) are not repeated: mode ranks 2 and 6 (PSKILL-22 rulings 17 and 12); principles ranks 1 to 5 (rulings 8 and 12); learning ranks 1 to 3 and 6; the dream, TDD, audits and removal rows (rulings 19 to 22); packaging rank 4 (rulings 21 and 22: `harness-topology.ts` goes with the registry change, the trigger-overlap check stays).
+
+Standing rules. They bind every ruling below.
+- Every skill or guide edit cuts at least as many lines as it adds from the same file. Authority corrections are exempt.
+- Per-PR ceiling (ruling 34): every implementation PR states in its body the lines added and the lines cut, text and code, counted by git. The cut must be at least the added, or the PR names the approved ruling that exempts it. Tests added for product behaviour are counted separately and are not capped. The blind reviewer checks the count from the diff.
+- If no matching cut is found at edit time, the item is dropped, not waived.
+- Before any cut, run the host file's contract test and search for other readers of the file.
+- A code removal needs the five-step caller trace in `pstack/README.md`.
+- A csf-side item is a recorded decision for the csf session or the Orchestrator to carry out. Nothing in Qara or csf is edited from tobogan.
+
+| # | Question (document, rank) | What was decided | Owner's answer |
+| --- | --- | --- | --- |
+| 1 | Proof-or-drop for second-vendor or adversarial passes (parallel, rank 1) | Option B, not pstack's drop-unproven. The controller reruns a finding's command where one exists, keeps the rest labelled "unproven", and reports counts per source. It goes in against a matching cut in `turbo/SKILL.md` section 5 or the delegation guide. | "yes B" |
+| 2 | Stuck-agent test by side effects (parallel, rank 3) | Dropped. Qara's 20-minute idle-sweep tick covers it. | "yes B" |
+| 3 | "A gap is not a pass" Collect rules (parallel, rank 4) | Dropped. Turbo Collect and `parseTurboHandoff` already enforce both. | "yes B" |
+| 4 | Gate loosening (parallel, rank 5) | One row in `acts.md`: weakening a gate needs JM's sign-off and proof the old check was wrong; a warn-only check is removed. The countersign-by-a-non-owner half is not taken. Against a one-line cut in `acts.md`. | "yes A" |
+| 5 | Iteration or stall bound text (parallel, rank 6) | Dropped. The iteration cap is already enforced by a hook in `LOOP-CONTROL.md`. | "yes B" |
+| 6 | Patch-id carry of a blind MERGE across a rebase (parallel, rank 2) | Dropped. A MERGE stays tied to the exact head. | "yes B" |
+| 7 | Same-brief race recipe (parallel, rank 7) | Dropped. `design-it-twice` covers competing designs, and the cross-vendor judge cannot be met in Claude Code. | "yes B" |
+| 8 | Hard-task sweep (parallel, open 5) | Run only when a tier change is proposed. Fable-after-two-failures stays as the existing decision. | "yes B" |
+| 9 | Bug-fix discipline clauses (mode, rank 1) | Take "ship only the lines the evidence supports" and "revert a change whose hypothesis is later refuted" as one sentence, merged with the premise step in the merged `triage` skill. The failing-repro-commit-first clause stays rejected. | "A" |
+| 10 | Eval blinding checklist (mode, rank 3; verification, rank 4) | Dropped. | "yes C" |
+| 11 | Plan-template verification split (mode, rank 5) | One row in `core/workflows/plan-template.md`: unit, live, and perf with a trunk baseline measured first, perf only where the phase changes a measured path. Against a 4-line cut found when the file is read in full. | "yes A" |
+| 12 | Captured-artifact forensics recipe (mode, rank 4) | Take, placed in `performance-goal/references/`; the owner confirmed the need. About 40 lines, so the budget rule applies and about 40 lines must be cut from `performance-goal` files. The Codex-only goal-tool branch is one candidate, but it is pinned by `performance-goal-contract.test.ts`. If no matching cut exists, the recipe is dropped. | "A" |
+| 13 | Verification one-liners (verification, rank 5) | Take only the baseline-tamper sentence (do not regenerate a snapshot or image baseline to make a diff pass) into `core/testing-guide.md`, against a matching cut. "Inconclusive is not a pass" is dropped, because the verifier already returns UNRESOLVED. The attempt floor is excluded. | "yes" |
+| 14 | Drift-versus-bug procedure (verification, rank 6) | Dropped. | "yes B" |
+| 15 | Attempt-log decision field (verification, rank 10) | One sentence at `performance-goal/workflows/measure-and-improve.md:30`: each attempt row also records kept or reverted, and why. Against a one-line cut. | "yes A" |
+| 16 | QA brief wording (verification, rank 9; csf) | One sentence in csf `shared/templates/stage-briefs/qa.md`: a gate that did not run is reported unreached, and another path never counts as verifying it. Against a one-line cut. csf-side. | "yes A" |
+| 17 | Exhaustive transition-table test for the csf drain lane (verification, rank 7) | Recorded for the csf lane, to be written when the lane is next worked. | "yes A" |
+| 18 | Exhaustive role x action x relation test for the matters policy (verification, rank 8) | Add to `m365/spike/test/`. Expected values are written from POLICY-* and never computed by the code under test. About 80 lines of test. | "A" |
+| 19 | `recall` command (learning, open 3) | Not built. `handoff` and the memory index cover it. Learning ranks 5 and 7 fall with it. | "yes B" |
+| 20 | New hooks name the incident they would have caught (learning, rank 4) | One line in `hook-authoring`, against a matching cut (the Rule 11 history cut is already approved). | "A" |
+| 21 | Plain-language report register (learning, open 5) | Keep today's report form. No rule added. | "yes B" |
+| 22 | Advisory repo mode of `scripts/check-doc-frontmatter.ts` (writing, rank 1) | Remove it (up to 216 lines with its test) after a caller trace of `scripts/lib/doc-checks.ts`. Keep the strict staged check. `check-doc-terms.ts` stays. | "yes A" |
+| 23 | TypeScript style rules (writing, rank 2) | No new skill. Two clauses only go into `code-style`, as one Structural rule (no `as` on unvalidated data; `unknown` at the parse boundary), against a matching cut. The rule 10 wording stays pinned. | "yes A" |
+| 24 | Prose-rules reference (writing, rank 3) | Dropped. `humaniser` covers it. | "yes B" |
+| 25 | Comment rule (writing, rank 4; open 2) | Replace `code-style` rule 8 with the constraint-and-why wording plus the encoding sentence: "a comment that claims a constraint becomes a type, assertion or test; if none is cheap, state it once and name its owner". Keep the string `rule 8` and the rule 10 phrases pinned by `code-style/SKILL.test.ts:19-32`. | "yes A" |
+| 26 | PR body cap (writing, rank 5); write the caller's usage first (writing, rank 6) | The PR body cap is dropped. For the second, one line in `core/references/interface-design.md`, against a one-line cut. | "yes" |
+| 27 | Reader-load test (writing, rank 7) | Already taken under PSKILL-22 ruling 17 (`refactoring-signals`). | none asked |
+| 28 | Count and tree claim check (writing, rank 8; packaging, rank 7) | Dropped. W-2's Evidence line already asks for sources. | "yes C" |
+| 29 | Benny triage rules (packaging, rank 1) | Take rule 1 (verify an existing fix before writing one: baseline and patched build, two runs each) and rule 2 (a repro counts only if the symptom appears twice from a reset state through the real interface) into the merged `triage` skill, absorbed by the step 7 shrink. Rules 3 and 4 are covered by the `acts.md` peer rules. | "yes A" |
+| 30 | Packaging rank 3 (licence note); packaging rank 2 (user-owned config outside a managed bundle) | The licence note is dropped, because nothing is copied. User-owned config is held as an unread csf-side item for whoever next works on `csf-onboard`. | "yes" |
+| 31 | Packaging ranks 5 and 6 (app-control adapter contract; harness-term coverage check or paragraph) | Dropped. | "yes" |
+| 32 | Task-shape table (mode, open 1) | Dropped. | "yes B" |
+| 33 | Svelte marketplace entry in Qara's base settings (packaging, open 6) | The Orchestrator checks whether the entry exists in the live settings and asks the owner only if it does. Settings edits are JM-only. | "yes C" |
+| 34 | Per-PR ceiling on additions (all implementation PRs) | Each implementation PR states in its body the lines added and the lines cut (text and code, counted by git). The cut must be at least the added, or the PR names the approved ruling that exempts it. Tests added for product behaviour are counted separately and are not capped. The blind reviewer checks the count from the diff. A per-wave ceiling (B) and the per-edit budget alone (C) were not chosen. Consequence: the forensics recipe (ruling 12) needs its 40-line cut in the same PR. | "q57 A" |
+
+- Why: the owner decides what changes in Qara and csf. A borrow list that keeps proposing what the owner has refused would mislead the next reader, and a ruling with no record would be re-litigated.
+- Evidence: the owner's answers, quoted in the table, given on 2026-11-23 in a second grill over the seven documents' borrow lists. Ruling 27 was not asked: it restates PSKILL-22 ruling 17.
+- Basis: Decision (owner: JM).
+- Code: Gap: nothing is applied yet in Qara or csf. Rulings 16, 17 and 30 are csf-side; ruling 33 is for the Orchestrator.
 
 ## Reference
 

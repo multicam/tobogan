@@ -16,7 +16,7 @@ E50 today bundles three readings of "email access" (read a matter's mail, compos
   - Trim R1 ("v1 mints no delegated Graph token") stays true for v1. A v2 record must say it is superseded for the named workloads only.
   - `factory/work-orders/WO-214.md` "Out of scope" lists mail and calendar by E50 and R2; its M12 check ("a reference search over `src/` for `/messages`, `mailFolders`, `/events`, `calendarView` and `sendMail` finds zero") must be retired or narrowed when the first Graph mail call lands.
 - Why: a single deferred row cannot carry three permission models. The firm has not said which reading it means (09 §23 revival trigger).
-- Evidence: cub files above, read at `9aee5f63`. The revival triggers are "drafter's suggestion, not ruled" (09 §23).
+- Evidence: cub files above, read at `9aee5f63`. The revival triggers are "drafter's suggestion, not ruled" (09 §23). Measured 2026-11-23 on the `cub-staging` registration (dev tenant): the E50 test account needed `Mail.ReadWrite` and `Mail.Send` delegated on the registration, an Exchange license on the user (it had no mailbox), and membership of the SharePoint site (`m365/spike/probe/RESULTS.md`).
 - Basis: Decision (owner: JM)
 - Code: cub v1 has no Graph mail or calendar call (trim R2 evidence; WO-214 M12). Gap: nothing in cub; tobogan has `spike/lib/m365/mail.ts` for mail only.
 
@@ -24,7 +24,7 @@ E50 today bundles three readings of "email access" (read a matter's mail, compos
 Anything a lawyer does for themself (read, file, add a date to their own calendar) fits delegated access. Anything that runs with no user present (a poller reading a shared filing mailbox) needs app-only access. Both can live on one registration; they are separate grants.
 - Why: v1 runs app-only with `Sites.Selected` because two of three workloads have no user present (decision of 2026-09-18, cited in trim R1). A delegated token dies with its person. A single choice for mail would repeat that trade-off wrongly for either side.
 - Evidence: Microsoft's permissions reference lists `Calendars.Read` and `Calendars.ReadWrite` as both delegated (admin consent not required) and application (admin consent required). Get message: delegated `Mail.ReadBasic`, `Mail.Read`; application `Mail.ReadBasic.All`, `Mail.Read` (the page's own spelling). Create event: delegated and application `Calendars.ReadWrite`. Event delta: `Calendars.Read` for both types. The mail rows of the permissions reference (including consent for the delegated mail scopes) were not read.
-- Basis: Verified (calendar consent, the three API permission tables); Unverified (consent requirement for the delegated mail scopes)
+- Basis: Verified (calendar consent, the three API permission tables); Tenant-tested (delegated `Mail.ReadWrite` and `Mail.Send` on cub-staging, 2026-11-23); Unverified (consent requirement for the delegated mail scopes)
 - Code: `graphScope` in `m365/spike/lib/m365/scopes.ts` requests `Mail.ReadWrite` and `Mail.Send` (delegated, per AUTH-5 and MAIL-7). cub: `src/lib/sharepoint/graph.ts` mints only an app-only token. Gap: cub has no delegated mail scope.
 
 **MAILCAL-3. Scope app-only mailbox access with RBAC for Applications, and remove the unscoped Entra consent.**

@@ -15,7 +15,7 @@ Plumbing for Microsoft 365 in a Next.js app: sign-in and tokens, the Graph clien
 | `nextjs.md` | Research | NEXT | Next.js 16 behaviours that shape the app layer | 2026-11-19 |
 | `v2-mail-calendar.md` | Research | MAILCAL | What cub would need for Graph mail and calendar in v2, and what its v1 E50 deferral would have to change | 2026-11-22 |
 | `v2-change-notifications.md` | Research | HOOK | What cub would need for Graph change notifications on SharePoint in v2, and what its v1 S7 deferral would have to change | 2026-11-22 |
-| `spike/probe/RESULTS.md` | Research | none | Measured results of the 2026-11-23 live probes against `cub-staging`: what passed, what the tenant refused, prerequisites found. Kept beside the probes by the owner's decision of 2026-11-24 | 2026-11-23 |
+| `probe-results.md` | Reference | none | Measured results of the 2026-11-23 live probes against `cub-staging`: what passed, what the tenant refused, prerequisites found | 2026-11-23 |
 | `guide.md` | Reference | none | The original integration guide the research starts from. Not safe to use as written; its Auth.js guidance is superseded by PLAN-5 (no auth library) | 2026-11-19 |
 
 ## Code

@@ -7,7 +7,7 @@
 ## Doctrines
 
 **PLAN-1. Nothing counts as working until it has run on a test tenant; tenant tests come first.**
-Environment: first runs went against the `cub-staging` registration in the dev tenant (2026-11-23, `probe/RESULTS.md`); the owner's staging setup (EC2, AWS Secrets Manager, Redis on the instance) is still to be connected. Each test runs as a converging loop with a budget of 3 attempts (LADDER-6 in csf-research, `tracks/factory`); irreversible steps follow LADDER-5 there. Run these, in order:
+Environment: first runs went against the `cub-staging` registration in the dev tenant (2026-11-23, `probe-results.md`); the owner's staging setup (EC2, AWS Secrets Manager, Redis on the instance) is still to be connected. Each test runs as a converging loop with a budget of 3 attempts (LADDER-6 in csf-research, `tracks/factory`); irreversible steps follow LADDER-5 there. Run these, in order:
 1. Sign-in, token refresh after expiry, sign-out (AUTH-1 to AUTH-3) — sign-in measured 2026-11-23; refresh and sign-out have no recorded result yet.
 2. What restricting a matter folder leaves behind, and whether it works at all on folders (MATTER-3, MATTER-6).
 3. App-only `invite` with `Sites.Selected` (MATTER-7).
@@ -20,7 +20,7 @@ Environment: first runs went against the `cub-staging` registration in the dev t
 10. Change notifications: create a drive and an inbox subscription, receive a notification, run the delta (GRAPH-8).
 11. Template copy and its monitor URL (FILES-7).
 - Why: items 2 and 3 decide the matter provisioning design. The rest is order and budget.
-- Evidence: first tenant run 2026-11-23 on `cub-staging` (dev tenant): read-only 5 of 5; app-only writes 9 of 10 (one test-pattern bug, fixed, not rerun); delegated mail and files 9 of 9; organization link round trip OK, anonymous link refused by the tenant; invite by email not run. Prerequisites found: two delegated mail permissions (`Mail.ReadWrite`, `Mail.Send`), an Exchange license, site membership (`probe/RESULTS.md`).
+- Evidence: first tenant run 2026-11-23 on `cub-staging` (dev tenant): read-only 5 of 5; app-only writes 9 of 10 (one test-pattern bug, fixed, not rerun); delegated mail and files 9 of 9; organization link round trip OK, anonymous link refused by the tenant; invite by email not run. Prerequisites found: two delegated mail permissions (`Mail.ReadWrite`, `Mail.Send`), an Exchange license, site membership (`probe-results.md`).
 - Basis: Decision
 
 **PLAN-2. Port the Graph layer, not the spike app.**
@@ -46,7 +46,7 @@ Copy `spike/lib/m365/` (without `server.ts` and `config.ts`) into the existing a
 **PLAN-5. Adopt no m365-specific dependency: keep cub's own OIDC code, adopt the thin Graph client, and adopt no Graph SDK and no auth library.**
 The reliable dependency for m365 is no dependency at all: Graph REST v1.0 and the Entra OAuth endpoints are the stable contract, and they outlive any wrapper. cub keeps its own OIDC sign-in code and adopts the thin Graph client (PLAN-2); no Graph SDK and no auth library; next-auth stays in the spike only as a test harness. The Redis token store against a real server stays untested (PLAN-1 item 9).
 - Why: the objective for this track is a reliable dependency for future-proofing cub. A wrapper that needs a Node 22 bump and a fetch polyfill to keep working, or an auth framework with no stable release, is the opposite of reliable; the REST surface and the OAuth endpoints are Microsoft's long-term contract.
-- Evidence: GRAPH-1 in `m365/graph-client.md` (`@microsoft/microsoft-graph-client` 3.1.0 needs Node 22 and a fetch polyfill import; its successor `@microsoft/msgraph-sdk` is still pre-release); AUTH-6 and the Open "Auth library" item in `m365/auth.md` (no stable next-auth v5; the Auth.js README recommends Better Auth); `m365/spike/probe/RESULTS.md` (the probes signed in with plain OAuth PKCE plus a certificate, and next-auth appears in no probe; every call ran through the thin client, per the probe sources in `m365/spike/probe/`); MAILCAL-4 in `m365/v2-mail-calendar.md` (cub signs in with its own direct Entra OIDC code, `src/lib/session/entra-oidc.ts`).
+- Evidence: GRAPH-1 in `m365/graph-client.md` (`@microsoft/microsoft-graph-client` 3.1.0 needs Node 22 and a fetch polyfill import; its successor `@microsoft/msgraph-sdk` is still pre-release); AUTH-6 and the Open "Auth library" item in `m365/auth.md` (no stable next-auth v5; the Auth.js README recommends Better Auth); `probe-results.md` (the probes signed in with plain OAuth PKCE plus a certificate, and next-auth appears in no probe; every call ran through the thin client, per the probe sources in `m365/spike/probe/`); MAILCAL-4 in `m365/v2-mail-calendar.md` (cub signs in with its own direct Entra OIDC code, `src/lib/session/entra-oidc.ts`).
 - Basis: Decision (owner: JM, 2026-11-24: "Go with rec", relayed by Toboggan)
 - Code: none; this records a verdict and changes no code.
 
@@ -69,4 +69,4 @@ The reliable dependency for m365 is no dependency at all: Graph REST v1.0 and th
 ## Open
 
 - PLAN-1 has started on `cub-staging` (dev tenant, 2026-11-23): items 1, 6 and 7 are partly measured; the registration's broad delegated SharePoint permissions (`Sites.FullControl.All`, `Sites.ReadWrite.All`, `AllSites.FullControl`) await the removal decision.
-- PLAN-3 is unanswered: the cub repository has not been read from this workspace. Tenant access exists: the 2026-11-23 probes ran against the `cub-staging` registration and site (`spike/probe/RESULTS.md`).
+- PLAN-3 is unanswered: the cub repository has not been read from this workspace. Tenant access exists: the 2026-11-23 probes ran against the `cub-staging` registration and site (`probe-results.md`).

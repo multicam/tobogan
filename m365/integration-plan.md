@@ -36,7 +36,7 @@ Copy `spike/lib/m365/` (without `server.ts` and `config.ts`) into the existing a
 5. Which features already exist, compared against the doctrines in `files.md`, `sharing.md`, `mail.md`.
 6. Hosting: staging is a long-running Node process on EC2, so the streaming upload route (NEXT-2) has no serverless duration or body limits; check any load balancer or reverse proxy in front of it.
 7. Tenant policy: external sharing, anonymous links, user consent.
-- Why: the fit answers decide what the port keeps or wraps; access is no longer the blocker — the 2026-11-23 probes ran against `cub-staging` (`probe/RESULTS.md`).
+- Why: the existing repo has not been read from this workspace.
 - Basis: Decision
 
 **PLAN-4. Facts come from primary sources, and weaker sources are marked.**
@@ -69,4 +69,4 @@ The reliable dependency for m365 is no dependency at all: Graph REST v1.0 and th
 ## Open
 
 - PLAN-1 has started on `cub-staging` (dev tenant, 2026-11-23): items 1, 6 and 7 are partly measured; the registration's broad delegated SharePoint permissions (`Sites.FullControl.All`, `Sites.ReadWrite.All`, `AllSites.FullControl`) await the removal decision.
-- PLAN-3: access exists — the 2026-11-23 probes ran against the `cub-staging` registration and site (`probe/RESULTS.md`); per that document, cub alignment rests on csf-research's cub evidence, not a probe run (aligned with the spike only on SharePoint sync), and matter restriction, change subscriptions, calendar, the Redis token store and the preview iframe have not been run.
+- PLAN-3 is unanswered: the cub repository has not been read from this workspace. Tenant access exists: the 2026-11-23 probes ran against the `cub-staging` registration and site (`spike/probe/RESULTS.md`).

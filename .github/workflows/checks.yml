@@ -1,4 +1,5 @@
-# Green, as defined by R-6. Runs on every push and pull request.
+# Code-directory checks. Runs on every push and pull request.
+# The repository checker (R-6) runs locally only, from a csf-research checkout; it is not run here.
 name: checks
 
 on:
@@ -9,17 +10,6 @@ permissions:
   contents: read
 
 jobs:
-  repository:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - name: Checker tests
-        working-directory: factory/checks
-        run: bun test
-      - name: Doctrines, lookup tables, secrets
-        run: bun factory/checks/check-repo.mjs .
-
   m365-spike:
     runs-on: ubuntu-latest
     defaults:

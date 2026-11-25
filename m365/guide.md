@@ -1,5 +1,7 @@
 # Next.js + SharePoint & Microsoft 365 Full-Stack Integration Guide
 
+> Superseded in part, 2026-11-25: the Auth.js (NextAuth v5) guidance below is superseded by PLAN-5 in `integration-plan.md` (no auth library); the guide is kept as the original reference.
+
 This document provides a complete, production-ready blueprint for integrating **SharePoint Document Libraries**, **Office Online (Word/Excel/PowerPoint) editing**, **Folder Sharing & Permissions**, and **Exchange Email views** into a **Next.js (App Router)** application.
 
 By using **Microsoft Graph** paired with **Auth.js (NextAuth v5) Delegated Authentication**, you avoid X.509 certificate requirements and automatically enforce each signed-in user's native SharePoint and Exchange permissions.

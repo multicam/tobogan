@@ -76,7 +76,7 @@ The Entra client secret, `AUTH_SECRET` and `TOKEN_ENCRYPTION_KEY` are fetched fr
 
 ## Open
 
-- **Auth library.** Decided 2026-11-24: none (PLAN-5 in `integration-plan.md`). The owner does not know yet what cub uses (2026-11-19); settle when the cub repository is attached (PLAN-3). The Auth.js README says it is now part of Better Auth and recommends Better Auth for new projects; Auth.js keeps receiving security and urgent fixes. If the existing app uses Auth.js, staying is reasonable. For a new auth layer, compare Better Auth and MSAL Node (`@azure/msal-node` 7.2.3), which refreshes tokens itself and supports certificates but needs a distributed cache plugin.
+- **Auth library.** The owner does not know yet what cub uses (2026-11-19); settle when the cub repository is attached (PLAN-3). The Auth.js README says it is now part of Better Auth and recommends Better Auth for new projects; Auth.js keeps receiving security and urgent fixes. If the existing app uses Auth.js, staying is reasonable. For a new auth layer, compare Better Auth and MSAL Node (`@azure/msal-node` 7.2.3), which refreshes tokens itself and supports certificates but needs a distributed cache plugin.
   Closed by PLAN-5 (owner decision, 2026-11-24): no auth library; cub keeps its own OIDC code and adopts the thin Graph client. No comparison with MSAL Node was made.
 - **Secret or certificate.** A client secret works for a delegated web app. Microsoft ranks it last, after managed identity, federated credentials and certificates. Start with a secret and plan rotation, or go straight to a certificate.
 - **Unverified:** whether `next-auth/jwt` module augmentation applies cleanly in beta.32 (the spike avoids needing it). Sign-in has not been run against a tenant.

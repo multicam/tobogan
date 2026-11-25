@@ -27,11 +27,11 @@ For example: "`m365`, FILES-4" or "MATTER-3".
 
 **R-5. Secrets never enter git.** Commit an `.env.example` with empty values; real values go in `.env.local`. Enforced by the repository checker in csf-research `checks/` (LADDER-2 in csf-research, `tracks/factory/harness-loops-graphs.md`).
 
-**R-6. Green means the checks pass.** Before a commit is pushed, `bun "$CSF_RESEARCH_DIR/checks/check-repo.mjs" .` and the checks of every code directory touched must pass (LADDER-1 in csf-research, `tracks/factory/harness-loops-graphs.md`). The repository checker lives in csf-research `checks/` and is run locally from a csf-research checkout at its master, named by the environment variable `CSF_RESEARCH_DIR`; it is not run in CI. The m365 spike checks still run in CI on every push.
+**R-6. Green means the checks pass.** Before a commit is pushed, `bun "${CSF_RESEARCH_DIR:?set CSF_RESEARCH_DIR to a csf-research checkout at its master}/checks/check-repo.mjs" .` and the checks of every code directory touched must pass (LADDER-1 in csf-research, `tracks/factory/harness-loops-graphs.md`). The repository checker lives in csf-research `checks/` and is run locally from a csf-research checkout at its master, named by the environment variable `CSF_RESEARCH_DIR`; it is not run in CI. The m365 spike checks still run in CI on every push.
 
 ## Checked directories
 
-The repository checker (R-6, in csf-research `checks/`) reads this file, every registered document, and these directories:
+The repository checker (R-6, in csf-research `checks/`) reads this file, every registered document, and these directories; it does not read the root `README.md`, `CLAUDE.md` or `archive/` — `archive/` holds one zip and no documents, so it has no lookup table to check, and a doctrine ID cited in the two root files is checked by hand when either file changes. The directories it checks are:
 
 - `m365`
 - `matters`

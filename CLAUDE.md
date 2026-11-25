@@ -5,4 +5,4 @@ Read `DOCTRINES.md` before doing anything in this repository and follow it. It i
 - W-1: ask questions one at a time through the question UI.
 - W-2: write planning and research documents as doctrines, in the format it defines.
 - R-2 and R-3: each track's `README.md` is its lookup table; add the row in the same commit as the document.
-- R-6: run `bun "$CSF_RESEARCH_DIR/checks/check-repo.mjs" .` (and the checks of any code directory you touched) before pushing; the checker lives in csf-research `checks/`.
+- R-6: run `bun "${CSF_RESEARCH_DIR:?set CSF_RESEARCH_DIR to a csf-research checkout at its master}/checks/check-repo.mjs" .` (and the checks of any code directory you touched) before pushing; `CSF_RESEARCH_DIR` must point at a csf-research checkout at its master; the checker lives in csf-research `checks/`.

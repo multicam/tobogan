@@ -29,14 +29,14 @@ Copy `spike/lib/m365/` (without `server.ts` and `config.ts`) into the existing a
 - Basis: Decision
 
 **PLAN-3. Answer the fit questions against the existing repo before porting.**
-1. Auth: which library signs users in, and is the access token copied onto the session (AUTH-1)? Owner does not know yet (2026-11-19).
+1. Auth: which library signs users in is decided: none — cub keeps its own OIDC sign-in code (PLAN-5, 2026-11-24). Still owed: is the access token copied onto the session (AUTH-1)?
 2. Session storage: answered 2026-11-19: Redis on the EC2 instance for staging (AUTH-7), app secrets in AWS Secrets Manager (AUTH-8).
 3. Graph access: is `@microsoft/microsoft-graph-client` in use? Keep it and wrap it, or move call sites to the thin client (GRAPH-1).
 4. Next.js version: on 14 or 15, `proxy.ts` is `middleware.ts` and `searchParams` may be synchronous.
 5. Which features already exist, compared against the doctrines in `files.md`, `sharing.md`, `mail.md`.
 6. Hosting: staging is a long-running Node process on EC2, so the streaming upload route (NEXT-2) has no serverless duration or body limits; check any load balancer or reverse proxy in front of it.
 7. Tenant policy: external sharing, anonymous links, user consent.
-- Why: the existing repo has not been read from this workspace.
+- Why: cub has been read from this workspace only at master `9aee5f63`, for the v2 documents (`v2-mail-calendar.md`, `v2-change-notifications.md`); no m365 document records a reading of cub's sign-in code or its Graph call sites against these questions.
 - Basis: Decision
 
 **PLAN-4. Facts come from primary sources, and weaker sources are marked.**
@@ -46,7 +46,7 @@ Copy `spike/lib/m365/` (without `server.ts` and `config.ts`) into the existing a
 **PLAN-5. Adopt no m365-specific dependency: keep cub's own OIDC code, adopt the thin Graph client, and adopt no Graph SDK and no auth library.**
 The reliable dependency for m365 is no dependency at all: Graph REST v1.0 and the Entra OAuth endpoints are the stable contract, and they outlive any wrapper. cub keeps its own OIDC sign-in code and adopts the thin Graph client (PLAN-2); no Graph SDK and no auth library; next-auth stays in the spike only as a test harness. The Redis token store against a real server stays untested (PLAN-1 item 9).
 - Why: the objective for this track is a reliable dependency for future-proofing cub. A wrapper that needs a Node 22 bump and a fetch polyfill to keep working, or an auth framework with no stable release, is the opposite of reliable; the REST surface and the OAuth endpoints are Microsoft's long-term contract.
-- Evidence: GRAPH-1 in `m365/graph-client.md` (`@microsoft/microsoft-graph-client` 3.1.0 needs Node 22 and a fetch polyfill import; its successor `@microsoft/msgraph-sdk` is still pre-release); AUTH-6 and the Open "Auth library" item in `m365/auth.md` (no stable next-auth v5; the Auth.js README recommends Better Auth); `probe-results.md` (the probes signed in with plain OAuth PKCE plus a certificate, and next-auth appears in no probe; every call ran through the thin client, per the probe sources in `m365/spike/probe/`); MAILCAL-4 in `m365/v2-mail-calendar.md` (cub signs in with its own direct Entra OIDC code, `src/lib/session/entra-oidc.ts`).
+- Evidence: GRAPH-1 in `m365/graph-client.md` (`@microsoft/microsoft-graph-client` 3.1.0 needs Node 22 and a fetch polyfill import; its successor `@microsoft/msgraph-sdk` is still pre-release); AUTH-6 and the Open "Auth library" item in `m365/auth.md` (no stable next-auth v5; the Auth.js README recommends Better Auth); `probe-results.md` (the probes signed in with plain OAuth PKCE plus a certificate, and next-auth appears in no probe; every Graph call ran through the thin client, per the probe sources in `m365/spike/probe/`); MAILCAL-4 in `m365/v2-mail-calendar.md` (cub signs in with its own direct Entra OIDC code, `src/lib/session/entra-oidc.ts`).
 - Basis: Decision (owner: JM, 2026-11-24: "Go with rec", relayed by Toboggan)
 - Code: none; this records a verdict and changes no code.
 
@@ -69,4 +69,4 @@ The reliable dependency for m365 is no dependency at all: Graph REST v1.0 and th
 ## Open
 
 - PLAN-1 has started on `cub-staging` (dev tenant, 2026-11-23): items 1, 6 and 7 are partly measured; the registration's broad delegated SharePoint permissions (`Sites.FullControl.All`, `Sites.ReadWrite.All`, `AllSites.FullControl`) await the removal decision.
-- PLAN-3 is unanswered: the cub repository has not been read from this workspace. Tenant access exists: the 2026-11-23 probes ran against the `cub-staging` registration and site (`probe-results.md`).
+- PLAN-3 is unanswered: cub was read from this workspace only at master `9aee5f63`, for the v2 documents (`v2-mail-calendar.md`, `v2-change-notifications.md`); no m365 document records a reading of cub's sign-in code or its Graph call sites against PLAN-3's questions. Tenant access exists: the 2026-11-23 probes ran against the `cub-staging` registration and site (`probe-results.md`).

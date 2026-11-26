@@ -24,4 +24,4 @@ Run on 2026-11-23 against the `cub-staging` registration in the dev tenant, site
 
 ## Alignment with cub
 
-From the research in `m365/` read against csf-research's cub evidence (not from a probe run): cub is aligned with the spike only on SharePoint sync. Mail, calendar, per-user tokens, change notifications and sharing are absent in cub.
+From the research in `m365/` read against csf-research's cub evidence (not from a probe run): cub is aligned with the spike only on SharePoint sync. Graph mail, calendar, per-user tokens, change notifications and sharing are absent in cub; mail exists only as indexing of `.msg` and `.eml` files filed in SharePoint (cub `src/lib/sharepoint/email-indexer.ts`).

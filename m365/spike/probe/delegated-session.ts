@@ -4,7 +4,6 @@
 // credentials, which that script reads from env and never prints.
 import { createHash, randomBytes } from "node:crypto";
 import { createGraphClient } from "../lib/m365/graph-client";
-import { graphScope } from "../lib/m365/scopes";
 import { clientAssertion, need, tokenUrl } from "./app-token";
 
 const REDIRECT = "http://localhost:3000/callback";
@@ -13,7 +12,7 @@ const b64u = (b: Buffer) => b.toString("base64url");
 export async function agentToken(): Promise<{ token: string; scopes: string }> {
   const verifier = b64u(randomBytes(32));
   const state = b64u(randomBytes(16));
-  const scope = graphScope("all");
+  const scope = "openid profile email offline_access Files.ReadWrite.All Mail.ReadWrite Mail.Send";
   const authorize =
     `https://login.microsoftonline.com/${need("SP_TENANT_ID")}/oauth2/v2.0/authorize?` +
     new URLSearchParams({
